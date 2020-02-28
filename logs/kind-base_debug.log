@@ -1,0 +1,249 @@
+2020-02-17 21:08:57,096 DEBUG [main] com.kind.framework.utils.SpringUtil [Logger.java : 24] ApplicationContext配置成功,在普通类可以通过调用SpringUtils.getAppContext()获取applicationContext对象,applicationContext=org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@f8f56b9: startup date [Mon Feb 17 21:08:48 CST 2020]; parent: org.springframework.context.annotation.AnnotationConfigApplicationContext@2f17e30d========
+2020-02-17 21:08:59,875 DEBUG [main] c.k.b.elasticsearch.EsConfiguration [Logger.java : 24] ES连接地址=192.168.0.29:9200
+2020-02-17 21:09:00,732 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：encAction,com.kind.framework.beetl.tag.EncyptAction
+2020-02-17 21:09:00,733 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：hasPermission,com.kind.framework.beetl.tag.HasPermission
+2020-02-17 21:09:00,735 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：hasRole,com.kind.framework.beetl.tag.HasRole
+2020-02-17 21:09:00,736 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：hasButton,com.kind.framework.beetl.tag.HasButton
+2020-02-17 21:09:00,737 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：dicData,com.kind.common.tag.DicData
+2020-02-17 21:09:00,738 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：dicSelect,com.kind.common.tag.DicSelect
+2020-02-17 21:09:00,740 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：dbQuerier,com.kind.common.tag.DbQuerier
+2020-02-17 21:09:00,740 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：linkageDicSelect,com.kind.common.linkagedic.LinkageDicSelect
+2020-02-17 21:09:00,742 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：appList,com.kind.common.tag.AppList
+2020-02-17 21:09:00,743 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：jsCssPath,com.kind.common.tag.JsCssPath
+2020-02-17 21:09:03,721 DEBUG [main] c.k.common.init.CommonDataInitiator [Logger.java : 24] ====================【用户密码验证类型】：utf-8
+2020-02-17 21:09:03,722 DEBUG [main] c.k.common.init.CommonDataInitiator [Logger.java : 24] ====================【COMMON基础数据初始化开始】=====================
+2020-02-17 21:09:07,522 DEBUG [main] c.k.common.init.CommonDataInitiator [Logger.java : 24] ====================【COMMON基础数据初始化结束】=====================
+2020-02-17 21:09:08,169 DEBUG [main] com.kind.framework.core.DbHelper [Logger.java : 24] 从默认容器中获取：0
+2020-02-17 21:13:18,121 DEBUG [main] com.kind.framework.utils.SpringUtil [Logger.java : 24] ApplicationContext配置成功,在普通类可以通过调用SpringUtils.getAppContext()获取applicationContext对象,applicationContext=org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@8c46918: startup date [Mon Feb 17 21:13:10 CST 2020]; parent: org.springframework.context.annotation.AnnotationConfigApplicationContext@6b00f608========
+2020-02-17 21:13:21,186 DEBUG [main] c.k.b.elasticsearch.EsConfiguration [Logger.java : 24] ES连接地址=192.168.0.29:9200
+2020-02-17 21:13:21,985 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：encAction,com.kind.framework.beetl.tag.EncyptAction
+2020-02-17 21:13:21,986 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：hasPermission,com.kind.framework.beetl.tag.HasPermission
+2020-02-17 21:13:21,987 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：hasRole,com.kind.framework.beetl.tag.HasRole
+2020-02-17 21:13:21,988 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：hasButton,com.kind.framework.beetl.tag.HasButton
+2020-02-17 21:13:21,988 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：dicData,com.kind.common.tag.DicData
+2020-02-17 21:13:21,989 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：dicSelect,com.kind.common.tag.DicSelect
+2020-02-17 21:13:21,990 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：dbQuerier,com.kind.common.tag.DbQuerier
+2020-02-17 21:13:21,992 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：linkageDicSelect,com.kind.common.linkagedic.LinkageDicSelect
+2020-02-17 21:13:21,993 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：appList,com.kind.common.tag.AppList
+2020-02-17 21:13:21,995 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：jsCssPath,com.kind.common.tag.JsCssPath
+2020-02-17 21:13:25,002 DEBUG [main] c.k.common.init.CommonDataInitiator [Logger.java : 24] ====================【用户密码验证类型】：utf-8
+2020-02-17 21:13:25,002 DEBUG [main] c.k.common.init.CommonDataInitiator [Logger.java : 24] ====================【COMMON基础数据初始化开始】=====================
+2020-02-17 21:13:28,436 DEBUG [main] c.k.common.init.CommonDataInitiator [Logger.java : 24] ====================【COMMON基础数据初始化结束】=====================
+2020-02-17 21:13:29,082 DEBUG [main] com.kind.framework.core.DbHelper [Logger.java : 24] 从默认容器中获取：0
+2020-02-17 21:26:09,144 DEBUG [main] com.kind.framework.utils.SpringUtil [Logger.java : 24] ApplicationContext配置成功,在普通类可以通过调用SpringUtils.getAppContext()获取applicationContext对象,applicationContext=org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@2bcec6a6: startup date [Mon Feb 17 21:26:01 CST 2020]; parent: org.springframework.context.annotation.AnnotationConfigApplicationContext@6b00f608========
+2020-02-17 21:26:11,551 DEBUG [main] c.k.b.elasticsearch.EsConfiguration [Logger.java : 24] ES连接地址=192.168.0.29:9200
+2020-02-17 21:26:12,361 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：encAction,com.kind.framework.beetl.tag.EncyptAction
+2020-02-17 21:26:12,362 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：hasPermission,com.kind.framework.beetl.tag.HasPermission
+2020-02-17 21:26:12,364 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：hasRole,com.kind.framework.beetl.tag.HasRole
+2020-02-17 21:26:12,364 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：hasButton,com.kind.framework.beetl.tag.HasButton
+2020-02-17 21:26:12,365 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：dicData,com.kind.common.tag.DicData
+2020-02-17 21:26:12,366 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：dicSelect,com.kind.common.tag.DicSelect
+2020-02-17 21:26:12,367 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：dbQuerier,com.kind.common.tag.DbQuerier
+2020-02-17 21:26:12,368 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：linkageDicSelect,com.kind.common.linkagedic.LinkageDicSelect
+2020-02-17 21:26:12,369 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：appList,com.kind.common.tag.AppList
+2020-02-17 21:26:12,370 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：jsCssPath,com.kind.common.tag.JsCssPath
+2020-02-17 21:26:15,529 DEBUG [main] c.k.common.init.CommonDataInitiator [Logger.java : 24] ====================【用户密码验证类型】：utf-8
+2020-02-17 21:26:15,530 DEBUG [main] c.k.common.init.CommonDataInitiator [Logger.java : 24] ====================【COMMON基础数据初始化开始】=====================
+2020-02-17 21:26:18,796 DEBUG [main] c.k.common.init.CommonDataInitiator [Logger.java : 24] ====================【COMMON基础数据初始化结束】=====================
+2020-02-17 21:26:19,265 DEBUG [main] com.kind.framework.core.DbHelper [Logger.java : 24] 从默认容器中获取：0
+2020-02-17 21:27:41,511 DEBUG [main] com.kind.framework.utils.SpringUtil [Logger.java : 24] ApplicationContext配置成功,在普通类可以通过调用SpringUtils.getAppContext()获取applicationContext对象,applicationContext=org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@2c306a57: startup date [Mon Feb 17 21:27:30 CST 2020]; parent: org.springframework.context.annotation.AnnotationConfigApplicationContext@6b00f608========
+2020-02-17 21:27:45,422 DEBUG [main] c.k.b.elasticsearch.EsConfiguration [Logger.java : 24] ES连接地址=192.168.0.29:9200
+2020-02-17 21:27:46,661 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：encAction,com.kind.framework.beetl.tag.EncyptAction
+2020-02-17 21:27:46,663 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：hasPermission,com.kind.framework.beetl.tag.HasPermission
+2020-02-17 21:27:46,666 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：hasRole,com.kind.framework.beetl.tag.HasRole
+2020-02-17 21:27:46,667 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：hasButton,com.kind.framework.beetl.tag.HasButton
+2020-02-17 21:27:46,669 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：dicData,com.kind.common.tag.DicData
+2020-02-17 21:27:46,670 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：dicSelect,com.kind.common.tag.DicSelect
+2020-02-17 21:27:46,673 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：dbQuerier,com.kind.common.tag.DbQuerier
+2020-02-17 21:27:46,675 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：linkageDicSelect,com.kind.common.linkagedic.LinkageDicSelect
+2020-02-17 21:27:46,677 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：appList,com.kind.common.tag.AppList
+2020-02-17 21:27:46,679 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：jsCssPath,com.kind.common.tag.JsCssPath
+2020-02-17 21:27:50,873 DEBUG [main] c.k.common.init.CommonDataInitiator [Logger.java : 24] ====================【用户密码验证类型】：utf-8
+2020-02-17 21:27:50,873 DEBUG [main] c.k.common.init.CommonDataInitiator [Logger.java : 24] ====================【COMMON基础数据初始化开始】=====================
+2020-02-17 21:27:54,639 DEBUG [main] c.k.common.init.CommonDataInitiator [Logger.java : 24] ====================【COMMON基础数据初始化结束】=====================
+2020-02-17 21:27:55,161 DEBUG [main] com.kind.framework.core.DbHelper [Logger.java : 24] 从默认容器中获取：0
+2020-02-17 21:42:47,058 DEBUG [main] com.kind.framework.utils.SpringUtil [Logger.java : 24] ApplicationContext配置成功,在普通类可以通过调用SpringUtils.getAppContext()获取applicationContext对象,applicationContext=org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@630d1b2f: startup date [Mon Feb 17 21:42:39 CST 2020]; parent: org.springframework.context.annotation.AnnotationConfigApplicationContext@6b00f608========
+2020-02-17 21:42:49,401 DEBUG [main] c.k.b.elasticsearch.EsConfiguration [Logger.java : 24] ES连接地址=192.168.0.29:9200
+2020-02-17 21:42:50,105 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：encAction,com.kind.framework.beetl.tag.EncyptAction
+2020-02-17 21:42:50,107 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：hasPermission,com.kind.framework.beetl.tag.HasPermission
+2020-02-17 21:42:50,108 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：hasRole,com.kind.framework.beetl.tag.HasRole
+2020-02-17 21:42:50,109 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：hasButton,com.kind.framework.beetl.tag.HasButton
+2020-02-17 21:42:50,110 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：dicData,com.kind.common.tag.DicData
+2020-02-17 21:42:50,111 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：dicSelect,com.kind.common.tag.DicSelect
+2020-02-17 21:42:50,112 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：dbQuerier,com.kind.common.tag.DbQuerier
+2020-02-17 21:42:50,113 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：linkageDicSelect,com.kind.common.linkagedic.LinkageDicSelect
+2020-02-17 21:42:50,114 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：appList,com.kind.common.tag.AppList
+2020-02-17 21:42:50,116 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：jsCssPath,com.kind.common.tag.JsCssPath
+2020-02-17 21:42:53,042 DEBUG [main] c.k.common.init.CommonDataInitiator [Logger.java : 24] ====================【用户密码验证类型】：utf-8
+2020-02-17 21:42:53,043 DEBUG [main] c.k.common.init.CommonDataInitiator [Logger.java : 24] ====================【COMMON基础数据初始化开始】=====================
+2020-02-17 21:42:56,955 DEBUG [main] c.k.common.init.CommonDataInitiator [Logger.java : 24] ====================【COMMON基础数据初始化结束】=====================
+2020-02-17 21:42:57,574 DEBUG [main] com.kind.framework.core.DbHelper [Logger.java : 24] 从默认容器中获取：0
+2020-02-17 21:44:39,266 DEBUG [main] com.kind.framework.utils.SpringUtil [Logger.java : 24] ApplicationContext配置成功,在普通类可以通过调用SpringUtils.getAppContext()获取applicationContext对象,applicationContext=org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@4a29f290: startup date [Mon Feb 17 21:44:30 CST 2020]; parent: org.springframework.context.annotation.AnnotationConfigApplicationContext@6b00f608========
+2020-02-17 21:44:42,774 DEBUG [main] c.k.b.elasticsearch.EsConfiguration [Logger.java : 24] ES连接地址=192.168.0.29:9200
+2020-02-17 21:44:44,023 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：encAction,com.kind.framework.beetl.tag.EncyptAction
+2020-02-17 21:44:44,025 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：hasPermission,com.kind.framework.beetl.tag.HasPermission
+2020-02-17 21:44:44,028 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：hasRole,com.kind.framework.beetl.tag.HasRole
+2020-02-17 21:44:44,030 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：hasButton,com.kind.framework.beetl.tag.HasButton
+2020-02-17 21:44:44,031 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：dicData,com.kind.common.tag.DicData
+2020-02-17 21:44:44,033 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：dicSelect,com.kind.common.tag.DicSelect
+2020-02-17 21:44:44,035 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：dbQuerier,com.kind.common.tag.DbQuerier
+2020-02-17 21:44:44,037 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：linkageDicSelect,com.kind.common.linkagedic.LinkageDicSelect
+2020-02-17 21:44:44,040 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：appList,com.kind.common.tag.AppList
+2020-02-17 21:44:44,042 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：jsCssPath,com.kind.common.tag.JsCssPath
+2020-02-17 21:44:48,358 DEBUG [main] c.k.common.init.CommonDataInitiator [Logger.java : 24] ====================【用户密码验证类型】：utf-8
+2020-02-17 21:44:48,359 DEBUG [main] c.k.common.init.CommonDataInitiator [Logger.java : 24] ====================【COMMON基础数据初始化开始】=====================
+2020-02-17 21:44:52,886 DEBUG [main] c.k.common.init.CommonDataInitiator [Logger.java : 24] ====================【COMMON基础数据初始化结束】=====================
+2020-02-17 21:44:53,445 DEBUG [main] com.kind.framework.core.DbHelper [Logger.java : 24] 从默认容器中获取：0
+2020-02-17 21:50:37,677 DEBUG [main] com.kind.framework.utils.SpringUtil [Logger.java : 24] ApplicationContext配置成功,在普通类可以通过调用SpringUtils.getAppContext()获取applicationContext对象,applicationContext=org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@5eb97ced: startup date [Mon Feb 17 21:50:29 CST 2020]; parent: org.springframework.context.annotation.AnnotationConfigApplicationContext@6b00f608========
+2020-02-17 21:50:39,960 DEBUG [main] c.k.b.elasticsearch.EsConfiguration [Logger.java : 24] ES连接地址=192.168.0.29:9200
+2020-02-17 21:50:40,818 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：encAction,com.kind.framework.beetl.tag.EncyptAction
+2020-02-17 21:50:40,821 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：hasPermission,com.kind.framework.beetl.tag.HasPermission
+2020-02-17 21:50:40,822 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：hasRole,com.kind.framework.beetl.tag.HasRole
+2020-02-17 21:50:40,823 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：hasButton,com.kind.framework.beetl.tag.HasButton
+2020-02-17 21:50:40,824 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：dicData,com.kind.common.tag.DicData
+2020-02-17 21:50:40,825 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：dicSelect,com.kind.common.tag.DicSelect
+2020-02-17 21:50:40,827 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：dbQuerier,com.kind.common.tag.DbQuerier
+2020-02-17 21:50:40,828 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：linkageDicSelect,com.kind.common.linkagedic.LinkageDicSelect
+2020-02-17 21:50:40,830 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：appList,com.kind.common.tag.AppList
+2020-02-17 21:50:40,831 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：jsCssPath,com.kind.common.tag.JsCssPath
+2020-02-17 21:50:43,553 DEBUG [main] c.k.common.init.CommonDataInitiator [Logger.java : 24] ====================【用户密码验证类型】：utf-8
+2020-02-17 21:50:43,553 DEBUG [main] c.k.common.init.CommonDataInitiator [Logger.java : 24] ====================【COMMON基础数据初始化开始】=====================
+2020-02-17 21:50:47,556 DEBUG [main] c.k.common.init.CommonDataInitiator [Logger.java : 24] ====================【COMMON基础数据初始化结束】=====================
+2020-02-17 21:50:48,125 DEBUG [main] com.kind.framework.core.DbHelper [Logger.java : 24] 从默认容器中获取：0
+2020-02-17 21:51:05,882 DEBUG [http-nio-80-exec-1] com.kind.framework.core.WebLogAspect [Logger.java : 24] ------------切面日志记录开始------------
+2020-02-17 21:51:05,941 DEBUG [http-nio-80-exec-1] c.k.framework.utils.ControllerUtil [Logger.java : 24] 客户端请求的所有参数：
+提交请求方式：GET
+Header....
+   host=127.0.0.1
+   connection=keep-alive
+   upgrade-insecure-requests=1
+   user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36
+   sec-fetch-user=?1
+   accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3
+   sec-fetch-site=none
+   sec-fetch-mode=navigate
+   accept-encoding=gzip, deflate, br
+   accept-language=zh-CN,zh;q=0.9
+   cookie=SESSION=771df080-2ea0-444a-bcd6-2d9b06b3b8b1; cs-skin=default; kind-sso-id_user=6674078d45204bd65c0b03c836b6b835; kind-sso-id_md5=44483f5f00e91fd88af3baf988f1bdb7
+   host1=127.0.0.1   activate.navicat.com   80
+   host2=/do   127.0.0.1   80
+Attribute....
+ hiddenHttpMethodFilter.FILTERED=true
+ characterEncodingFilter.FILTERED=true
+ requestContextFilter.FILTERED=true
+ httpPutFormContentFilter.FILTERED=true
+Parameter....
+   action=login
+IpAddress....
+   IP=127.0.0.1
+
+2020-02-17 21:51:06,667 DEBUG [http-nio-80-exec-1] c.k.framework.utils.ControllerUtil [Logger.java : 24] 扫描中action值找到service类：com.kind.base.core.login.GotoLoginPageService，注解：requireTransaction=false,requireLogin=false
+2020-02-17 21:51:06,697 DEBUG [http-nio-80-exec-1] c.k.framework.utils.ControllerUtil [Logger.java : 24] 开始处理service类：com.kind.base.core.login.GotoLoginPageService
+2020-02-17 21:51:06,739 DEBUG [http-nio-80-exec-1] c.k.f.service.BaseActionService [Logger.java : 24] 执行sql语句：null
+2020-02-17 21:51:06,740 DEBUG [http-nio-80-exec-1] c.k.f.controller.DoController [Logger.java : 24] ----转向页面地址：login
+2020-02-17 21:51:06,750 DEBUG [http-nio-80-exec-1] com.kind.base.core.log.LogUser [Logger.java : 24] -----beanJson-----:{"OPTIME":1581947466745,"REQUEST_URL2":"http://127.0.0.1/kind-base/do?action=login","SRCTYPE":"0","LOGTYPE":"SYS","LOGIP":"127.0.0.1","OP_MILLISECOND":862,"REQUEST_URL":"/do?action=login","LOGID":"20021721510674592001","LOGLEVEL":"I"}
+2020-02-17 21:51:06,752 DEBUG [http-nio-80-exec-1] com.kind.framework.core.WebLogAspect [Logger.java : 24] ------------切面日志记录结束------------耗时：868
+
+2020-02-17 21:51:08,130 DEBUG [http-nio-80-exec-1] c.k.framework.beetl.tag.EncyptAction [Logger.java : 24] 加密key=6674078d45204bd65c0b03c836b6b835
+2020-02-17 21:51:08,577 DEBUG [http-nio-80-exec-1] c.k.framework.beetl.tag.EncyptAction [Logger.java : 24] 加密key=6674078d45204bd65c0b03c836b6b835
+2020-02-17 21:51:08,801 DEBUG [http-nio-80-exec-1] c.k.framework.beetl.tag.EncyptAction [Logger.java : 24] 加密key=6674078d45204bd65c0b03c836b6b835
+2020-02-17 21:51:08,803 DEBUG [http-nio-80-exec-1] c.k.framework.beetl.tag.EncyptAction [Logger.java : 24] 加密key=6674078d45204bd65c0b03c836b6b835
+2020-02-17 21:51:09,896 DEBUG [http-nio-80-exec-1] com.kind.framework.core.WebLogAspect [Logger.java : 24] ------------切面日志记录开始------------
+2020-02-17 21:51:09,899 DEBUG [http-nio-80-exec-1] c.k.framework.utils.ControllerUtil [Logger.java : 24] 客户端请求的所有参数：
+提交请求方式：GET
+Header....
+   host=127.0.0.1
+   connection=keep-alive
+   user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36
+   accept=image/webp,image/apng,image/*,*/*;q=0.8
+   sec-fetch-site=same-origin
+   sec-fetch-mode=no-cors
+   referer=http://127.0.0.1/kind-base/do?action=login
+   accept-encoding=gzip, deflate, br
+   accept-language=zh-CN,zh;q=0.9
+   cookie=SESSION=771df080-2ea0-444a-bcd6-2d9b06b3b8b1; cs-skin=default; kind-sso-id_user=6674078d45204bd65c0b03c836b6b835; kind-sso-id_md5=44483f5f00e91fd88af3baf988f1bdb7
+   host1=127.0.0.1   activate.navicat.com   80
+   host2=/do   127.0.0.1   80
+Attribute....
+ hiddenHttpMethodFilter.FILTERED=true
+ characterEncodingFilter.FILTERED=true
+ requestContextFilter.FILTERED=true
+ httpPutFormContentFilter.FILTERED=true
+Parameter....
+   action=esign_get_login_qrcode
+   v=1581947469757
+IpAddress....
+   IP=127.0.0.1
+
+2020-02-17 21:51:09,969 DEBUG [http-nio-80-exec-9] com.kind.framework.core.WebLogAspect [Logger.java : 24] ------------切面日志记录开始------------
+2020-02-17 21:51:10,024 DEBUG [http-nio-80-exec-9] c.k.framework.utils.ControllerUtil [Logger.java : 24] 客户端请求的所有参数：
+提交请求方式：POST
+Header....
+   host=127.0.0.1
+   connection=keep-alive
+   content-length=20
+   accept=*/*
+   origin=http://127.0.0.1
+   x-requested-with=XMLHttpRequest
+   user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36
+   content-type=application/x-www-form-urlencoded; charset=UTF-8
+   sec-fetch-site=same-origin
+   sec-fetch-mode=cors
+   referer=http://127.0.0.1/kind-base/do?action=login
+   accept-encoding=gzip, deflate, br
+   accept-language=zh-CN,zh;q=0.9
+   cookie=SESSION=771df080-2ea0-444a-bcd6-2d9b06b3b8b1; cs-skin=default; kind-sso-id_user=6674078d45204bd65c0b03c836b6b835; kind-sso-id_md5=44483f5f00e91fd88af3baf988f1bdb7
+   host1=127.0.0.1   activate.navicat.com   80
+   host2=/restful   127.0.0.1   80
+Attribute....
+ hiddenHttpMethodFilter.FILTERED=true
+ characterEncodingFilter.FILTERED=true
+ requestContextFilter.FILTERED=true
+ httpPutFormContentFilter.FILTERED=true
+Parameter....
+   action=getVerifyCode
+IpAddress....
+   IP=127.0.0.1
+
+2020-02-17 21:51:10,074 DEBUG [http-nio-80-exec-1] c.k.framework.utils.ControllerUtil [Logger.java : 24] 扫描中action值找到service类：com.kind.base.core.esign.GetLoginQrcodeService，注解：requireTransaction=false,requireLogin=false
+2020-02-17 21:51:10,075 DEBUG [http-nio-80-exec-1] c.k.framework.utils.ControllerUtil [Logger.java : 24] 开始处理service类：com.kind.base.core.esign.GetLoginQrcodeService
+2020-02-17 21:51:10,148 DEBUG [http-nio-80-exec-9] c.k.framework.utils.ControllerUtil [Logger.java : 24] 扫描中action值找到service类：com.kind.base.core.login.GetVerifyCodeService，注解：requireTransaction=false,requireLogin=false
+2020-02-17 21:51:10,150 DEBUG [http-nio-80-exec-9] c.k.framework.utils.ControllerUtil [Logger.java : 24] 开始处理service类：com.kind.base.core.login.GetVerifyCodeService
+2020-02-17 21:51:10,343 DEBUG [http-nio-80-exec-1] c.k.b.c.esign.GetLoginQrcodeService [Logger.java : 24] =====> ESIGN_LOGIN_ID: ESIGN_LOGIN_ID:A6136C1C380A4926B918A10683B59AA5_1581947470076, isLogin: false
+2020-02-17 21:51:10,521 DEBUG [http-nio-80-exec-9] c.k.f.service.BaseActionService [Logger.java : 24] 执行sql语句：null
+2020-02-17 21:51:10,523 DEBUG [http-nio-80-exec-9] com.kind.base.core.log.LogUser [Logger.java : 24] -----beanJson-----:{"OPTIME":1581947470523,"REQUEST_URL2":"http://127.0.0.1/kind-base/restful?action=getVerifyCode","SRCTYPE":"0","LOGTYPE":"SYS","LOGIP":"127.0.0.1","OP_MILLISECOND":516,"REQUEST_URL":"/restful?action=getVerifyCode","LOGID":"20021721511052392001","LOGLEVEL":"I"}
+2020-02-17 21:51:10,523 DEBUG [http-nio-80-exec-9] com.kind.framework.core.WebLogAspect [Logger.java : 24] ------------切面日志记录结束------------耗时：516
+
+2020-02-17 21:51:10,779 DEBUG [http-nio-80-exec-1] c.k.f.service.BaseActionService [Logger.java : 24] 执行sql语句：null
+2020-02-17 21:51:10,780 DEBUG [http-nio-80-exec-1] c.k.f.controller.DoController [Logger.java : 24] ----流输出，无转向页面地址！！
+2020-02-17 21:51:10,781 DEBUG [http-nio-80-exec-1] com.kind.base.core.log.LogUser [Logger.java : 24] -----beanJson-----:{"OPTIME":1581947470781,"REQUEST_URL2":"http://127.0.0.1/kind-base/do?action=esign_get_login_qrcode&v=1581947469757","SRCTYPE":"0","LOGTYPE":"SYS","LOGIP":"127.0.0.1","OP_MILLISECOND":884,"REQUEST_URL":"/do?action=esign_get_login_qrcode&v=1581947469757","LOGID":"20021721511078165001","LOGLEVEL":"I"}
+2020-02-17 21:51:10,782 DEBUG [http-nio-80-exec-1] com.kind.framework.core.WebLogAspect [Logger.java : 24] ------------切面日志记录结束------------耗时：885
+
+2020-02-17 21:53:00,527 DEBUG [main] com.kind.framework.utils.SpringUtil [Logger.java : 24] ApplicationContext配置成功,在普通类可以通过调用SpringUtils.getAppContext()获取applicationContext对象,applicationContext=org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@28a6301f: startup date [Mon Feb 17 21:52:52 CST 2020]; parent: org.springframework.context.annotation.AnnotationConfigApplicationContext@6b00f608========
+2020-02-17 21:53:02,800 DEBUG [main] c.k.b.elasticsearch.EsConfiguration [Logger.java : 24] ES连接地址=192.168.0.29:9200
+2020-02-17 21:53:03,573 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：encAction,com.kind.framework.beetl.tag.EncyptAction
+2020-02-17 21:53:03,574 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：hasPermission,com.kind.framework.beetl.tag.HasPermission
+2020-02-17 21:53:03,576 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：hasRole,com.kind.framework.beetl.tag.HasRole
+2020-02-17 21:53:03,576 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：hasButton,com.kind.framework.beetl.tag.HasButton
+2020-02-17 21:53:03,577 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：dicData,com.kind.common.tag.DicData
+2020-02-17 21:53:03,578 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：dicSelect,com.kind.common.tag.DicSelect
+2020-02-17 21:53:03,579 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：dbQuerier,com.kind.common.tag.DbQuerier
+2020-02-17 21:53:03,580 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：linkageDicSelect,com.kind.common.linkagedic.LinkageDicSelect
+2020-02-17 21:53:03,581 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：appList,com.kind.common.tag.AppList
+2020-02-17 21:53:03,583 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：jsCssPath,com.kind.common.tag.JsCssPath
+2020-02-17 21:53:43,586 DEBUG [main] com.kind.framework.utils.SpringUtil [Logger.java : 24] ApplicationContext配置成功,在普通类可以通过调用SpringUtils.getAppContext()获取applicationContext对象,applicationContext=org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@736f3e9e: startup date [Mon Feb 17 21:53:35 CST 2020]; parent: org.springframework.context.annotation.AnnotationConfigApplicationContext@6b00f608========
+2020-02-17 21:53:46,022 DEBUG [main] c.k.b.elasticsearch.EsConfiguration [Logger.java : 24] ES连接地址=192.168.0.29:9200
+2020-02-17 21:53:46,856 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：encAction,com.kind.framework.beetl.tag.EncyptAction
+2020-02-17 21:53:46,857 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：hasPermission,com.kind.framework.beetl.tag.HasPermission
+2020-02-17 21:53:46,859 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：hasRole,com.kind.framework.beetl.tag.HasRole
+2020-02-17 21:53:46,859 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：hasButton,com.kind.framework.beetl.tag.HasButton
+2020-02-17 21:53:46,860 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：dicData,com.kind.common.tag.DicData
+2020-02-17 21:53:46,861 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：dicSelect,com.kind.common.tag.DicSelect
+2020-02-17 21:53:46,862 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：dbQuerier,com.kind.common.tag.DbQuerier
+2020-02-17 21:53:46,863 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：linkageDicSelect,com.kind.common.linkagedic.LinkageDicSelect
+2020-02-17 21:53:46,865 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：appList,com.kind.common.tag.AppList
+2020-02-17 21:53:46,866 DEBUG [main] c.k.f.c.c.BeetlWebMvcConfiguration [Logger.java : 24] 注册beetl标签tag：jsCssPath,com.kind.common.tag.JsCssPath
+2020-02-17 21:53:49,521 DEBUG [main] c.k.common.init.CommonDataInitiator [Logger.java : 24] ====================【用户密码验证类型】：utf-8
+2020-02-17 21:53:49,522 DEBUG [main] c.k.common.init.CommonDataInitiator [Logger.java : 24] ====================【COMMON基础数据初始化开始】=====================
+2020-02-17 21:53:53,521 DEBUG [main] c.k.common.init.CommonDataInitiator [Logger.java : 24] ====================【COMMON基础数据初始化结束】=====================
+2020-02-17 21:53:54,170 DEBUG [main] com.kind.framework.core.DbHelper [Logger.java : 24] 从默认容器中获取：0

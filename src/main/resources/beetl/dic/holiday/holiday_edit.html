@@ -1,0 +1,146 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>12月份全屏日历</title>
+
+<!-- jCalendar CSS - Contains Tipsy CSS - Delete as needed -->
+<link rel='stylesheet' type='text/css' href='<#jsCssPath url="/js_calendar/calendar.css"/>' type="text/css" media="screen" title="no title" charset="utf-8" />
+<!-- Source jQuery -->
+<script type="text/javascript" src='<#jsCssPath url="/js_calendar/jquery-1.7.1.min.js"/>'></script>
+<!-- Source CalendarJS - Contains Tipsy jQuery Plugin - Delete as needed -->
+<script type="text/javascript" src='<#jsCssPath url="/js_calendar/calendar.js"/>'></script>
+<script type="text/javascript" src='<#jsCssPath url="/js/gcommon.js"/>'></script>
+<script type="text/javascript" src='<#jsCssPath url="/js/common.js"/>'></script>
+<link rel='stylesheet' type='text/css' href='<#jsCssPath url="/css/common.css"/>' />
+<link rel='stylesheet' type='text/css' href='<#jsCssPath url="/js/themes/bootstrap/easyui.css"/>' />
+<!-- Call the Calendar -->
+<script>
+	//var myDate = new Date();
+	//var y = myDate.getFullYear();
+	$(document).ready(function() {
+
+		$("#main-container").calendar({
+			tipsy_gravity : 's', // How do you want to anchor the tipsy notification? (n / s / e / w)
+			click_callback : calendar_callback, // Callback to return the clicked date
+			year : ${YEAR}, // Optional, defaults to current year - pass in a year - Integer or String
+			scroll_to_date : false, // Scroll to the current date?
+			yearConfigInfo_callback : getYearConfigInfo_callback, //获取已有的年份配置
+			yearConfigInfo_callback : getYearConfigInfo_callback, //获取已有的年份配置
+			click_next_year_callback:set_year_callback,//点击下一年
+			click_prev_year_callback:set_year_callback,//点击上一年
+			hover_callback:set_hover_callback //鼠标移动
+		});
+	});
+
+	var s_data_date="";
+	//
+	// Example of callback - do something with the returned date
+	var calendar_callback = function(date) {
+		s_data_date=$(this).attr('data-date');
+		if ($(this).css('background-color') && $(this).css('background-color') == 'rgb(255, 0, 0)') {
+			$(this).css('background-color', '');
+			$("#id_span_remark").hide();
+		} else {
+			$(this).css('background-color', 'red');
+			$("#id_span_remark").show();
+		}
+		$("#id_holiday_remark").val($(this).attr('remark'));
+		//
+		// Returned date is a date object containing the day, month, and year.
+		// date.day = day; date.month = month; date.year = year;
+		// alert(date.year+"_"+date.month+"_"+date.day);
+		//console.log(date);
+	}
+	
+	var set_hover_callback=function(flag) {
+		if(flag=='over'){
+			//$("#id_span_remark").show();
+			//$("#id_holiday_remark").val($(this).attr('remark'));
+		}else{
+			//$("#id_span_remark").hide();
+		}
+	}
+	
+	function chgRemark(){
+		var str=",备注：";
+		var s=$("div[data-date='"+s_data_date+"']").attr('original-title');
+		if(s.indexOf(str)>-1){
+			s=s.split(str)[0];
+		}else{
+			str="";
+		}
+		$("div[data-date='"+s_data_date+"']").attr("remark",$("#id_holiday_remark").val());	
+		
+		if($("#id_holiday_remark").val()!=''){
+			$("div[data-date='"+s_data_date+"']").attr('original-title',s+",备注："+$("#id_holiday_remark").val());		
+		}else{
+			$("div[data-date='"+s_data_date+"']").attr('original-title',s);		
+		}			
+	}
+	
+	var set_year_callback=function(year){
+		$("#id_span_year").html(year);
+	}
+	var s_year_data={};
+	
+	var getYearConfigInfo_callback = function(year) {
+
+		postSyncAjaxAndGetHtml("restful?action=<#encAction action="sys_holiday_get"/>",{"SEL_YEAR":$("#id_span_year").html()},"getHolidayData");
+		return s_year_data;
+	}
+	
+	function getHolidayData(info){
+		if(info.HOLIDAYDATA){
+			s_year_data=info.HOLIDAYDATA;
+		}
+
+	}
+</script>
+</head>
+<body>
+	<div style='padding: 5px 20px; height: 35px; vertical-align: middle; line-height: 40px; border-bottom: 1px solid;'>
+		当前设置年份：<span id='id_span_year'>${YEAR}</span>， <span style='font-size: 12px;'> 颜色说明：<span style='background-color: red;'>&nbsp;&nbsp;</span>节假日 <span id='id_span_remark' style='display: none;'>，节假日备注：<input type='text' id='id_holiday_remark' style='width: 300px;' onchange="chgRemark();" /></span>
+		</span> <a class="easyui-linkbutton btn_query" onclick='saveData();' style='float: right; height: 25px; margin-left: 3px;'>保存节假日设置</a> <a class="easyui-linkbutton btn_query" onclick='setWeek67ToSelect();' style='float: right; height: 25px; margin-left: 3px;'>勾选星期六、星期日</a> <a class="easyui-linkbutton btn_query" onclick='$("div .next").trigger("click");' style='float: right; height: 25px; margin-left: 3px;'>下一年</a> <a class="easyui-linkbutton btn_query" onclick='$("div .prev").trigger("click");' style='float: right; height: 25px; margin-left: 3px;'>上一年</a>
+	</div>
+	<div id="main-container" style='overflow: auto;'></div>
+	<script>
+		function setWeek67ToSelect() {
+			$.each($("div .day"), function(i) {
+				if ($(this).html().indexOf('星期') > -1) {
+					$(this).css('background-color', 'red');
+				}
+			});
+		}
+		$(window).resize(function() {
+			$("#main-container").height($(window).height() - 70);
+		});
+		$(function() {
+			$(window).resize();
+		});
+		function saveData(){
+			var holidayJson={};
+			var i_index=0;
+			$.each($("div .day"), function(i) {
+				if ($(this).css('background-color') && $(this).css('background-color') == 'rgb(255, 0, 0)') {
+					var s_str="holidayJson.d_"+i_index+'={"value":"'+$(this).attr("data-date")+'","remark":"'+$(this).attr("remark")+'"}';
+					eval(s_str);
+					i_index++;
+				}
+			});
+			holidayJson.num=i_index+"";			
+			postSyncAjaxAndGetHtml("restful?action=<#encAction action="sys_holiday_save"/>",{"HOLIDAY_DATA":JSON.stringify(holidayJson),"SEL_YEAR":$("#id_span_year").html()},"getSaveReturnInfo");
+		}
+		function getSaveReturnInfo(info){
+
+	
+			if(info.g_result=='1'){
+				showMsg("保存成功！");
+				getTabsCurrentWindow().queryData();
+			}else{
+				showMsg(info.g_message);
+			}
+		}
+	</script>
+
+	<% include("../../common/end.html"){} %>

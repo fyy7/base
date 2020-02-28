@@ -1,0 +1,292 @@
+<% include("../../common/head.html"){} %>
+<SCRIPT type="text/javascript">
+	var setting = {
+		view: {
+			selectedMulti: false
+		},
+		data: {
+			key: {
+				title:"NAME",
+				name:"NAME"
+			},
+			simpleData: {
+				enable: true,
+				idKey: "ID",
+				pIdKey: "PID"
+	
+			}
+		},
+		callback: {
+			onClick:onClickTree
+		}
+	};
+	var zNodes =null;
+	
+	/*
+	*选择应用范围，组织结构
+	*/
+	function selectOrgid(){
+		openWindow("选择组织机构",'do?action=<#encAction action="get_resouce_orgided"/>',800,700,"getSelectOrgid");
+	}
+	
+	function getSelectOrgid(jsondata){
+		if(jsondata.g_result ){
+			if(!jsondata.showMsgFlag){
+				//没有显示过的，显示
+				showMsg(jsondata.g_message);
+			}
+		}				
+	}
+
+	function onClickTree(event, treeId, treeNode, clickFlag){
+		//没有顶层了，所以，，，，
+		//if (treeNode.isParent) {			
+
+		//	if(!treeNode.PID){
+		//		return true;
+		//	}
+		//}
+		if(treeNode.RES_TYPE!='00001'){
+			alert("仅开放菜单资源的编辑功能！");
+			return;
+		}
+		showResourceData(treeNode.ID,treeNode.PID);
+	}
+	
+	function showResourceData(rid,pid){
+		postAjaxAndGetHtml("do?action=<#encAction action="sys_resoure_goto_edit2"/>","RID="+rid+"&noHtmlHeadFlag=1&PARENTID="+pid+"&APP_ID="+$("#SEL_APPID").val(),"getResourceHtml");
+	}
+	
+	function getResourceHtml(data){
+		$("#id_div_resoure").html(data);
+		$.parser.parse($("#id_div_resoure"));//渲染  
+		showLinkText();
+		if($("#RID").val()!=''){
+			$("#id_a_del").show(); 
+		}
+		$("#id_scope_"+$("#id_scope").val()).attr("checked","checked");
+		if($("#id_scope").val()!='1'){
+			$("#id_tr_scope").show();
+		}
+		$("#id_image_src").attr("src",$("#EXTITEM3").val());
+		$("input[name='RLOGO']").focus();
+		requiredSign();//必填红点
+	}
+	
+	function getImgSrc(setid){
+		openWindow("选择图标集","do?action=<#encAction action="sys_icon_main"/>&SET_INPUT="+setid,"400","600");
+	}
+	
+
+	function expandNode(e) {
+		var zTree = $.fn.zTree.getZTreeObj("treeData");
+		var type = e.data.type;
+		var nodes = zTree.getSelectedNodes();
+		if (type.indexOf("All")<0 && nodes.length == 0) {
+			alert("请先选择一个父节点");
+		}
+
+		if (type == "expandAll") {
+			zTree.expandAll(true);
+		} else if (type == "collapseAll") {
+			zTree.expandAll(false);
+		}
+	}
+	function addResource(){
+		var zTree = $.fn.zTree.getZTreeObj("treeData");
+		var nodes = zTree.getSelectedNodes();
+		if($("#SEL_RES_TYPE").val()=='00001'){
+			
+			if (nodes.length == 0) {
+				showResourceData("","");
+			}else{
+				if(nodes[0].isParent){
+					showResourceData("",nodes[0].ID);
+				}else{
+					showResourceData("",nodes[0].PID);
+				}
+			}
+		}
+		
+	}
+
+/* 	act_setSelectValue('<#encAction action="act"/>',"SEL_RES_TYPE","select_dmb_query",{"DMLX":"RES_TYPE"},null,"RES_TYPE");
+	act_setSelectValue('<#encAction action="act"/>',"SEL_APPID","select_app_query",{"service":"kind.framework.ms.urls.nportal"}); */
+	
+	$(function(){
+		getAppTreeData();
+	});
+	function getInitData(){
+
+	
+		if($("#SEL_RES_TYPE option[value='default01']")==null){
+			$("#SEL_RES_TYPE").prepend("<option value='default01'>菜单、按钮资源</option>");
+		}
+		
+		if(!$("#SEL_APPID").val()){
+			$("#SEL_APPID option:first").prop("selected", 'selected');  
+		}
+		
+		
+		getAppTreeData();
+	}
+	function getInitTypeData(){
+		$("#SEL_RES_TYPE option[value='00002']").remove();
+		if(!$("#SEL_RES_TYPE").val()){
+			$("#SEL_RES_TYPE :nth-child(0)").prop("selected", 'selected');  
+		}
+		getAppTreeData();
+	}	
+
+	
+	
+	function getAppTreeData(){
+		if($("#SEL_APPID").val()&&$("#SEL_RES_TYPE").val()){
+			$("#id_div_resoure").empty();
+			postAjax("restful?action=<#encAction action="act"/>&flagId=sys_resource_query&CHANNEL_RTYPE="+$("#SEL_RES_TYPE").val()+"&APPID="+$("#SEL_APPID").val(),"","ztreeInit");
+		}
+	}
+	function ztreeInit(data){
+	
+		zNodes=data.rows;
+
+		$.fn.zTree.init($("#treeData"), setting, zNodes);
+		var zTree = $.fn.zTree.getZTreeObj("treeData");
+		$("#expandAllBtn").bind("click", {type:"expandAll"}, expandNode);
+		$("#collapseAllBtn").bind("click", {type:"collapseAll"}, expandNode);
+		if("${RID!}"!=""){
+			//查找节点
+			var node = zTree.getNodeByParam("ID","${RID!''}",null);
+			//展开节点
+			if(node){
+				zTree.expandNode(node.getParentNode(), true, null, true, true);
+				//选中节点
+				zTree.selectNode(node);
+				//打开信息
+				showResourceData(node.ID,node.PID);
+			}
+			
+		}else{
+			zTree.expandAll(true);
+		}
+	}
+	function saveData(){
+
+		submitFormData2("form1","setReturnValue");
+	}
+	
+	//重排
+	function setReturnValue(){
+		
+		var rid=getGlobalParam("RID");
+		if(!rid){
+			rid="";
+		}
+		window.location.href="do?action=<#encAction action="sys_resoure_main"/>&RID="+rid+"&APPID="+$("#SEL_APPID").val();
+	}
+	function reIndexResource(){
+		showConfirm("确认需要重排?","reIndexResourceOK");
+	}
+	function reIndexResourceOK(){
+		postAjax("restful?action=<#encAction action="sys_resoure_reindex2"/>","","getReturnData");
+	}
+	
+	//删除
+	function delData(){
+		showConfirm("是否确认删除?","delDataOK");		
+	}
+	function delDataOK(){
+		postAjax("restful?action=<#encAction action="sys_resoure_del2"/>","RID="+$("#RID").val(),"getReturnData");
+	}
+	function getReturnData(jsondata){
+
+		showMsg(jsondata.g_message);
+		setGlobalParam("RID","");
+		setReturnValue();
+	}
+	//上、下移
+	function moveNode(style){
+		var zTree = $.fn.zTree.getZTreeObj("treeData");
+		var nodes = zTree.getSelectedNodes();
+		if(nodes.length==0){
+			showMsg("请选择要移动的节点!");
+			return;
+		}
+		var rid=nodes[0].ID;
+		postAjax("restful?action=<#encAction action="sys_resoure_moveIndex"/>","RID="+rid+"&STYLE="+style,"getReturnData1");
+	}
+	function getReturnData1(jsondata){
+		setGlobalParam("RID",jsondata.ID);
+		showMsg(jsondata.g_message);
+		setReturnValue();
+	}
+	
+	//如果是模块组则显示出连接
+	function showLinkText() {
+		if ($("#ISGROUP").val() == "0") {
+			$('#EXTITEM1_TR').show();
+			$('#EXTITEM2_TR').show();
+			$('#EXTITEM3_TR').show();
+			$('#id_tr_scope_val').show();
+		} else if ($("#ISGROUP").val() == "1") {
+			$('#EXTITEM1_TR').hide();
+			$('#EXTITEM2_TR').hide();
+			$('#EXTITEM3_TR').hide();
+			$('#id_tr_scope_val').hide();
+		}
+	}
+</SCRIPT>
+<table width="100%">
+	<tr>
+		<td width="26%">
+			<table width="350">
+				<tr>
+					<td><span id='id_div_select'> 当前系统： <select name='SEL_APPID' id='SEL_APPID' style="width: 260px;" select-value="${APPID}" onchange="getAppTreeData();" sucFunc="getInitData" />
+							<option value="${APPID}" allordidx="10000" dm="${APPID}" dmnr="${APPNAME}">${APPNAME}</option>
+					</span></td>
+				</tr>
+				<tr>
+					<td><span id='id_div_type'> 资源类型： <select name='SEL_RES_TYPE' id='SEL_RES_TYPE' style="width: 260px;" select-value="default01" onchange="getAppTreeData();" sucFunc="getInitTypeData" />
+							<option value="00001" dmlx="RES_TYPE" dm="00001" dmnr="菜单资源">菜单资源</option>
+							<option value="00002" dmlx="RES_TYPE" dm="00001" dmnr="菜单资源">按钮资源</option>
+							<option value="00004" dmlx="RES_TYPE" dm="00001" dmnr="菜单资源">工作流资源</option>
+					</span></td>
+				</tr>
+				<tr>
+					<td width="340" valign="top" align="center">
+						<div class="easyui-panel">
+							<div id='id_div_head' style="border-bottom: solid 1px; height: 30px; padding-top: 2px; padding-left: 2px;">
+								<#hasButton code="resource.module_2">
+								<a id="id_a_add" href="#" class="easyui-linkbutton btn_edit" onclick="addResource();return false;">新增</a></#hasButton>
+								<a id="id_a_add" href="#" class="easyui-linkbutton btn_edit" onclick="reIndexResource();return false;">重排</a> <a id="id_a_add" href="#" class="easyui-linkbutton btn_edit" onclick="moveNode(1);return false;">上移</a> <a id="id_a_add" href="#" class="easyui-linkbutton btn_edit" onclick="moveNode(2);return false;">下移</a> <a id="expandAllBtn" href="#" class="easyui-linkbutton btn_edit">展开</a> <a id="collapseAllBtn" href="#" class="easyui-linkbutton btn_edit">折叠</a>
+							</div>
+							<div id="id_div_tree" style="overflow-y: auto; height: 100%">
+								<ul id="treeData" class="ztree"></ul>
+							</div>
+						</div>
+					</td>
+				</tr>
+			</table>
+		<td>
+		<td valign="top" width="74%" style="border-left: solid 1px;">
+			<div id='id_div_resoure' class="easyui-panel" style="overflow-y: auto; height: 100%"></div>
+		</td>
+	</tr>
+</table>
+<style>
+#id_div_head .btn_edit {
+	margin: 0px;
+	width: 50px;
+	height: 22px;
+	padding: 0px
+}
+</style>
+<script type="text/javascript">
+	//自动缩放
+	$(window).resize(function() {
+		$('#id_div_tree').height($(window).height() - $('#id_div_head').height()- 95);
+		$('#id_div_resoure').height($(window).height() -65);
+		$('#id_div_resoure').width($(window).width() -365);
+	});
+</script>
+<% include("../../common/end.html"){} %>

@@ -1,0 +1,194 @@
+<% include("../../common/head.html"){} %>
+<form name="form1" id="form1">
+	<div id="fieldset_condition" style="margin: 0px;">
+		<fieldset>
+			<legend id="fieldset_legend" onclick="fieldsetToggle('fieldset_legend','${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/');" style="cursor: pointer;" title="点击：显示/隐藏">
+				<img src='${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/images/DHTMLSuite_minus.gif' />查询条件
+			</legend>
+			<table style="width: 100%;" id="fieldset_data">
+				<tr>
+					<td>姓名：<input name="SEL_OPNAME" type="text" size="7" class="txtitem" id='id_sel_opname' /> 账号：<input name="SEL_OPACCOUNT" type="text" size="7" class="txtitem" /> 机构：<select name="SEL_UNIT" id='SEL_UNIT' class="txtitem" style="width: 200px;" onchange="getDeptList(this.value)">
+							<option value=''>--</option>
+					</select> 部门：<select name="SEL_DEPTID" id='SEL_DEPARTMENT' class="txtitem" style="width: 200px;">
+							<option value=''>--</option>
+					</select> <a href="#" class="easyui-linkbutton btn_query" data-options="iconCls:'icon-search'" onclick='queryData()'>查询</a>
+					</td>
+				</tr>
+			</table>
+		</fieldset>
+	</div>
+
+	<div style="margin: 2px;">
+		<table id="dg" class="easyui-datagrid" title="">
+			<thead>
+				<tr>
+					<th data-options="field:'OPACCOUNT',width:80,align:'left'">账名</th>
+					<th data-options="field:'OPNAME',width:120,align:'left',halign:'center'">姓名</th>
+					<th data-options="field:'UNNAME',width:200,align:'left',halign:'center'">机构</th>
+					<th data-options="field:'DEPARTMENTNAME',width:200,align:'left',halign:'center'">部门名称</th>
+					<th data-options="field:'MAIN_DEPT_FLAG',width:60,align:'center',halign:'center',formatter:paisex">主要部门</th>
+					<th data-options="field:'ENABLED',width:80,align:'center',formatter:paisex">启用标志</th>
+				</tr>
+			</thead>
+		</table>
+	</div>
+</form>
+
+<script>
+  	act_setSelectValue('<#encAction action="act"/>','SEL_UNIT','select_organid_query',null,'ALLORDIDX');
+
+  	function getDeptList(ogranId){
+	   var json={};
+	   json["ORGANID"]=ogranId;
+	   $("#SEL_DEPARTMENT").empty();
+	   $("#SEL_DEPARTMENT").append("<option value=''>--</option>");
+	   act_setSelectValue('<#encAction action="act"/>',"SEL_DEPARTMENT","select_dept_query",json,'ALLORDIDX');
+  	}
+
+  	//初始化加载
+  	$(function() {
+	    var optype='${session[session_name].OpType }'
+	    if(optype<2){
+	      addStoolbar();
+	    }
+	    
+	    var pager = $('#dg').datagrid('getPager');//获取表格分页
+	    pager.pagination({
+	      buttons : stoolbar
+	    });
+	    
+	    queryData();
+  	});
+
+  	//自动缩放
+  	$(window).resize(function() {
+    	$('#dg').resizeDataGrid($("#fieldset_condition").height()+4, 4, 0, 0);
+  	});
+
+  	//查询
+  	function queryData() {
+	    var s_url = "restful?action=<#encAction action="act"/>&flagId=sys_user_query";
+	    $('#dg').datagrid({
+	      url : s_url,
+	      pageNumber:1,
+	      rownumbers:false,
+	      queryParams : $('#form1').serializeObject(),
+	      onLoadSuccess : function(data) {
+	        
+	        $(window).resize();
+	        //成功验证是否有无出错
+	        if (data.g_result == "0") {
+	          showMsg(data.g_message);
+	        }
+	      },
+	      onDblClickRow : function(rowIndex, rowData) {
+	        //双击
+	        updateData('用户管理', rowData.OPNO);
+	      }
+	    });
+	    var pager = $('#dg').datagrid('getPager'); //获取表格分页
+	    pager.pagination({
+	      buttons : stoolbar
+	    });
+  	}
+  
+
+  	//刷新查询
+  	function refreshQueryData(jsondata) {
+	    if (jsondata.g_result && jsondata.g_result == '1') {
+	      if (!jsondata.showMsgFlag) {
+	        //没有显示过的，显示
+	        showMsg(jsondata.g_message);
+	      }
+	      queryData();
+	    }
+  	}
+
+  	//底部按钮
+	var stoolbar = ['-'<#hasButton code="register.user_1">,'-',{
+  		text : '新增',
+  		iconCls : 'icon-add',
+  		handler : function() { 
+  			updateData('新增用户', '');
+  		}
+  	}</#hasButton><#hasButton code="register.user_2">,'-',{
+	    text : '修改',
+	    iconCls : 'icon-edit',
+	    handler : function() {
+	      var rows = $('#dg').datagrid('getSelections');
+	      if (rows.length != 1) {
+	        showMsgAndExecFn("请选择一条数据！", "");
+	        return;
+	      }
+	      updateData('修改用户', rows[0].OPNO);
+	    }
+  	}</#hasButton><#hasButton code="register.user_8">,'-', {
+        text : '删除',
+        iconCls : 'icon-remove',
+        handler : function() {
+          var rows = $('#dg').datagrid('getSelections');
+          if (rows.length != 1) {
+            showMsgAndExecFn("请选择一条数据！", "");
+            return;
+          }
+          showConfirm("删除该条数据吗？", "delData");
+        }
+	}</#hasButton>,'-'<#hasButton code="register.user_3">,'-', {
+	    text : '密码重置',
+	    iconCls : 'icon-ok',
+	    handler : function() {
+	      var rows = $('#dg').datagrid('getSelections');
+	      if (rows.length != 1) {
+	        showMsgAndExecFn("请选择一条数据！", "");
+	        return;
+	      }
+	      showConfirm("是否重置密码，系统初始密码为：1", "resetData");
+	    }
+	}</#hasButton>];
+	
+  	function addStoolbar(){
+	 
+	  stoolbar=stoolbar;
+	 //处理按钮多余的坚线
+	 stoolbar=dataGridButtonFilter(stoolbar);
+  	}
+
+  	function updateData(title, opno) {
+    	openWindow(title, 'do?action=<#encAction action="user_edit"/>&OPNO=' + opno, 500, 1290, "refreshQueryData");
+  	}
+
+  	function delData() {
+	    var rows = $('#dg').datagrid('getSelections');
+	    if (rows.length != 1) {
+	      showMsgAndExecFn("请选择一条数据！", "");
+	      return;
+	    }
+	    for (var i = 0; i < rows.length; i++) {
+	      postAjax("restful", "action=<#encAction action="user_delete"/>&OPNO=" + rows[i].OPNO, "refreshQueryData");
+	    }
+  	}
+  
+  	function resetData() {
+	    var rows = $('#dg').datagrid('getSelections');
+	    if (rows.length != 1) {
+	      showMsgAndExecFn("请选择一条数据！", "");
+	      return;
+	    }
+	    for (var i = 0; i < rows.length; i++) {
+	      postAjax("restful", "action=<#encAction action="user_reset_password"/>&OPNO=" + rows[i].OPNO, "refreshQueryData");
+	    }
+  	}
+  	/* 代码转换 */
+	function paisex(val ,row){
+		if(val=='1'){
+			return "是";
+		}
+		
+		if (val=='0') {
+			return "否";
+		}
+		
+		return val;
+	}
+</script>
+<% include("../../common/end.html"){} %>

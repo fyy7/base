@@ -1,0 +1,120 @@
+<% include("../../common/head.html"){} %>
+<SCRIPT type="text/javascript">
+var setting = {
+		check: {
+			enable: true,
+			chkboxType : { "Y" : "", "N" : "" }
+		},
+		view: {
+			selectedMulti: true
+		},
+		data: {
+			key: {
+				title:"DMNR",
+				name:"DMNR"
+			},
+			simpleData: {
+				enable: true,
+				idKey: "DM",
+				pIdKey: "PID"
+	
+			}
+		},
+		callback: {
+			//onClick:onClickTree
+		}
+	};
+	
+	
+	var zNodes =null;	
+	
+	$(function(){
+		postAjax("restful?action=<#encAction action="act"/>&flagId=select_organid_query","","ztreeInit");
+	});
+	
+	function ztreeInit(data){
+
+		zNodes=data.rows;
+		$.fn.zTree.init($("#treeData"), setting, zNodes);
+		var zTree = $.fn.zTree.getZTreeObj("treeData");
+		$("#expandAllBtn").bind("click", {type:"expandAll"}, expandNode);
+		$("#collapseAllBtn").bind("click", {type:"collapseAll"}, expandNode);
+	
+		//初始化勾选
+		var orgids=$("input[name='SCOPE_ORGIDS']",getParentWindow().document).val();
+		if(orgids!=""){
+			var arr_orgids=orgids.split(",");
+			for(var i=0;i<arr_orgids.length;i++){
+				//查找节点
+				node = zTree.getNodeByParam("DM",arr_orgids[i],null);
+				if(node!=null){
+					zTree.checkNode(node, true, false, true);
+				}
+			}
+		}
+		if($("input[name='SCOPE_ORGNAMES']",getParentWindow().document).val()!=''){
+			$("#id_orgname_span").html("已选单位：["+$("input[name='SCOPE_ORGNAMES']",getParentWindow().document).val()+"]");
+		}
+	}
+	
+	function expandNode(e) {
+		var zTree = $.fn.zTree.getZTreeObj("treeData");
+		var type = e.data.type;
+		var nodes = zTree.getSelectedNodes();
+		if (type.indexOf("All")<0 && nodes.length == 0) {
+			alert("请先选择一个父节点");
+		}
+
+		if (type == "expandAll") {
+			zTree.expandAll(true);
+		} else if (type == "collapseAll") {
+			zTree.expandAll(false);
+		}
+	}
+
+	
+	function addOrgids(){		
+		var orgids = "";
+		var orgnames = "";
+		
+		var zTree = $.fn.zTree.getZTreeObj("treeData");
+		//获取勾选的
+		var nodes = zTree.getCheckedNodes(true);		
+		if(nodes.length>0){
+			for(var i=0;i<nodes.length;i++){
+				orgids += nodes[i].DM + ",";
+				orgnames += nodes[i].DMNR + ",";
+			}
+		}
+		
+		orgids = orgids.substr(0,orgids.length-1);
+		orgnames = orgnames.substr(0,orgnames.length-1);
+		
+		$("input[name='SCOPE_ORGIDS']",getParentWindow().document).val(orgids);
+		$("input[name='SCOPE_ORGNAMES']",getParentWindow().document).val(orgnames);
+		closeWindow();
+	}
+</SCRIPT>
+<table width="100%" id='id_table'>
+	<tr>
+		<td width="330" valign="top">
+			<div class="easyui-panel">
+				<div id='id_div_head' style="border-bottom: solid 1px; height: 26px; padding-top: 2px; padding-left: 2px;">
+					<a id="id_a_add" href="#" class="easyui-linkbutton" onclick="addOrgids();return false;">确定</a> <a id="expandAllBtn" href="#" class="easyui-linkbutton">展开</a> <a id="collapseAllBtn" href="#" class="easyui-linkbutton">折叠</a>
+				</div>
+				<div id='id_orgname_span' style='overflow-y: scroll; height: 50px; width: 100%; border-bottom: solid 1px;'></div>
+				<div id="id_div_tree" style="overflow-y: auto; height: 100%">
+					<ul id="treeData" class="ztree"></ul>
+				</div>
+			</div>
+		</td>
+	</tr>
+</table>
+
+<script type="text/javascript">
+	//自动缩放
+	$(window).resize(function() {
+		$('#id_div_tree').height($(window).height() - $('#id_div_head').height() - $('#id_orgname_span').height() );
+	});
+</script>
+<% include("../../common/end.html"){} %>

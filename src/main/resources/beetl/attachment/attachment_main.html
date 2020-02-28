@@ -1,0 +1,266 @@
+<% include("../common/head.html"){} %>
+<form name="form1" id="form1">
+	<div id="fieldset_condition" style="margin: 0px;">
+		<fieldset >
+			<legend id="fieldset_legend" onclick="fieldsetToggle('fieldset_legend', '${!(kind_framework_ms_urls_resource)}/');" style="cursor: pointer;" title="点击：显示/隐藏"><img src='${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/images/DHTMLSuite_minus.gif'/>查询条件</legend>
+			<table style="width:100%;" id="fieldset_data">
+				<tr>
+					<td>
+						<!-- 系统：
+						<select id="appInfos" name="APP_ID" style="width: 120px;">
+							<option value="">--</option>
+						</select> -->
+						名称：<input type="text" name="NAME" size="20"/>
+						类型：
+						<select id="attachmentTypes" name="TYPE" style="width: 90px;">
+							<option value="99">--</option>
+						</select>
+						时间：<input name="BEGIN_TIME" type="text" id="BeginDate" style="width: 120px;" class="Wdate" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true,readOnly:true,maxDate:'#F{$dp.$D(\'EndDate\')}'})" size="12" >
+						至：<input name="END_TIME" type="text" id="EndDate" style="width: 120px;" class="Wdate" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true,readOnly:true,minDate:'#F{$dp.$D(\'BeginDate\')}'})" size="12" >	
+						<a href="#" class="easyui-linkbutton btn_query" data-options="iconCls:'icon-search'" onclick="queryList()">查询</a>
+					</td>
+				</tr>
+			</table>
+		</fieldset>
+	</div>
+	<div style="margin: 0px;">
+		<table id="dg"></table>
+	</div>
+</form>
+
+<script>
+
+	// 应用信息
+	var appInfos = [
+		<%
+			for(item in APP_LIST){
+				print("{key: '" + item["APP_ID"] + "', value: '" + item["APP_NAME"] + "'}");
+				if (!itemLP.last) {
+					print(", ");
+				}
+			}
+		%>
+	];
+	
+	// 附件类型
+	var attachmentTypes = [
+		<%
+			for(item in ATTACHMENT_TYPE){
+				print("{key: '" + item["DM"] + "', value: '" + item["DMNR"] + "'}");
+				if (!itemLP.last) {
+					print(", ");
+				}
+			}
+		%>
+	];
+	
+	// 附件校验类型
+	var attachmentCheckTypes = [
+		<%
+			for(item in ATTACHMENT_CHECKTYPE){
+				print("{key: '" + item["DM"] + "', value: '" + item["DMNR"] + "'}");
+				if (!itemLP.last) {
+					print(", ");
+				}
+			}
+		%>
+	];
+	
+	// --------------------------------------------------------------------------------------------------
+
+	// 初始化
+	$(function() {
+		initDataGrid();
+		
+		// 应用下拉框
+		initSelectOption("appInfos", appInfos);
+		
+		// 附件类型
+		initSelectOption("attachmentTypes", attachmentTypes);
+	});
+	
+	// 初始化数据表格
+	function initDataGrid() {
+		$("#dg").datagrid({
+			url: CTX.url.list,
+			pageNumber: 1,
+		    pageSize: CTX.datagrid.pageSize,
+		    pageList: CTX.datagrid.pageSizeList,
+			fitColumns: true,
+			striped: true,
+			columns: [[
+				{field: "PK_UID", hidden: true, title: "PK_UID"},
+				/* {field: "APP_ID", width: 150, align: "left", halign: "center", title: "系统", 
+					formatter: function(value, row, index){
+						return getDicValue(appInfos, value);
+					}
+				}, */
+				{field: "ATTACHMENT_NAME", width: 250, align: "left", halign: "center", title: "名称"},
+				{field: "ATTACHMENT_TYPE", width: 100, align: "left", halign: "center", title: "类型", 
+					formatter: function(value, row, index){
+						return getDicValue(attachmentTypes, value);
+					}
+				},
+				{field: "ATTACHMENT_SUFFIX", width: 100, align: "left", halign: "center", title: "后缀"},
+				{field: "ATTACHMENT_SIZE", width: 100, align: "left", halign: "center", title: "大小（b）"},
+				{field: "CHECK_TYPE", width: 100, align: "left", halign: "center", title: "校验类型", hidden: true, 
+					formatter: function(value, row, index){
+						return getDicValue(attachmentCheckTypes, value);
+					}
+				},
+				{field: "CHECK_VALUE", width: 150, align: "left", halign: "center", title: "校验值", hidden: true},
+				{field: "CREATE_TIME", width: 150, align: "left", halign: "center", formatter: formatterdate, title: "创建时间"},
+				{field: "SAVE_PATH", width: 250, align: "left", halign: "center", title: "存储路径", hidden: true},
+				{field: "_ATTACHMENT_SUFFIX", width: 70, align: "center", halign: "center", title: "图示",
+					formatter: function(value, row, index){
+						var url = "download?APP_ID=" + row.APP_ID + "&UID=" + row.PK_UID;
+						
+						var _html = "<img src='${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/images/png64x64/2.png' style='height: 28px; margin-top: 5px;'>";
+						if (row.ATTACHMENT_SUFFIX && "png|jpg|jepg|bmp|gif".indexOf(row.ATTACHMENT_SUFFIX.toLowerCase()) > -1) {
+							_html = "<img class='enlarge' src='" + url + "' style='height: 28px; margin-top: 5px;'>";
+						}
+						
+						return "<a href='" + url + "' target='_blank'>" + _html + "</a>";
+					}
+				},
+				{field: "COMMENTS", width: 250, align: "left", halign: "center", title: "备注"}
+			]],
+			queryParams: $("#form1").serializeObject(),
+			onBeforeLoad: function (params) {
+	            params.PAGE_NO = params.page;
+	            params.PAGE_SIZE = params.rows;
+	            return true;
+	        },
+			onLoadSuccess: function(data){
+				if(data.g_result == "0"){
+					showMsg(data.g_message);
+				}
+				bindEnlargeEvent("enlarge");
+			},
+			onDblClickRow: function(rowIndex, rowData){
+				openDetailWin("修改面板", "U", rowData.PK_UID);
+			}
+		});
+		
+		var pager = $("#dg").datagrid("getPager");	//获取表格分页
+		pager.pagination({buttons: stoolbar});
+		
+		// 自动缩放
+		$(window).resize(function() {
+			$("#dg").resizeDataGrid($("#fieldset_condition").height() + 1, 4, 0, 0);
+		});
+	}
+	
+	// 分页栏按钮
+	var stoolbar = [
+		"-" <#hasButton code="attachment.admin_2">, "-", {
+			text : "新增",
+			iconCls : "icon-add",
+			handler : function() {
+				openDetailWin("添加附件", "A", "");
+			}
+		}</#hasButton> <#hasButton code="attachment.admin_2">, "-", {
+			text : "批量新增",
+			iconCls : "icon-photos",
+			handler : function() {
+				openWindow("批量添加附件", CTX.url.batchUploadPage, 490, 700, "refreshDataGrid");
+			}
+		}</#hasButton> <#hasButton code="attachment.admin_2">, "-", {
+			text : "批量新增2",
+			iconCls : "icon-photos",
+			handler : function() {
+				openWindow("批量添加附件(基于webupolader)", CTX.url.batchUploadPage2, 490, 700, "refreshDataGrid");
+			}
+		}</#hasButton> <#hasButton code="attachment.admin_4">, "-", {
+			text : "修改",
+			iconCls : "icon-save",
+			handler : function() {
+				var rows = $("#dg").datagrid("getSelections");
+				if(rows.length!=1){
+					showMsgAndExecFn("请选择一条数据！", "");
+					return;
+				}
+				
+				openDetailWin("修改面板", "U", rows[0].PK_UID);
+			}
+		}</#hasButton> <#hasButton code="attachment.admin_8">, "-", {
+			text : "删除",
+			iconCls : "icon-remove",
+			handler : function() {
+				showConfirm("确认删除该条数据？", "del");
+			}
+		}</#hasButton>
+	];
+	
+	//处理按钮多余的坚线
+  	stoolbar=dataGridButtonFilter(stoolbar);
+	
+	// 打开详情窗口
+	function openDetailWin(title, cmd, id){	
+		openWindow(title, CTX.url.detailPage + "&CMD=" + cmd + "&UID=" + id, 490, 700, "refreshDataGrid");
+	}
+	
+	// 刷新表格
+	function refreshDataGrid(jsondata) {
+		if (jsondata && jsondata.g_result) {
+			if (!jsondata.showMsgFlag) {
+				showMsg(jsondata.g_message);
+			}
+			
+			if (jsondata.g_result == "1") {
+				queryList();
+			}
+		}
+	}
+	
+	// 查询表格
+	function queryList() {
+		$("#dg").datagrid("reload", $("#form1").serializeObject());
+	}
+	
+	function del() {
+		var rows = $("#dg").datagrid("getSelections");
+		if(rows.length != 1){
+			showMsgAndExecFn("请选择一条数据！","");
+			return;
+		}
+		
+		var param = {};
+		param.APP_ID = rows[0].APP_ID;
+	    param.UID = rows[0].PK_UID;
+	    
+	    postAjax(CTX.url.del, param, "refreshDataGrid"); 
+	}
+	
+</script>
+
+<script>
+
+	(function (pageSize, pageSizeList) {
+		
+		function PageContext () {
+			this.url = {
+				detailPage: "do?action=<#encAction action="goto_attachment_detail_page"/>",
+				batchUploadPage: "do?action=<#encAction action="goto_attachment_multiupload_page"/>",
+				batchUploadPage2: "do?action=<#encAction action="attachment/attachment_multi_upload_webuploader"/>",
+				list: "restful?action=<#encAction action="get_attachment_list"/>",
+				get: "restful?action=<#encAction action="get_attachment"/>",
+				add: "restful?action=<#encAction action="add_attachment_fdfs"/>",
+				modify: "restful?action=<#encAction action="modify_attachment"/>",
+				del: "restful?action=<#encAction action="delete_attachment"/>"
+			},
+					
+			this.datagrid = {
+				pageSize: pageSize,  // 每页显示条数，该值需在pageSizeList里存在
+				pageSizeList: pageSizeList  // 条数列表，数组，如 [10, 20, 30, 50, 100]
+			}
+		}
+		
+		window.CTX = new PageContext();
+		
+	//}) (CFG.pageSize, CFG.pageSizeList);
+	}) (20, [10, 20, 30, 50, 100]);
+
+</script>
+
+<% include("../common/end.html"){} %>

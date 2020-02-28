@@ -1,0 +1,31 @@
+<% include("../common/head.html"){} %>
+
+<link href='<#jsCssPath url="/uploadify/uploadify.css"/>' type='text/css' rel='stylesheet' />
+<script type="text/javascript" src='<#jsCssPath url="/js/ajaxfileupload.js"/>'></script>
+<style>
+.infotitle {
+	height: 30px;
+	width: 100px;
+	text-align: right;
+}
+</style>
+<script type="text/javascript">
+
+	$(function () {
+		$(window).resize(function() {
+			$("#formbody").height($(window).height() - $("#formfoot").height());
+		});
+	});
+
+</script>
+
+<form id="form1" name="form1" method="post" action="restful">
+	<input id="UID" name="UID" type="hidden" value="${!(ENTITY.UID)}" /> <input id="CACHE_UID" name="CACHE_UID" type="hidden" />
+
+	<div id="formbody" style="overflow-y: auto;">${!(FORM_ITEMS_HTML)}</div>
+	<div id="formfoot" style="width: 100%; height: 55px; position: fixed; bottom: 0px; text-align: center; border-top: 1px solid #ccc; margin-top: 5px;">
+		<A class="easyui-linkbutton btn_edit" data-options="iconCls:'icon-save'" href="#" id="id_submit">保存</A> <A class="easyui-linkbutton btn_close" data-options="iconCls:'icon-cancel'" href="#" onclick="closeWindow();">关闭</A>
+	</div>
+</form>
+
+<% include("../common/end.html"){} %>

@@ -1,0 +1,84 @@
+<% include("../../../common/head.html"){} %>
+<script>
+	$(function(){
+		$("#id_submit").click(function(){
+			saveData();
+			return false;
+		});
+		updateDmlxSelect();
+	});
+	
+	function saveData(){
+		submitFormData("form1","setReturnValue");
+	}
+	function setReturnValue(){
+		//setGlobalParam("g_result","1");
+	}
+
+	function updateDmlxSelect(){
+	    $("#DMLX option").remove();
+	    $("#DMLX").append("<option value=''>--</option><option value='DMLX'>代码类型</option>");
+	    postAjax("restful","action=<#encAction action="sysdmb_option"/>","setDmlxOptions");
+	
+	}
+  function setDmlxOptions(jsondata){
+    if(jsondata.g_result=='0'){
+      showMsg(jsondata.g_message);
+      return;
+    }
+    
+    var _html = "";
+    $.each(jsondata.SYS_DMB_LIST,function(n,json){
+      _html += "<option value='"+json.DM+"'>"+json.DMNR+"</option>";
+    });
+    $("#DMLX").append(_html);
+    $("#DMLX option[value='${SYS_DMB_INFO.DMLX!}']").attr("selected","selected");  
+  }
+</script>
+
+<form id="form1" name="form1" method="post" action="restful">
+	<input type="hidden" name="action" value="<#encAction action="sys_dmb_save"/>" /> <input type="hidden" name="CMD" id='CMD' value='${CMD}' /> <input type="hidden" name="OLD_DMLX" value='${SYS_DMB_INFO.DMLX!}' /> <input type="hidden" name="OLD_DM" value='${SYS_DMB_INFO.DM!}' />
+
+	<table width="100%" cellspacing="1" class='dataintable form_bod'>
+		<tr>
+			<td height="30" align="right" class="infotitle">代码类型:</td>
+			<td colspan="3"><select name="DMLX" id="DMLX" class="txtitem" maxnum="20" title="代码类型" style="width: 220px" required="true" check="yz_selectone" warning="代码类型不能为空!">
+					<option value=''>--</option>
+			</select></td>
+		</tr>
+		<tr>
+			<td height="30" align="right" class="infotitle">代码:</td>
+			<td><input name="DM" type="text" size="30" style="width: 218px" class="txtitem" maxnum="20" title="代码" value="${!(SYS_DMB_INFO.DM)}" required="true" check="yz_notblank" warning="代码不能为空,且不能包含空格!" /></td>
+			<td height="30" align="right" class="infotitle">代码内容:</td>
+			<td><input name="DMNR" type="text" size="30" style="width: 218px" class="txtitem" maxnum="70" title="代码内容" value="${!(SYS_DMB_INFO.DMNR)}" required="true" check="yz_notblank" warning="代码内容不能为空,且不能包含空格!" /></td>
+		</tr>
+		<tr>
+			<td height="30" align="right" class="infotitle">代码层次:</td>
+			<td><input name="DMCC" type="text" size="30" style="width: 218px" class="txtitem" maxnum="20" title="代码层次" value="${!(SYS_DMB_INFO.DMCC)}" /></td>
+			<td height="30" align="right" class="infotitle">备注:</td>
+			<td><input name="BZ" type="text" size="30" style="width: 218px" class="txtitem" maxnum="80" title="备注" value="${!(SYS_DMB_INFO.BZ)}" /></td>
+		</tr>
+		<tr>
+			<td height="30" align="right" class="infotitle">备注说明:</td>
+			<td><input name="BZSM" type="text" size="30" style="width: 218px" class="txtitem" maxnum="255" title="备注说明" value="${!(SYS_DMB_INFO.BZSM)}" /></td>
+			<td height="30" align="right" class="infotitle">备用1:</td>
+			<td><input name="BY1" type="text" size="30" style="width: 218px" class="txtitem" maxnum="10" title="备用1" value="${!(SYS_DMB_INFO.BY1)}" /></td>
+		</tr>
+		<tr>
+			<td height="30" align="right" class="infotitle">备用2:</td>
+			<td><input name="BY2" type="text" size="30" style="width: 218px" class="txtitem" maxnum="20" title="备用2" value="${!(SYS_DMB_INFO.BY2)}" /></td>
+			<td height="30" align="right" class="infotitle">备用3:</td>
+			<td><input name="BY3" type="text" size="30" style="width: 218px" class="txtitem" maxnum="50" title="备用3" value="${!(SYS_DMB_INFO.BY3)}" /></td>
+		</tr>
+		<tr>
+			<td height="30" align="right" class="infotitle">备用4:</td>
+			<td><input name="BY4" type="text" size="30" style="width: 218px" class="txtitem" maxnum="255" title="备用4" value="${!(SYS_DMB_INFO.BY4)}" /></td>
+			<td height="30" align="right" class="infotitle">备用5:</td>
+			<td><input name="BY5" type="text" size="30" style="width: 218px" class="txtitem" maxnum="255" title="备用5" value="${!(SYS_DMB_INFO.BY5)}" /></td>
+		</tr>
+		<tr>
+			<td colspan="4" align="center" width="100%"><a href="#" id='id_submit' class="easyui-linkbutton btn_edit" data-options="iconCls:'icon-save'">保存</a></td>
+		</tr>
+	</table>
+</form>
+<% include("../../../common/end.html"){} %>

@@ -1,0 +1,242 @@
+<% include("common/head.html"){} %>
+<link rel='stylesheet' type='text/css' href='<#jsCssPath url="/css/style.css"/>' />
+
+<script type="text/javascript">
+var Loadimagerul = "${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/images/loading.gif";
+</script>
+<script type="text/javascript" src='<#jsCssPath url="/js/loading.js"/>'></script>
+
+<div class="top">
+	<div class="logo"></div>
+	<div class="user" title='机构：${!(session[session_name].orgName)}，部门：${!(session[session_name].deptName)}'>
+		<div class="of">
+			<div class="user_tx">
+				<img src="${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/images/tx.png">
+			</div>
+			<div class="user_name" title='机构：${!(session[session_name].orgName)}，部门：${!(session[session_name].deptName)}'>${!(session[session_name].opName)}(${!(session[session_name].OpAccount)})【${!(session[session_name].orgName)}-${!(session[session_name].deptName)}】</div>
+			<div class="user_s"></div>
+		</div>
+		<div class="hide" url='do?action=<#encAction action="modify_password"/>' onclick='openWin(this,335,430);'>修改密码</div>
+		<div class="hide" url='do?action=<#encAction action="user_goto_change_dept"/>&FLAG=1' onclick='openWin(this,350,700);'>部门切换</div>
+		<div class="hide" onclick='exitSystem();'>退出系统</div>
+
+	</div>
+</div>
+<div class="body_section">
+
+	<div class="main">
+		<div class="hd">
+
+			<ul>
+				<li class="on" onclick="changeTaskPanel(this)" targetId="taskPanel"><img src="${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/images/computerOn.png">系统入口</li>
+				<li class="" onclick="changeTaskPanel(this)" targetId="toolPanel"><img src="${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/images/boxDown.png">工具下载</li>
+				<li class="" onclick="changeTaskPanel(this)" targetId="techPanel"><img src="${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/images/settings.png">技术支持</li>
+			</ul>
+			<div class="bot_bor"></div>
+		</div>
+		<div class="system">
+			<div class="system_bod">
+				<div class="sys_cont">
+					<div class="cont task_panel" id="taskPanel" style=''>
+						<ul id="task_ul">
+							<% for(row in rows){ %>
+							<li id='t${rowLP.index}' appTodoType='${(row.APP_REQUEST_URL==null || row.APP_REQUEST_URL=="")?0:1}' appId='${row.APP_ID}' appType='${row.APP_TYPE}' appStatus='${row.APP_STATUS}' url='${row.APP_LOGIN_URL}' onclick='visitApp(this);return false;' target="${row.APP_ID}"><% if(row.APP_LOGIN_URL==null || ""==row.APP_LOGIN_URL){ %> <a class="c_un"><img src="${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/images/un.png" style="border: 0"></a>${row.APP_NAME} <% }else{ %> <a class="c1"><div class="icon">
+										<div class="ric" style='display: none;'></div>
+										<img src="${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/${row.APP_PIC_ADDRESS}" style="border: 0">
+									</div></a>${row.APP_NAME} <% } %>
+							</li> <% } %>
+						</ul>
+					</div>
+					<div class="cont task_panel" id="toolPanel" style="display: none; overflow: hidden;">
+						<div>
+							<table class='dataintable form_bod' style='width: 98%;'>
+								<tr class="h">
+									<td style="width: 77%;">&nbsp;&nbsp;&nbsp;工具名称</td>
+									<td style="width: 15%;" align="center">时间</td>
+									<td style="width: 8%;" align="center">下载</td>
+								</tr>
+							</table>
+						</div>
+						<iframe id='tool_iframe' task='yes' frameborder=no style='margin: 5px; border: 0px solid; width: 103%;; padding: 0 10px; z-index: 9;' url='do?action=<#encAction action="portal_tool"/>' src='about:blank'></iframe>
+					</div>
+					<div class="cont task_panel" id="techPanel" style="display: none; overflow: hidden;">
+						<iframe task='yes' frameborder=no id='tech_iframe' style='border: 0px solid; width: 100%; z-index: 9;' url='do?action=<#encAction action="portal_skill"/>' src='about:blank'></iframe>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="bottom">使用单位：${!(kind_framework_common_params_system_portal_copyright)}&copy; ${date(),'yyyy'} ，技术支持：福建省凯特科技有限公司</div>
+
+<form id='form1' name='form1' method="get" style='display: none;'></form>
+<form method="get" id="form_logout" name="form_logout" action="do">
+	<input type="hidden" name="action" value="<#encAction action="jingbao2_user_logout"/>" />
+</form>
+
+<script>
+  	${!(session[session_name].ChangePwd==1?"$('#form_logout').submit();":"")}
+  	
+    function visitApp(obj) {
+      if($(obj).attr('url')!='null' && $(obj).attr('url')!=""){
+        $(obj).find("div[class='ric']").attr("style","display:none;");
+        if ($(obj).attr('appStatus') == '1') {  
+          $("#form1").html("");
+          //同域名的
+          var surl=$(obj).attr('url');
+          
+          if($(obj).attr('appType')=='1INTERNAL'){
+        	  //内部系统
+        	  surl='do?action=<#encAction action="goto_subsystem"/>&APP_ID='+$(obj).attr('appId')
+          }
+          
+          var jsonParams = getUrlParams(surl);
+          surl = surl.split("?")[0];
+          var formHtml="";
+          if(jsonParams){
+            $.each(jsonParams, function(item, value) {
+              formHtml += "<input name='" + item + "' type='hidden' value='" + value + "'/>"
+            });
+          }
+          
+          $("#form1").attr('action', surl);         
+          $("#form1").html(formHtml);     
+          $("#form1").attr('target', $(obj).attr('target'));
+          $("#form1").submit();
+        } 
+      }     
+    }
+  
+    $(function() {
+     $(document).attr("title","${!(kind_framework_common_params_system_portal_title)}");
+      var t;
+      var isfa = false;
+      
+      //关闭按钮
+      $(".cls").click(function() {        
+        //postAjax("do?action=<#encAction action="ajax__portal_user_default"/>&flag=1&taskId=" + $(this).attr("taskId"),"",null);
+        $(this).parent().parent().parent().hide();
+        window.location.href='do?action=<#encAction action="GOTO_PORTAL"/>';
+      });
+      
+      $(".user").click(function() {
+        if (!isfa) {
+          $(".user").addClass("user_hide");
+        } else {
+          $(".user").removeClass("user_hide");
+        }
+        isfa = !isfa;
+      })
+  
+      $(".user").mouseleave(function() {
+        $(".user").removeClass("user_hide");
+        isfa=false;
+      });
+      
+      $(".hd li").click(function() {
+        var aaa = $(this);
+        var position = $(this).position().left;
+        $(".bot_bor").animate({
+          "left" : position
+        }, 300, function() {
+          aaa.addClass("on").siblings().removeClass("on");
+        })
+      });
+      
+      getAppTodoCount();  
+
+      $(window).resize();
+  
+    });
+    
+    
+    $(window).resize(function(){
+      var page_w = $(window).width();
+      var page_h = $(window).height();
+      $(".system_bod").css("height",page_h-298);
+      $("#taskPanel ul").css("min-height", $(window).height() -333);
+      $("#tool_iframe").height($(window).height() -390);
+      $("#tech_iframe").height($(window).height() -337);
+    });  
+    
+    /**
+     * 异步获取应用系统代办数量
+     * 
+     * @returns
+     */
+    function getAppTodoCount(){
+      var flag = false;//是否选中“系统入口”面板
+      $(".hd li").each(function(){
+        if($(this).attr("class")=='on' && $(this).attr("targetId")=='taskPanel'){
+          flag = true;
+          //找到就退出each
+          return false;
+        }
+      });
+      if(flag){
+        $("#task_ul li").each(function(index){
+          var todoType =$(this).attr("appTodoType");
+          if(todoType=='1'){
+            var url ="action=<#encAction action="get_app_todocount"/>&LI_ID="+$(this).attr("id")+"&APP_ID="+$(this).attr("target");
+            postAjax("restful",url,"setReturnValue",'','f');
+          }
+        });     
+      }     
+    }
+    function setReturnValue(jsondata) {
+      if(jsondata.data >0){
+        $("#"+jsondata.id).find("div[class='ric']").attr("style","display:block;");
+      }
+    }
+
+    //系统退出
+    function exitSystem() {
+      $.messager.confirm('提示', '确认退出?', function(r) {
+        if (r) {
+          $('#form_logout').submit();
+        }
+      });
+    }
+    
+    // 打开panel
+    function openWin(obj, height, width) {
+      openWindow($(obj).text(), $(obj).attr('url'), height, width, '');
+    }
+    
+    //恢复默认回调函数
+    function getSetReturnData(data){
+      if(data){
+        if(data.g_result && data.g_result == "1"){
+          window.location.href='do?action=<#encAction action="GOTO_PORTAL"/>'; 
+        }else{
+          showMsg(data.g_message);
+        }
+      }
+    }
+    
+    // 点击面板切换
+    function changeTaskPanel(obj){
+      var targetId = $(obj).attr("targetId");
+      $(obj).parent().find("li").attr("class","");
+      $(obj).attr("class","on");
+      $(".task_panel").hide();        
+      $("#" + targetId).find("iframe").each(function(){
+        if(!($(this).attr("src").indexOf($(this).attr('url'))>-1)){
+          $(this).attr("src", $(this).attr('url'));
+        }
+      });
+      $("#" + targetId).show();     
+    }
+    
+    //通用下载页面
+    function downfile(id,filepath,filename,flag){
+      //var url="do?action=<#encAction action="ajax__connon_file_down"/>&ID="+id+"&FILENAME="+filename+"&FILEPATH="+filepath+"&FLAG="+flag;
+      // jQuery('<form action="' + url + '" method="post" target="_blank"></form>').appendTo('body').submit().remove();
+    }
+    
+    $(function () {
+		checkLoginState("${!(KISSO_COOKIE_NAME)}_md5", 1000);
+	});
+  </script>
+
+<% include("common/end.html"){} %>

@@ -1,0 +1,105 @@
+<% include("../common/head.html"){} %>
+<link rel='stylesheet' type='text/css' href='<#jsCssPath url="/uploadify/uploadify.css"/>' rel='stylesheet' />
+<script type="text/javascript" src='<#jsCssPath url="/js/ajaxfileupload.js"/>'></script>
+
+<link rel="stylesheet" href='<#jsCssPath url="/lib/webuploader/webuploader.css"/>'>
+<script type="text/javascript" src='<#jsCssPath url="/lib/webuploader/webuploader.js"/>'></script>
+<script type="text/javascript" src='<#jsCssPath url="/module/webuploader/CommonWebUploader.js"/>'></script>
+
+<style>
+
+	.infotitle {height: 30px; width: 90px; text-align: right;}
+	
+	.uploader-file-container {}
+	.uploader-file-item {width: 450px; height: 35px; padding-bottom: 5px;}
+	.uploader-file-thumblr {float: left; width: 35px; height: 35px; line-height: 35px; text-align: center; vertical-align: middle;}
+	.uploader-file-thumblr img {width: 35px; height: 35px; border-radius: 5px;}
+	.uploader-file-info {float: left; margin-left: 10px; margin-top: 0px; width: 300px;}
+	.uploader-file-name {font-size: 13px; color: #07141e; font-family: "宋体", "tahoma", "arial"}
+	.uploader-file-progress {width: 100%; height: 5px; border: 1px solid #999; border-radius: 10px; margin-top: 3px; padding: 1px;}
+	.uploader-file-progress-bar {background: #1094fa; height: 5px; width: 0px; border-radius: 10px;}
+	.uploader-file-operate {float: right; line-height: 40px; vertical-align: middle;}
+	.uploader-file-status {width: 30px; font-size: 12px; color: green;}
+	.uploader-file-status.uploader-file-fail {color: red;}
+	.uploader-file-remove {margin-left: 5px; cursor: pointer;}
+	
+</style>
+<script type="text/javascript">
+
+	// TODO待修改为通用页面
+	
+	var uploaderCount = 1;
+	
+	var _parent = null;
+	
+	var webuploader = null;
+
+	// 初始化
+	$(function() {
+		if (!parent.CTX) {
+			_parent = getTabsCurrentWindow();
+		} else {
+			_parent = parent;
+		}
+		
+		// 应用下拉框
+		initSelectOption("appInfos", _parent.appInfos);
+		
+		// 校验类型
+		initSelectOption("attachmentCheckTypes", _parent.attachmentCheckTypes);
+		
+		$("#form1").attr("action", _parent.CTX.url.add);
+		
+		$(window).unload(function(){
+			_parent.queryList(); 
+	    });
+		
+		// 初始化webuploader
+		webuploader = new CommonWebUploader({
+			debugMode: true,
+			containerId: "uploaderContainer",
+			filePickerId: "webuploaderBtn",
+			serverUrl: "upload?APP_ID=" + $("#appInfos").val() + "&CHECK_TYPE=" + $("#attachmentCheckTypes").val() + "&FDFS=1&SAVE_DIRECT=1",
+			chunkSize: 10 * 1024 * 1024,  // 文件分片大小（B）
+			fileSingleSizeLimit: 100 * 1024 * 1024,  // 文件大小（B）
+			showMsgFn: showMsg
+		});
+		webuploader.setErrorMsg("YT_NO_FILES_FOR_UPLOAD", null);
+	});
+	
+	function uploads() {
+		//alert(webuploader.hasFileForUpload());
+		
+		doWebUpload(webuploader, function (data) {
+			console.log("upload callback .");
+			console.log(data);
+			console.log("upload callback ..");
+		});
+	}
+	
+</script>
+
+<form id="form1" name="form1" method="post" action="restful">
+	<table class="dataintable form_bod">
+		<tr style="height: 5px;"></tr>
+		<tr>
+			<td class="infotitle">系统：</td>
+			<td style="width: 35%;">
+				<select id="appInfos" value="" class="txtitem" style="width: 90%;">
+				</select>
+			</td>
+			<td class="infotitle">校验类型：</td>
+			<td style="width: 35%;">
+				<select id="attachmentCheckTypes" value="" class="txtitem" style="width: 90%;">
+				</select>
+			</td>
+		</tr>
+	</table>
+</form>
+<div id="uploaderContainer" style="padding-left: 60px; margin: 20px 0;"></div>
+<div style="text-align: center;">
+	<a id="webuploaderBtn" class="easyui-linkbutton btn_edit" style="border-color: #4bc6e8; background-color: #4bc6e8;" data-options="iconCls:'icon-add'" href="javascript:;">添加附件</a>
+	<a class="easyui-linkbutton btn_edit" data-options="iconCls:'icon-save'" href="javascript:;" onclick="uploads();">上传</a>
+</div>
+
+<% include("../common/end.html"){} %>

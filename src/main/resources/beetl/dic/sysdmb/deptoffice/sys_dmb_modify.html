@@ -1,0 +1,40 @@
+<% include("../../../common/head.html"){} %>
+<script>
+	$(function(){
+		$("#id_submit").click(function(){
+			saveData();
+			return false;
+		});
+	});
+	
+	function saveData(){
+		submitFormData("form1","setReturnValue");
+	}
+	function setReturnValue(){
+		//setGlobalParam("g_result","1");
+	}
+
+</script>
+
+<form id="form1" name="form1" method="post" action="restful">
+	<input type="hidden" name="action" value="<#encAction action="${FLAG== 'DEPT.TYPE'?'dept_type_save':'office_type_save'}"/>" /> <input type="hidden" name="CMD" id='CMD' value='${CMD}' /> <input type="hidden" name="APP_ID" value='${APP_ID}' /> <input type="hidden" name="OLD_APP_ID" value='${APP_ID}' /> <input type="hidden" name="OLD_DMLX" value='${SYS_DMB_INFO.DMLX!}' /> <input type="hidden" name="OLD_DM" value='${SYS_DMB_INFO.DM!}' />
+	<table width="100%" cellspacing="1" class='dataintable form_bod'>
+		<tr>
+			<td height="30" align="right" class="infotitle">代码:</td>
+			<td><input name="DMLX" type="hidden" value="${FLAG}" /> <input name="DM" type="text" size="30" class="txtitem" maxnum="20" title="代码" title="代码" value="${!(SYS_DMB_INFO.DM)}" required="true" check="yz_number" warning="代码必须为数字,且不能包含空格!" /></td>
+		</tr>
+		<tr>
+			<td height="30" align="right" class="infotitle">代码内容:</td>
+			<td><input name="DMNR" type="text" size="30" class="txtitem" maxnum="70" title="代码内容" value="${!(SYS_DMB_INFO.DMNR)}" required="true" check="yz_notblank" warning="代码内容不能为空,且不能包含空格!" /></td>
+		</tr>
+		<tr>
+			<td height="30" align="right" class="infotitle">备注:</td>
+			<td><input name="BZ" type="text" size="30" class="txtitem" maxnum="80" title="备注" value="${!(SYS_DMB_INFO.BZ)}" /></td>
+		</tr>
+
+		<tr>
+			<td colspan="2" align="center" width="100%"><a href="#" id='id_submit' class="easyui-linkbutton btn_edit" data-options="iconCls:'icon-save'">保存</a></td>
+		</tr>
+	</table>
+</form>
+<% include("../../../common/end.html"){} %>

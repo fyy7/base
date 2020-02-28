@@ -1,0 +1,122 @@
+<% include("../../common/head.html"){} %>
+<script type="text/javascript" src='<#jsCssPath url="/js/echarts.common.min.js"/>'></script>
+<form name="form1" id="form1" action='restful?action=<#encAction action="nginx_query_ip"/>'>
+	<div id="fieldset_condition" style="margin: 0px; display: none;">
+		<fieldset>
+			<legend id="fieldset_legend" onclick="fieldsetToggle('fieldset_legend','${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/');" style="cursor: pointer;" title="点击：显示/隐藏">
+				<img src='${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/images/DHTMLSuite_minus.gif' />查询条件
+			</legend>
+			<table style="width: 100%;" id="fieldset_data">
+				<tr>
+					<td>统计类型：<select name='type' onchange="queryData();" id='select_type'>
+							<option value="1">按IP访问次数(前50)</option>
+							<option value="2">按页面访问次数(前50)</option>
+					</select> 时间：<input style='width: 155px;' value="${trim(date(),'yyyy-MM-dd 00:00:00')}" name="START_DATE" type="text" id="START_DATE" class="Wdate" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:true,readOnly:true,maxDate:'#F{$dp.$D(\'END_DATE\')}'})"> 至 <input style='width: 155px;' value="${trim(date(),'yyyy-MM-dd')} 23:59:59" name="END_DATE" type="text" id="END_DATE" class="Wdate" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:true,readOnly:true,minDate:'#F{$dp.$D(\'START_DATE\')}'})"> <a href="#" class="easyui-linkbutton btn_query" data-options="iconCls:'icon-search'" onclick='queryData()'>查询</a>
+					</td>
+				</tr>
+			</table>
+		</fieldset>
+	</div>
+</form>
+<!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
+<div id="div_statistics" style="margin: 2px; width: 331px; height: 160px; float: left;"></div>
+<script>
+	var select_type=1;
+	
+	var div_statistics = echarts.init(document.getElementById('div_statistics'));
+	
+	div_statistics.on('click', function(param) {
+		var url_param="do?action=<#encAction action="goto"/>&page=sys/nginx/list_main&start_date="+$("#START_DATE").val()+"&end_date="+$("#END_DATE").val();
+		if(select_type==1){
+			url_param+="&ip="+ param.name;
+		}
+		
+		openWindow(param.name+'>>访问详情', url_param, '95%', '95%');
+	});
+
+ 
+  //初始化加载
+  $(function() {
+	  if("${bigscreen!}"!="1"){
+		  $("#fieldset_condition").show();
+	  }
+	  
+	  if("${!(type)}"!=""){
+		  $("#select_type").val("${type!}");
+	  }
+	  queryData();
+  });
+  
+  function queryData(){
+	  select_type=$("#select_type").val();
+	  postForm("form1",getStatisticsInfo);
+  }
+  
+  function getStatisticsInfo(json){
+	  var remarks=new Array();
+	  var nums=new Array();
+	  
+	  var i_start=0;
+	  var i_count=0;
+	  $.each(json.data,function(n, value){
+		  $.each(value,function(n2, value2){
+			  if(n2=="column"){
+				  remarks[i_start]=value2;
+			  }else{
+				  nums[i_start]=value2; 
+				  i_count+=value2;
+			  }
+		  });
+		  i_start++;
+	  });
+	  option_statistics.xAxis.data=remarks;
+	  option_statistics.series[0].data=nums;
+	  
+	  
+	  option_statistics.title.text=(select_type=="1"?'按IP统计':'按页面统计')+('(总量：'+json.totalHits+"，图表数量："+i_count+")");
+
+	  
+	// 使用刚指定的配置项和数据显示图表。
+	  div_statistics.setOption(option_statistics);
+	  $(window).resize();
+  }
+    
+   //自动缩放
+   $(window).resize(function() {	   
+	   if("${bigscreen!}"=="1"){
+		   $("#div_statistics").height($(window).height() -6);
+		}else{
+		   $("#div_statistics").height($(window).height() - $("#fieldset_condition").height() -6);
+		}
+		$("#div_statistics").width($(window).width() -6);
+		div_statistics.resize();
+   });
+   
+   var option_statistics = {
+		   title : {
+		        //text: '订阅交换的数量统计',
+		        x:'center'
+		    },
+		    xAxis: {
+		    	axisLabel: {  
+				   interval:0,  
+				   rotate:40  
+				},
+		        type: 'category',
+		        data: []
+		    },
+		    tooltip : {
+		        trigger: 'item',
+		        formatter: "{b} : {c}条 "
+		    },
+		    yAxis: {
+		        type: 'value'
+		    },
+		    series: [{
+		        data: [],
+		        itemStyle : { normal: {label : {show: true, position: 'inside'}}},
+		        type: 'bar'
+		    }]
+		};
+</script>
+<% include("../../common/end.html"){} %>

@@ -1,0 +1,44 @@
+[{
+
+	"ActAction": {
+		"type": "selListSql",
+		"tableConfig": [{
+			"name": "PORTAL_APP_INFO",
+			"alias": "d",
+			"linkType": ",",
+			"linkStr": ""
+		}],
+		"paramConfig": [{
+			"name": "APP_ID",
+			"alias": "DM",
+			"tableAlias": "d"
+		},{
+			"name": "APP_NAME",
+			"alias": "DMNR",
+			"tableAlias": "d"
+		},{
+			"name": "APP_ORDER",
+			"alias": "ALLORDIDX",
+			"tableAlias": "d"
+		}],
+		"keyName": "rows",
+		
+		"whereConfig": [{
+			"from": "RS#!APP_NAME",
+			"tableAlias": "D",
+			"type": "%%",
+			"value": ""
+		},{
+			"name": "IS_DEL",
+			"tableAlias": "D",
+			"type": "=",
+			"value": "0"
+		}],
+		"orderConfig":[{
+			"name": "APP_ORDER",
+			"tableAlias": "d",
+			"type": ""
+		
+		}]
+	}
+}]

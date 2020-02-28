@@ -1,0 +1,31 @@
+<script type="text/javascript">
+</script>
+<form id="form1" name="form1" method="post" action="restful">
+	<input type="hidden" name="action" value="<#encAction action="user_order_save"/>"> <input type="hidden" name="DEPTID" value="${!(DEPTID)}"> <input type="hidden" name="DLEVEL" value="${!(LIST[0].DLEVEL)}">
+	<!-- 层次 -->
+	<input type="hidden" name="ORGANID" value="${!(ORGANID)}">
+	<!-- 所属组织 -->
+	<div id='div_data_list' style='overflow-y: auto;'>
+		<table width="90%" border="0" class="dataintable">
+			<tr height="30">
+				<td style="font-size: 15px; font-weight: bold; border-bottom: 1px solid;" colspan="2" align="left">当前部门：${LIST[0].DEPTNAME}</td>
+			</tr>
+			<tr height="30">
+				<td align="center" class="infotitle" width="70">排序号</td>
+				<td align="center">用户姓名</td>
+			</tr>
+
+
+			<% for(var i=0;i<DEPT_TYPE_LIST.~size;i++){%>
+             ${i%1==0?"<tr>":""}
+				<td width="70" align="center"><input name="ORDIDX" value="${DEPT_TYPE_LIST[i].ORDIDX}" type='text' style="width: 50px;" required="true" check="yz_positivenum1" warning="排序号不能为空，且只能为整数！" /></td>
+				<td><input name="OPNO" id="OPNP_${i}" value="${DEPT_TYPE_LIST[i].OPNO}" type='hidden' /> ${DEPT_TYPE_LIST[i].OPNAME} <!-- <input name="BTITLE" value="#{DEPT_TYPE_LIST[var1].get('OPNAME')}" type='text' style="width: 120px;"/> --></td> 
+			${(i%3==0)?"</tr>":""} <% } %> 
+		</table>
+	</div>
+	<div id="btn_bottom" align="center" style="overflow: hidden; border-top: 1px solid;">
+		<a id="id_a_add" href="#" class="easyui-linkbutton btn_edit" onclick="saveData();return false;">保存</a>
+	</div>
+
+</form>
+

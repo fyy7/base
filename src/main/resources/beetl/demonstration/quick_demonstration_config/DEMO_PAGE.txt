@@ -1,0 +1,29 @@
+{
+	"pageTitle": "页面标题",
+	
+	"searchBar": [
+		[{"label": "姓名", "type": "input",  "width": "120px，选填，通用配置项"}, {"label": "性别", "type": "select", "options": ["男", "女"]}, {"label": "[为空]", "type": "radio", "items": ["正常", "冻结"]}],
+		[{"label": "生日", "type": "datetimepicker"}, {"label": "[为空，文本内容]", "type": "text", "value": "文本值"}],
+		[{"label": "[为空，清空搜索条件按钮]", "type": "clearBtn"}, {"label": "[为空，搜索按钮]", "type": "searchBtn"}]
+	],
+
+	"datagridColumns": [
+		{"field": "NAME", "title": "姓名", "width": "150", "align": "center"},
+		{"field": "AGE", "title": "年龄", "width": "100", "align": "left"}
+	],
+
+	"datagridData": [
+		[{"field": "NAME", "value": "张三"}, {"field": "AGE", "value": "23"}],
+		[{"field": "NAME", "value": "李四"}, {"field": "AGE", "value": "12"}],
+		[{"field": "NAME", "value": "王五"}, {"field": "AGE", "value": "34"}],
+		[{"field": "NAME", "value": "王五"}, {"field": "AGE", "value": "55"}]
+	],
+
+	"detailForm": [
+		[{"label": "姓名", "type": "input", "colspan": "3，该属性不配置则不跨列，通用配置项", "required": "true，该属性不配置则默认非必填状态，通用配置项", "width": "95%，选配，默认92%"}],
+		[{"label": "性别", "type": "select", "options": ["男", "女"]}, {"label": "状态", "type": "radio", "items": ["正常", "冻结"]}],
+		[{"label": "生日", "type": "datetimepicker"}, {"label": "文本内容", "type": "text", "value": "文本值"}],
+		[{"label": "电话", "type": "input"}, {"label": "地址", "type": "input", "required": "true"}],
+		[{"label": "备注", "type": "textarea", "colspan": "4", "height": "100px", "width": "95%"}]
+	]
+}

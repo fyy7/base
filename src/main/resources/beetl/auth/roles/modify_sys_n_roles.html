@@ -1,0 +1,307 @@
+<% include("../../common/head.html"){} %>
+
+<SCRIPT type="text/javascript">
+var app_setting = {
+		check: {
+			enable: false
+		},
+		view: {
+			selectedMulti: false,
+			addDiyDom: addDiyDomApp
+		},
+		data: {
+			key: {
+				title:"APPNAME",
+				name:"APPNAME"
+			},
+			simpleData: {
+				enable: true,
+				idKey: "APPID",
+			//	pIdKey: "APPID"
+	
+			}
+		},
+		callback: {
+			onClick:onClickAppTree
+		}
+	};
+	var setting = {
+		check: {
+			enable: true,
+			chkboxType:  { "Y": "p", "N": "s" }
+		},
+		view: {
+			selectedMulti: false,
+		
+			addDiyDom: addDiyDom
+	
+		},
+		data: {
+			key: {
+				title:"TITLE",
+				name:"TITLE"
+			},
+			simpleData: {
+				enable: true,
+				idKey: "RID",
+				pIdKey: "PARENTID"
+	
+			}
+		},
+		callback: {
+			//onClick:onClickTree
+		}
+	};
+	
+	var zNodes =null;		
+	//已选择数据存储
+	var rolesData=${ROLERIGHTS_JSON};
+	var appTreeData=${ROLERIGHTS_TYPE};
+	
+	function onClickAppTree(event, treeId, treeNode, clickFlag){
+		loadTreeData(treeNode);
+	}
+
+	var oldobj=null;
+	$(function(){
+		act_setSelectValue('<#encAction action="act"/>','rtype','select_dmb_query',{"DMLX":"RES_TYPE"},null,"RES_TYPE");
+		$.fn.zTree.init($("#app_treeData"), app_setting, appTreeData);
+	
+		$("#expandAllBtn").bind("click", {type:"expandAll"}, expandNode);
+		$("#collapseAllBtn").bind("click", {type:"collapseAll"}, expandNode);
+
+		var node=null;
+		$("#cleckType").click(function(){
+			var zTree = $.fn.zTree.getZTreeObj("treeData");
+			if($(this).is(":checked")){
+				setting.check.chkboxType={ "Y": "ps", "N": "s" };
+				
+			}else{
+				setting.check.chkboxType={ "Y": "p", "N": "s" };
+
+			}
+			zTree.setting.check.chkboxType=setting.check.chkboxType
+		})
+		
+
+	});
+	function addDiyDomApp(treeId, treeNode){
+		 
+	       var spantxt=$("#" + treeNode.tId + "_span").html();  
+	        if(spantxt.length>15){  
+	            spantxt=spantxt.substring(0,15)+"...";  
+	            $("#" + treeNode.tId + "_span").html(spantxt);  
+	        }
+		}
+
+	function changeRtype() {
+		var value = getCheckedValue("rtype");
+
+		if (oldobj && value != oldobj.CHANNEL_RTYPE) {
+			oldobj.CHANNEL_RTYPE = value;
+			loadTreeData(oldobj);
+		}
+
+	}
+	function getCheckedValue(name) {
+		var test = $("input[name='" + name + "']:checked");
+		var checkBoxValue = "";
+		test.each(function() {
+			checkBoxValue += $(this).val() + ",";
+		})
+		checkBoxValue = checkBoxValue.substring(0, checkBoxValue.length - 1);
+
+		return checkBoxValue;
+	}
+
+	function setCheckedValue(name, value) {
+
+		var test = $("input[name='" + name + "']:checkbox");
+		var checkBoxValue = "";
+
+		test.each(function() {
+			if (value&&value.indexOf($(this).val()) > -1) {
+				//		alert($(this).val());
+
+				$(this).prop('checked', true);
+			} else {
+				//	$(this).removeAttr("checked");
+				$(this).prop('checked', false);
+			}
+
+		})
+	}
+	//类型过滤初始化
+	function tun2clecked() {
+		/* 		$("#rtype option[value='00002']").remove();
+		 $("#rtype option[value='00001']").remove();
+		 $("#rtype").prepend("<option value='default01' >菜单、按钮资源</option>"); */
+
+		act_select2Checkbox($("#rtype"));
+		if (appTreeData && appTreeData[0]) {
+			var zTree = $.fn.zTree.getZTreeObj("app_treeData");
+			var node = zTree.getNodeByParam("APPID", appTreeData[0].APPID);
+			zTree.cancelSelectedNode();//先取消所有的选中状态
+			zTree.selectNode(node, true);//将指定ID的节点选中
+			loadTreeData(appTreeData[0]);
+		}
+	}
+	function addDiyDom(treeId, treeNode) {
+		var sObj = $("#" + treeNode.tId + "_span");
+		var addStr = "<span id='diyshow_space_" +treeNode.id+ "' > </span>"
+		sObj.after(addStr);
+	}
+	function loadTreeData(jsondata) {
+		//获取div内的值
+		if (jsondata && jsondata.APPID) {
+			var appid = jsondata.APPID;
+			var channel_rtype = jsondata.CHANNEL_RTYPE;
+			if (oldobj != null) {
+				updateJsonData();
+			}
+			oldobj = jsondata;
+			postAjax(
+					"restful?action=<#encAction action="get_resources_ourself"/>&APP_ID="
+							+ appid + "&CHANNEL_RTYPE=" + channel_rtype, "",
+					"getTreeDataValue");
+
+			setCheckedValue("rtype", channel_rtype);
+
+		}
+
+	}
+	function getTreeDataValue(jsondata) {
+
+		if (jsondata.g_result == 1) {
+			zNodes = jsondata.value;
+			$("#treeData").empty();
+			initTree();
+
+		}
+
+	}
+
+	function initTree() {
+
+		$.fn.zTree.init($("#treeData"), setting, zNodes);
+		var zTree = $.fn.zTree.getZTreeObj("treeData");
+
+		zTree.expandAll(true);
+
+		for ( var key in rolesData) {
+
+			node = zTree.getNodeByParam("RID", key, null);
+			if (node != null) {
+				zTree.checkNode(node, rolesData[key], false, true);
+				node.oldchecked = "Y";
+			}
+		}
+		$(window).resize();
+	}
+
+	function expandNode(e) {
+
+		var zTree = $.fn.zTree.getZTreeObj("treeData");
+		var type = e.data.type;
+		var nodes = zTree.getSelectedNodes();
+		if (type.indexOf("All") < 0 && nodes.length == 0) {
+			alert("请先选择一个父节点");
+		}
+
+		if (type == "expandAll") {
+			zTree.expandAll(true);
+		} else if (type == "collapseAll") {
+			zTree.expandAll(false);
+		}
+	}
+	function updateJsonData() {
+
+		var zTree = $.fn.zTree.getZTreeObj("treeData");
+		if (zTree) {
+			//获取勾选的
+			var nodes = zTree.getCheckedNodes(true);
+			if (nodes.length > 0) {
+				for (var j = 0; j < nodes.length; j++) {
+					if (!rolesData[nodes[j].RID]) {
+						//roleRightsAdd += nodes[j].RID + ";";	
+						rolesData[nodes[j].RID] = true;
+					}
+				}
+			}
+			//获取未勾选的
+			nodes = zTree.getCheckedNodes(false);
+			if (nodes.length > 0) {
+				for (var j = 0; j < nodes.length; j++) {
+					if (rolesData[nodes[j].RID]) {
+						//	roleRightsDel += nodes[j].RID + ";";
+						rolesData[nodes[j].RID] = false;
+					}
+				}
+			}
+		}
+
+	}
+	function saveData() {
+		var roleRightsAdd = "";
+		var roleRightsDel = "";
+
+		updateJsonData();
+
+		for ( var key in rolesData) {
+
+			if (rolesData[key] == true) {
+
+				roleRightsAdd += key + ";";
+			} else {
+				roleRightsDel += key + ";";
+			}
+		}
+
+		roleRightsAdd = roleRightsAdd.substr(0, roleRightsAdd.length - 1);
+		roleRightsDel = roleRightsDel.substr(0, roleRightsDel.length - 1);
+
+		$("#RoleRights_Add").val(roleRightsAdd);
+		$("#RoleRights_Del").val(roleRightsDel);
+		$("#RoleRights_Json").val(JSON.stringify(rolesData));
+
+		submitFormData("form1", "");
+	}
+
+	//自动缩放
+	$(window).resize(function() {
+
+		$('#id_div_tree').height($(window).height() - 60);
+
+	});
+</SCRIPT>
+<div style="width: 260px; z-index: 9999; position: fixed ! important; right: 0px; top: 60px;">
+	<select name="rtype" id="rtype" onchange="changeRtype()" sucFunc="tun2clecked"></select>
+</div>
+<form id="form1" name="form1" method="post" action="restful">
+	<input type="hidden" name="action" value="<#encAction action="sys_role_save"/>" /> <INPUT type="hidden" name="ROLEID" value="${SYS_N_ROLES_LIST.ROLEID}" /> <INPUT type="hidden" name="RoleRights_Add" id="RoleRights_Add" /> <INPUT type="hidden" name="RoleRights_Del" id="RoleRights_Del" /> <INPUT type="hidden" name="RoleRights_Json" id="RoleRights_Json" />
+	<TABLE border='0' style="width: 100%">
+		<tr>
+			<td >角色名称：<span><input type='text' name='ROLENAME' value="${SYS_N_ROLES_LIST.ROLENAME}" style="width: 200px;" class="txtitem" maxnum="50" title="角色名称" required="true" check="yz_notblank" warning="角色名称不能为空" /></span>&nbsp;&nbsp;&nbsp;&nbsp; 备注：<span><input type='text' name='REMARK' value="${SYS_N_ROLES_LIST.REMARK}" style="width: 200px;" class="txtitem" maxnum="250" title="备注" /></span> <#hasButton code="resource.role_2">
+				<a href="#" class="easyui-linkbutton btn_edit" style="margin: 0px;" onclick="saveData();return false;">保存</a></#hasButton> <span><input id="cleckType" type="checkbox"><label for="cleckType">级联选择</label></span>
+			</td>
+		</tr>
+		</form>
+	</TABLE>
+	<TABLE border='0' style="width: 100%" >
+		<tr>
+			<td width="260px" valign="top" style="border-top: solid 1px;display: none">
+				<div id="app_ul_div" class="app_ul_div select" style="vertical-align: top;">
+
+					<ul id="app_treeData" class="ztree"></ul>
+				</div>
+			</td>
+			<td  style="border-top: solid 1px; border-left: solid 1px; height: 300px;width: 100%">
+				<div id="id_div_tree" class="ztree" style="overflow-y: auto;">
+					<ul id="treeData" class="ztree"></ul>
+				</div>
+			</td>
+		</tr>
+	</TABLE>
+
+
+	<% include("../../common/end.html"){} %>

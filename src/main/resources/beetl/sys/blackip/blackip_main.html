@@ -1,0 +1,138 @@
+<% include("../../common/head.html"){} %>
+<form name="form1" id="form1">
+	<div id="fieldset_condition" style="margin: 0px;">
+		<fieldset>
+			<legend id="fieldset_legend" onclick="fieldsetToggle('fieldset_legend','${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/');" style="cursor: pointer;" title="点击：显示/隐藏">
+				<img src='${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/images/DHTMLSuite_minus.gif' />查询条件
+			</legend>
+			<table style="width: 100%;" id="fieldset_data">
+				<tr>
+					<td>黑名单IP:<input name='BLACK_IP' type="text" value='' style='width: 130px;' /> 加入时间从:<input style='width: 100px;' name="START_DATE" type="text" id="BeginDate" class="Wdate" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true,readOnly:true,maxDate:'#F{$dp.$D(\'EndDate\')}'})"> 至: <input style='width: 100px;' name="END_DATE" type="text" id="EndDate" class="Wdate" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true,readOnly:true,minDate:'#F{$dp.$D(\'BeginDate\')}'})"> <a href="#" class="easyui-linkbutton btn_query" data-options="iconCls:'icon-search'" onclick='queryData()'>查询</a>
+					</td>
+				</tr>
+			</table>
+		</fieldset>
+	</div>
+	<div style="margin: 0px;">
+		<table id="dg" class="easyui-datagrid" title="">
+			<thead>
+				<tr>
+					<th data-options="field:'BLACK_IP',width:110,align:'center',halign:'center'">黑名单IP</th>
+					<th data-options="field:'CREATE_DATE',width:150,align:'left',halign:'center',formatter:formatterdatetime">加入时间</th>
+					<th data-options="field:'REMARK',width:320,align:'left',fixed:true,halign:'center'">备注</th>
+				</tr>
+			</thead>
+		</table>
+	</div>
+</form>
+<script>
+  //初始化加载
+  $(function() {
+	  queryData();
+  });
+    
+   //自动缩放
+   $(window).resize(function() {
+       $('#dg').resizeDataGrid($("#fieldset_condition").height()+1, 4, 0, 0);
+   });
+   
+   function formatterdatetimeZ(val, row) {
+		if(val){
+			var newDate = new Date(val);
+		   	//newDate.setTime(val);
+			return newDate.Format("yyyy-MM-dd hh:mm:ss");
+		}
+		return '';   
+	}
+   
+   //查询
+   function queryData() {
+       var s_url = "restful?action=<#encAction action="blackip_query_list"/>";      
+       $('#dg').datagrid({
+           url : s_url,
+           pageNumber:1,striped:true,
+           queryParams : $('#form1').serializeObject(),
+           onLoadSuccess:function(data){
+               //成功验证是否有无出错
+               if(data.g_result=="0"){
+                   showMsg(data.g_message);
+               }
+           },
+			onDblClickRow : function(rowIndex, rowData) {
+				//双击
+				openData('详情', rowData.BLACK_IP);
+			}
+       });
+       var pager = $('#dg').datagrid('getPager'); //获取表格分页
+       pager.pagination({
+			buttons : stoolbar
+		});
+   }
+   
+   //底部按钮
+   var stoolbar = [            
+   {
+       text : '新增',
+       iconCls : 'icon-add',
+       handler : function() {
+    	   openData('新增','');
+       }
+   },'-',{
+       text : '修改',
+       iconCls : 'icon-save',
+       handler : function() {
+           var rows = $('#dg').datagrid('getSelections');
+           if(rows.length!=1){
+               showMsgAndExecFn("请选择一条数据！","");
+               return;
+           }
+           openData('修改',rows[0].BLACK_IP);
+       }
+   } ,'-', {
+       text : '删除',
+       iconCls : 'icon-remove',
+       handler : function() {
+           var rows = $('#dg').datagrid('getSelections');
+           if(rows.length!=1){
+               showMsgAndExecFn("请选择一条数据！","");
+               return;
+           }
+           showConfirm("删除该条数据吗？","delData");  
+       }
+   }];
+   
+ 	//处理按钮多余的坚线
+   stoolbar=dataGridButtonFilter(stoolbar);
+   
+   function openData(title, ip){
+	   openWindow(title, 'do?action=<#encAction action="blackip_goto_modify"/>&BLACK_IP=' + ip, '240', '500', "refreshQueryData");
+	}
+   
+   function delData(){
+		var param = {};
+		param.action = "<#encAction action="blackip_delete"/>";
+	    var rows = $('#dg').datagrid('getSelections');
+	    if(rows.length!=1){
+	      showMsgAndExecFn("请选择一条数据！","");
+	      return;
+	    }
+	    param.BLACK_IP = rows[0].BLACK_IP;
+	    postAjax("restful",param,"refreshQueryData");    
+	}
+      
+   //刷新查询
+   function  refreshQueryData(jsondata){
+	   if(jsondata.g_result ){
+           if(!jsondata.showMsgFlag){
+               //没有显示过的，显示
+               showMsg(jsondata.g_message);
+           }
+           if(jsondata.g_result=='1'){
+               queryData();
+           }
+       }     
+   }
+   
+   
+</script>
+<% include("../../common/end.html"){} %>

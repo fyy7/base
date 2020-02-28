@@ -1,0 +1,63 @@
+[{
+"ActPostposition":[{
+	"type":"LISTTURNSTR",
+	"target":"rows",
+	"TURNCODE":[{
+		"field":"OPETIME",
+	}
+	]
+	}],
+	"ActAction": {
+		"type": "selPaginSql",
+		"tableConfig": [{
+			"name": "SYS_N_ROLES",
+			"alias": "a",
+			"linkType": "",
+			"linkStr": ""
+		}],
+		"paramConfig": [{
+			"name": "ROLEID",
+			"alias": "ROLEID",
+			"tableAlias": "a"
+			
+		}, {
+			"name": "ROLENAME",
+			"alias": "ROLENAME",
+			"tableAlias": "a"
+		}, {
+			"name": "OPEMAN",
+			"alias": "OPEMAN",
+			"tableAlias": "a"
+		}, {
+			"name": "OPETIME",
+			"alias": "OPETIME",
+			"tableAlias": "a"
+		}, {
+			"name": "REMARK",
+			"alias": "REMARK",
+			"tableAlias": "a"
+		}],
+		"keyName": "rows",
+		"orderConfig": [{
+			"name": "ROLEID ",
+			"tableAlias": "a",
+			"type": ""
+		}],
+		
+		"whereConfig": [{
+			"from": "SS#!USER#OpNo",
+			"name": "CREATOR",
+			"tableAlias": "a",
+		
+			"type": "=",
+			"value": ""
+		},{
+	      "from": "RS#!SEL_ROLENAME",
+	     "name": "ROLENAME", 
+	      "tableAlias": "a",
+	     
+	      "type": "%%",
+	      "value": ""
+	    }]
+	}
+}]

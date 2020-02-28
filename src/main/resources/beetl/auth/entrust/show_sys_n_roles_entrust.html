@@ -1,0 +1,146 @@
+<% include("../../common/head.html"){} %>
+<form name="form1" id="form1">
+	<div id="fieldset_condition" style="margin: 0px;">
+		<fieldset>
+			<legend id="fieldset_legend" onclick="fieldsetToggle('fieldset_legend','${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/');" style="cursor: pointer;" title="点击：显示/隐藏">
+				<img src='${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/images/DHTMLSuite_minus.gif' />查询条件
+			</legend>
+			<table style="width: 100%;" id="fieldset_data">
+				<tr>
+					<td>受托人：<input type='text' name='SEL_ROLENAME' size='20' class="txtitem" /> 委托期限：<input name="SEL_BEGINDATE" type="text" id="BeginDate" style="width: 120px;" class="Wdate" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true,readOnly:true,maxDate:'#F{$dp.$D(\'EndDate\')}'})" size="12"> 至：<input name="SEL_ENDDATE" type="text" id="EndDate" style="width: 120px;" class="Wdate" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true,readOnly:true,minDate:'#F{$dp.$D(\'BeginDate\')}'})" size="12"> <a href="#" class="easyui-linkbutton btn_query" data-options="iconCls:'icon-search'" onclick='queryData()'>查询</a>
+					</td>
+				</tr>
+			</table>
+		</fieldset>
+	</div>
+	<div>
+		<table id="dg" class="easyui-datagrid" title="" data-options="">
+			<thead>
+				<tr>
+					<th data-options="field:'ROLEID',hidden:true,width:10,align:'left'">主键</th>
+					<th data-options="field:'ROLENAME',width:160,align:'left',fixed:true,halign:'center'">被委托人</th>
+					<th data-options="field:'OPEMAN',width:140,align:'left',halign:'center'">创建者</th>
+					<th data-options="field:'OPETIME',width:100,align:'left',halign:'center',formatter:formatterdate">操作时间</th>
+					<th data-options="field:'USERFULTIME',width:330,align:'left',halign:'center',formatter:formatterdatemerge">委托期限</th>
+					<th data-options="field:'REMARK',width:200,align:'left',halign:'center'">备注</th>
+				</tr>
+			</thead>
+		</table>
+	</div>
+</form>
+<script>
+	//初始化加载
+	$(function() {
+		var pager = $('#dg').datagrid('getPager');//获取表格分页
+		pager.pagination({buttons:stoolbar});
+	});
+
+	
+	//自动缩放
+	$(window).resize(function() {
+		$('#dg').resizeDataGrid($("#fieldset_condition").height(), 4, 0, 0);
+	});
+	
+	//查询
+	function queryData() {
+		var s_url = "restful?action=<#encAction action="act"/>&flagId=sys_entrust_query";		
+		$('#dg').datagrid({
+			url : s_url,
+			pageNumber:1,
+			queryParams : $('#form1').serializeObject(),
+			onLoadSuccess:function(data){
+	
+				//成功验证是否有无出错
+				if(data.g_result=="0"){
+					showMsg(data.g_message);
+				}
+			},
+			onDblClickRow:function(rowIndex, rowData){
+				//双击
+				updateData('修改委托',rowData.ROLEID);
+			}
+		});
+		var pager = $('#dg').datagrid('getPager');	//获取表格分页
+		pager.pagination({buttons:stoolbar});
+	}
+	
+	//刷新查询
+	function  refreshQueryData(jsondata){
+		if(jsondata.g_result ){
+			if(!jsondata.showMsgFlag){
+				//没有显示过的，显示
+				showMsg(jsondata.g_message);
+			}
+			if(jsondata.g_result=='1'){
+				queryData();
+			}
+		}				
+	}
+	
+	//底部按钮
+	var stoolbar = [ '-'<#hasButton code="resource.entrust_2">,{
+		text : '新增',
+		iconCls : 'icon-add',
+			handler : function() {
+				if("${session[session_name].OpType}" == "0"){
+				//	return showMsg("管理员无此权限!");
+				}
+				updateData('新增委托','');
+			}
+		}</#hasButton>
+		<#hasButton code="resource.entrust_2">,'-',{
+		text : '修改',
+		iconCls : 'icon-edit',
+		handler : function() {
+			if("${session[session_name].OpType}" == "0"){
+				//return showMsg("管理员无此权限!");
+			}
+			var rows = $('#dg').datagrid('getSelections');
+			if(rows.length!=1){
+				showMsgAndExecFn("请选择一条数据！","");
+				return;
+			}
+			updateData('修改委托',rows[0].ROLEID);
+		}
+	}</#hasButton>
+	<#hasButton code="resource.entrust_8">,'-', {
+		text : '删除',
+		iconCls : 'icon-remove',
+		handler : function() {
+			if("${session[session_name].OpType}" == "0"){
+			//	return showMsg("管理员无此权限!");
+			}
+			var rows = $('#dg').datagrid('getSelections');
+			if(rows.length!=1){
+				showMsgAndExecFn("请选择一条数据！","");
+				return;
+			}
+			showConfirm("删除该条数据吗？","delData");	
+		}
+	
+	}</#hasButton>];
+	
+	//处理按钮多余的坚线
+  	stoolbar=dataGridButtonFilter(stoolbar);
+	
+	function updateData(title,roleId){
+		openWindow(title,'do?action=<#encAction action="goto_sys_entrust_edit"/>&ROLEID='+roleId,1024,900,"refreshQueryData");
+	}
+	
+	function delData(){
+		var rows = $('#dg').datagrid('getSelections');
+		if(rows.length!=1){
+			showMsgAndExecFn("请选择一条数据！","");
+			return;
+		}
+		for(var i=0; i<rows.length; i++){
+			postAjax("restful","action=<#encAction action="sys_entrust_del"/>&ROLEID="+rows[i].ROLEID,"refreshQueryData");		
+		}
+		queryData();
+	}
+	
+	function setUserRole(title,roleId){
+		openWindow(title,'do?action=<#encAction action="goto_entrust_to_user"/>&ROLEID='+roleId,500,960,"refreshQueryData");
+	}
+</script>
+<% include("../../common/end.html"){} %>

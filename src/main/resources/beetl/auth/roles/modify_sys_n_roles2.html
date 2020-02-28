@@ -1,0 +1,265 @@
+<% include("../../common/head.html"){} %>
+<SCRIPT type="text/javascript">
+	var setting = {
+		check: {
+			enable: true,
+			chkboxType:  { "Y": "p", "N": "s" }
+		},
+		view: {
+			selectedMulti: false,
+		
+			addDiyDom: addDiyDom
+	
+		},
+		data: {
+			key: {
+				title:"TITLE",
+				name:"TITLE"
+			},
+			simpleData: {
+				enable: true,
+				idKey: "RID",
+				pIdKey: "PARENTID"
+	
+			}
+		},
+		callback: {
+			//onClick:onClickTree
+		}
+	};
+	var zNodes =null;		
+	//已选择数据存储
+	var rolesData=${ROLERIGHTS_JSON};
+
+	var oldindex=null;
+	$(function(){
+		act_setSelectValue('<#encAction action="act"/>','rtype','select_dmb_query',{"DMLX":"RES_TYPE"},null,"RES_TYPE");
+		$("#expandAllBtn").bind("click", {type:"expandAll"}, expandNode);
+		$("#collapseAllBtn").bind("click", {type:"collapseAll"}, expandNode);
+
+		var node=null;
+	
+		$('#tt').tabs({
+			onSelect:function(title,index){
+				
+				loadTreeData(index);
+			  }
+
+		})
+		
+
+	});
+	
+	function changeRtype(){
+	    var tab = $('#tt').tabs('getSelected');
+		var index = $('#tt').tabs('getTabIndex',tab);
+		var value=getCheckedValue("rtype");
+		if(value){
+			if(value!=$("#treeData_"+index).attr("rtype")){
+				$("#treeData_"+index).attr("rtype",value);
+				loadTreeData(index);
+			}
+			
+		}else{
+			showMsg("必须选择一个资源类型！");
+		
+			setCheckedValue("rtype",$("#treeData_"+index).attr("rtype"));
+		}
+	
+	}
+	function getCheckedValue(name){
+		 var test = $("input[name='"+name+"']:checked");  
+	        var checkBoxValue = "";   
+	        test.each(function(){  
+	            checkBoxValue += $(this).val()+",";  
+	        })  
+	        checkBoxValue = checkBoxValue.substring(0,checkBoxValue.length-1);  
+
+	        return checkBoxValue;
+	}
+	
+	function setCheckedValue(name,value){
+
+		 var test = $("input[name='"+name+"']:checkbox");  
+	        var checkBoxValue = ""; 
+	    
+	        test.each(function(){  
+			//	alert(value+":"+$(this).val()+":"+value.indexOf($(this).val()))
+	        	if(value.indexOf($(this).val())>-1){
+	        //		alert($(this).val());
+
+	        		$(this).prop('checked',true);
+	        	}else{
+	        	//	$(this).removeAttr("checked");
+	        		$(this).prop('checked',false);
+	        	}
+	           
+	        })  
+	}
+	//宣传列初始化
+	function tun2clecked(){
+		act_select2Checkbox($("#rtype"));
+		loadTreeData(0);
+	}
+	function addDiyDom(treeId, treeNode){
+		var sObj = $("#" + treeNode.tId + "_span");
+		var addStr = "<span id='diyshow_space_" +treeNode.id+ "' > </span>"
+		sObj.after(addStr);
+	}
+	function loadTreeData(index){
+		//获取div内的值
+
+		if($("#treeData_"+index).attr("appid")&&$("#treeData_"+index).attr("rtype")){
+			var appid=$("#treeData_"+index).attr("appid");
+			var channel_rtype=$("#treeData_"+index).attr("rtype");
+			if(oldindex!=null){
+				updateJsonData();
+			}
+				oldindex=index;
+			postAjax("restful?action=<#encAction action="get_resources_ourself"/>&APP_ID="+appid+"&CHANNEL_RTYPE="+channel_rtype,"","getTreeDataValue");
+		
+			setCheckedValue("rtype",$("#treeData_"+index).attr("rtype"));
+			
+		}
+	
+
+	}
+	function getTreeDataValue(jsondata){
+	
+		if(jsondata.g_result==1){
+			zNodes=	jsondata.value;
+			initTree();
+			
+		}
+		
+	}
+	
+	function initTree(){
+		var tab = $('#tt').tabs('getSelected');
+		var index = $('#tt').tabs('getTabIndex',tab);
+			$.fn.zTree.init($("#treeData_"+index), setting, zNodes);
+			var zTree = $.fn.zTree.getZTreeObj("treeData_"+index);
+			zTree.expandAll(true);
+	
+			//for(i=0;i<rolesData.length;i++){
+	
+			for(var key in rolesData){
+		
+			node = zTree.getNodeByParam("RID",key,null);
+			if(node!=null){
+				zTree.checkNode(node,rolesData[key], false, true);
+				node.oldchecked="Y";
+			}
+			}
+	}
+	
+	function expandNode(e) {
+		var tab = $('#tt').tabs('getSelected');
+		var index = $('#tt').tabs('getTabIndex',tab);
+
+		var zTree = $.fn.zTree.getZTreeObj("treeData_"+index);
+		var type = e.data.type;
+		var nodes = zTree.getSelectedNodes();
+		if (type.indexOf("All")<0 && nodes.length == 0) {
+			alert("请先选择一个父节点");
+		}
+
+		if (type == "expandAll") {
+			zTree.expandAll(true);
+		} else if (type == "collapseAll") {
+			zTree.expandAll(false);
+		}
+	}
+	function updateJsonData(){
+	
+		var zTree = $.fn.zTree.getZTreeObj("treeData_"+oldindex);
+		if(zTree){
+			//获取勾选的
+			var nodes = zTree.getCheckedNodes(true);		
+			if(nodes.length>0){
+				for(var j=0;j<nodes.length;j++){
+					if(!rolesData[nodes[j].RID]){
+						//roleRightsAdd += nodes[j].RID + ";";	
+						rolesData[nodes[j].RID]=true;
+					}
+				}
+			}
+			//获取未勾选的
+			nodes = zTree.getCheckedNodes(false);		
+			if(nodes.length>0){
+				for(var j=0;j<nodes.length;j++){
+					if(rolesData[nodes[j].RID]){
+					//	roleRightsDel += nodes[j].RID + ";";
+						rolesData[nodes[j].RID]=false;
+					}
+				}
+			}
+		}
+	
+	}
+	function saveData(){		
+		var roleRightsAdd = "";
+		var roleRightsDel = "";
+		var tab=$('#tt').tabs('tabs');
+		updateJsonData();
+
+		for(var key in rolesData){
+			
+			if(rolesData[key]==true){
+
+				roleRightsAdd +=key + ";";	
+			}else{
+				roleRightsDel+=key + ";";
+			}
+		}
+		
+		roleRightsAdd = roleRightsAdd.substr(0,roleRightsAdd.length-1);
+		roleRightsDel = roleRightsDel.substr(0,roleRightsDel.length-1);
+
+		$("#RoleRights_Add").val(roleRightsAdd);
+		$("#RoleRights_Del").val(roleRightsDel);
+		$("#RoleRights_Json").val(JSON.stringify(rolesData));
+
+		submitFormData("form1","");
+	}
+	
+	//自动缩放
+	$(window).resize(function() {
+		$('#tt').height($(window).height()-60);
+	
+	});
+</SCRIPT>
+<div style="width: 260px; z-index: 9999; position: fixed ! important; right: 0px; top: 100px;">
+	<select name="rtype" id="rtype" onchange="changeRtype()" sucFunc="tun2clecked"></select>
+</div>
+<form id="form1" name="form1" method="post" action="restful">
+	<input type="hidden" name="action" value="<#encAction action="sys_role_save"/>" /> <INPUT type="hidden" name="ROLEID" value="${SYS_N_ROLES_LIST.ROLEID}" /> <INPUT type="hidden" name="RoleRights_Add" id="RoleRights_Add" /> <INPUT type="hidden" name="RoleRights_Del" id="RoleRights_Del" /> <INPUT type="hidden" name="RoleRights_Json" id="RoleRights_Json" />
+	<TABLE border='0'>
+		<tr>
+			<td>角色名称：<span><input type='text' name='ROLENAME' value="${SYS_N_ROLES_LIST.ROLENAME}" style="width: 200px;" class="txtitem" maxnum="50" title="角色名称" required="true" check="yz_notblank" warning="角色名称不能为空" /></span>&nbsp;&nbsp;&nbsp;&nbsp; 备注：<span><input type='text' name='REMARK' value="${SYS_N_ROLES_LIST.REMARK}" style="width: 200px;" class="txtitem" maxnum="250" title="备注" /></span> <a href="#" class="easyui-linkbutton btn_edit" style="margin: 0px;" onclick="saveData();return false;">保存</a>
+			</td>
+		</tr>
+		</form>
+	</TABLE>
+	<TABLE border='0'>
+		<tr>
+			<td style="border-top: solid 1px;">
+				<div id="tt" class="easyui-tabs" style="width: 100%; height: 100%;">
+					<% for(var i=0;i
+					<ROLERIGHTS_TYPE.~size;i++){
+		%>
+					<div title="${ROLERIGHTS_TYPE[i].APPNAME}" style="padding: 2px; display: none;">
+						<div id="id_div_tree_${i}" style="overflow-y: auto;">
+							<ul id="treeData_${i}" rtype="${ROLERIGHTS_TYPE[i].CHANNEL_RTYPE}" appid="${ROLERIGHTS_TYPE[i].APPID}" class="ztree"></ul>
+						</div>
+					</div>
+					<% } %> 
+				</div>
+
+
+			</td>
+		</tr>
+	</TABLE>
+
+
+	<% include("../../common/end.html"){} %>

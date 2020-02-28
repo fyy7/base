@@ -1,0 +1,49 @@
+<% include("../../common/head.html"){} %>
+<style>
+.sysicon[xsrc=''] {
+	width: 75px;
+	height: 75px;
+	border: 1px solid #fff;
+}
+
+.sysicon:hover {
+	border: 1px solid #abc6de;
+}
+</style>
+<div style='overflow-y: scroll; height: 300px;' id='id_img_list'>
+	<% var count = 1000; for(var i=1;i<=count;i++){ %> <img class="sysicon" src='${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/images/loading.gif' xsrc="${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/images/png64x64/${i}.png" /> <% } %>
+</div>
+<div style='padding-right: 20px; padding-top: 4px; border-top: 1px solid #ccc;' id='id_div_button'>
+	<span style='float: left;'>当前图标个数：${count}</span>
+</div>
+<script>
+	$(function() {
+		$("#id_img_list").height($(window).height() - 36);
+		$("#id_img_list").find("img").css('padding', '5px').bind('click',function() {
+			setSrc($(this));
+		});
+		
+		//加载图片
+		scrollImageLoading("id_img_list");
+		if(${count} <= 0 ){
+			showMsg("无可选图标！");
+		}
+	});
+	
+	//回填设置
+	function setSrc(obj) {
+		$("#id_image_src", getParentWindow().document).prop("src",obj.attr("src")).show();
+		var setId='${SET_INPUT!}';
+		if(setId){
+			$("#"+setId, getParentWindow().document).val(obj.attr("src").replace("${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/", ""));
+		}
+		
+		closeWindow();
+	}
+	
+	$("#id_img_list").bind("scroll", function() {
+		scrollImageLoading("id_img_list");
+	});
+</script>
+
+<% include("../../common/end.html"){} %>

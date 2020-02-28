@@ -1,0 +1,48 @@
+<% include("../../common/head.html"){} %>
+
+<div style="padding: 5px; overflow-y: auto;" id='div_user_list'></div>
+
+<div style='padding: 5px; height: 55px; border-top: 1px solid; display: none;' id='div_button'>
+	<a href="#" class="easyui-linkbutton btn_query" data-options="iconCls:'icon-mini-refresh'" onclick='getInfo()'>刷新</a>
+</div>
+
+<script>
+  //初始化加载
+  $(function() {
+	  if("${bigscreen!}"!="1"){
+		  $("#div_button").show();
+	  }
+	  
+	  getInfo();
+  });
+    
+   //自动缩放
+   $(window).resize(function() {
+	   $("#div_user_list").height($(window).height() - $("#div_button").height());
+   });
+   
+   function getInfo(){
+	   postAjax("restful?action=<#encAction action="query_online_user"/>",{},"handleInfo");
+   }
+   function handleInfo(json){
+	   $("#div_user_list").html("");
+	  // alert(JSON.stringify(json.onlineUser));
+	   if(json.onlineUser){
+		   var divHtml="<div style='font-weight: bold;font-size:15px;height:30px;'>在线人数："+json.onlineUser.length+"</div>";
+		   $("#div_user_list").append(divHtml);
+		   
+		   for(var i in json.onlineUser){
+			   divHtml="<div>"+(parseInt(i)+1)+">登录账号："+json.onlineUser[i].account;
+			   divHtml+="(部门Id："+json.onlineUser[i].deptId+")";
+			   divHtml+="，操作IP地址："+json.onlineUser[i].ip;
+			   divHtml+="，登录时间："+json.onlineUser[i].loginTime;
+			   divHtml+="，最后操作时间："+json.onlineUser[i].updateTime;
+			   divHtml+="</div>"
+
+			   $("#div_user_list").append(divHtml);
+		   }
+	   }
+	   $(window).resize();
+   }
+</script>
+<% include("../../common/end.html"){} %>

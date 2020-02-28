@@ -1,0 +1,75 @@
+<% include("../../common/head.html"){} %>
+<div id="id_office_type_title" style="padding-left: 5px; padding-top: 10px; border-bottom: 1px solid; color: #fff">职务列表：</div>
+<div id='id_office_type_div' style="padding-left: 20px; height: 180px; overflow-y: scroll; color: #fff"></div>
+
+<div style="padding-left: 40%; border-top: 1px solid;">
+	<#hasButton code="userpower.branch_2">
+	<a id="id_a_add" href="#" class="easyui-linkbutton btn_edit" onclick="okData()">确定</a></#hasButton>
+	<!-- <a href="#" class="easyui-linkbutton" onclick='okData()'>确定</a> -->
+</div>
+
+<script>
+	$(function() {
+		var temp_names = '${OFFICE_TYPE_NAMES!}',temp_ids='${OFFICE_TYPE_IDS!}'
+		
+		if (temp_names && temp_ids) {
+		  var office_type_names = temp_names.split(",");
+		  var office_type_ids = temp_ids.split(",");
+			var cur_office_type = window.top.$("#g_win_iframe" + (window.top.g_openModelWinNum - 1)).contents().find('#id_office_type_${NUM}').val().split(",");
+
+			var s_checkbox = "<table style='width:100%'>";
+			for (var i = 0; i < office_type_names.length; i++) {
+				if (i == 0) {
+					s_checkbox += "<tr>";
+				}
+				if (i % 3 == 0 && i != 0) {
+					s_checkbox += "</tr><tr>";
+				}
+				s_checkbox += "<td style='width:33%'><input id='id_office_type_" + i + "' type='checkbox' value='" + office_type_ids[i] + "'";
+				var b_find = false;
+				for (var j = 0; j < cur_office_type.length; j++) {
+					if (cur_office_type[j] == office_type_ids[i]) {
+						b_find = true;
+						break;
+					}
+				}
+				if (b_find) {
+					s_checkbox += " checked";
+				}
+				s_checkbox += " /><label id='id_label_"+i+"' for='id_office_type_"+i+"'>" + office_type_names[i] + "</label></td>";
+
+			}
+			s_checkbox += "</tr></table>";
+			$("#id_office_type_div").html(s_checkbox);
+		}
+	});
+	function okData() {
+		var s_ids = "";
+		var s_names = "";
+		$("input[id^=id_office_type_]").each(
+				function(i) {
+					if ($(this).prop("checked")) {
+						s_ids += "," + $(this).val();
+						s_names += ","
+								+ $(
+										"#"
+												+ $(this).attr("id").replace(
+														"id_office_type_",
+														"id_label_")).html();
+					}
+				});
+
+		window.top.$("#g_win_iframe" + (window.top.g_openModelWinNum - 1))
+				.contents().find('#id_office_type_${NUM}').val(
+						s_ids.substring(1));
+		window.top.$("#g_win_iframe" + (window.top.g_openModelWinNum - 1))
+				.contents().find('#id_select_office_${NUM}').val(
+						s_names.substring(1));
+		window.top.$("#g_win_iframe" + (window.top.g_openModelWinNum - 1))
+				.contents().find('#id_select_office_${NUM}').attr('title',
+						s_names.substring(1));
+		closeWindow();
+
+	}
+</script>
+<% include("../../common/end.html"){} %>

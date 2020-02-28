@@ -1,0 +1,36 @@
+<% include("../../common/head.html"){} %>
+<script>
+    $(function() {
+      $("#id_submit").click(function() {
+          saveData();
+          return false;
+      });
+    });
+    
+    function saveData() {
+        submitFormData("form1", "setReturnValue");
+    }
+    function setReturnValue() {
+        //setGlobalParam("g_result","1");
+    }
+</script>
+
+<form id="form1" name="form1" method="post" action="restful">
+	<input name="action" type="hidden" value="<#encAction action="blackip_save"/>"> <input type="hidden" name="BLACK_IP_OLD" value='${BEAN.BLACK_IP!}' />
+
+	<table class='dataintable form_bod'>
+		<tr>
+			<td height="30" align="right" class="infotitle" width='60'>IP地址:</td>
+			<td><input name="BLACK_IP" value="${!(BEAN.BLACK_IP)}" type="text" class="txtitem" title="IP地址" style="width: 90%" required warning="IP地址不能为空！" /></td>
+		</tr>
+
+		<tr>
+			<td height="30" align="right" class="infotitle" width='60'>备注:</td>
+			<td><textarea name="REMARK" cols="50" rows="4" maxnum="255" title="备注" style="width: 88%" required warning="备注不能为空！">${!(BEAN.REMARK)}</textarea></td>
+		</tr>
+		<tr>
+			<td colspan="2" align="center" width="100%"><A class="easyui-linkbutton btn_edit" data-options="iconCls:'icon-save'" href="#" id="id_submit">保存</A></td>
+		</tr>
+	</table>
+</form>
+<% include("../../common/end.html"){} %>

@@ -1,0 +1,66 @@
+[{
+
+	"ActAction": {
+		"type": "selListSql",
+		"tableConfig": [{
+			"name": "SYS_DMB",
+			"alias": "d",
+			"linkType": ",",
+			"linkStr": ""
+		}],
+		"paramConfig": [{
+			"name": "DMNR",
+			"alias": "DMNR",
+			"tableAlias": "d"
+		},{
+			"name": "DM",
+			"alias": "DM",
+			"tableAlias": "d"
+		},{
+			"name": "DMLX",
+			"alias": "DMLX",
+			"tableAlias": "d"
+		}],
+		"keyName": "rows",
+
+		
+		"whereConfig": [{
+			"from": "RS#!DMLX",
+			"tableAlias": "D",
+			
+			"type": "=",
+			"value": ""
+		},{
+			"preposition":
+					[
+					{"from":"RS#!APP_SYSTEM_APPID",type:"str_nonull"}
+					],
+			"from": "GROUP#!",
+			"group":[
+				{
+			"from": "RS#!APP_SYSTEM_APPID",
+			"tableAlias": "D",
+			"name": "APP_ID",
+			"type": "="
+				},
+				{
+				"logic":"or",
+				"name": "APP_ID",
+				"type": "=",
+				"value": "COMMON"
+				}
+			]
+		}],
+		"orderConfig":[{
+			"name": "DMLX",
+			"tableAlias": "d",
+			"type": ""
+		
+		},{
+			"name": "DM",
+			"tableAlias": "d",
+			"type": ""
+		
+		}]
+	}
+}]

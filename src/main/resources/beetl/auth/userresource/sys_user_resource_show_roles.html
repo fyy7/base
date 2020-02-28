@@ -1,0 +1,21 @@
+权限来源：
+<div style="border-bottom: solid 1px; width: 100%; padding-top: 6px;"></div>
+<span style="font-size: 15px; color: red;">A、角色[人员分配]</span>
+<br />
+<looptag item="var" for1="0" for2="ROLES_USER_RIGHTS.length-1"> &nbsp;&nbsp;&nbsp;#{var+1}、#{ROLES_USER_RIGHTS[var].get("ROLENAME")}，#{ROLES_USER_RIGHTS[var].get("OPNAME")} #{ROLES_USER_RIGHTS[var].get("DEPTNAME")!=null?"("+ROLES_USER_RIGHTS[var].get("DEPTNAME"):""} #{ROLES_USER_RIGHTS[var].get("ORGNAME")!=null?","+ROLES_USER_RIGHTS[var].get("ORGNAME")+")":""}<br />
+</looptag>
+<br />
+<span style="font-size: 15px; color: red;">B、角色[部门分配]</span>
+<br />
+<looptag item="var" for1="0" for2="ROLES_DEPT_RIGHTS.length-1"> &nbsp;&nbsp;&nbsp;#{var+1}、#{ROLES_DEPT_RIGHTS[var].get("ROLENAME")}，#{ROLES_DEPT_RIGHTS[var].get("OPNAME")} #{ROLES_DEPT_RIGHTS[var].get("DEPTNAME")!=null?"("+ROLES_DEPT_RIGHTS[var].get("DEPTNAME"):""} #{ROLES_DEPT_RIGHTS[var].get("ORGNAME")!=null?","+ROLES_DEPT_RIGHTS[var].get("ORGNAME")+")":""}<br />
+</looptag>
+<br />
+<span style="font-size: 15px; color: red;">C、直接授权</span>
+<br />
+<looptag item="var" for1="0" for2="USER_RIGHTS.length-1"> &nbsp;&nbsp;&nbsp;#{var+1}、#{USER_RIGHTS[var].get("OPNAME")} #{USER_RIGHTS[var].get("DEPTNAME")!=null?"("+USER_RIGHTS[var].get("DEPTNAME"):""} #{USER_RIGHTS[var].get("ORGNAME")!=null?","+USER_RIGHTS[var].get("ORGNAME")+")":""}<br />
+</looptag>
+<br />
+<span style="font-size: 15px; color: red;">D、部门、职务角色</span>
+<br />
+<looptag item="var" for1="0" for2="ROLES_DEPTOFFICE_RIGHTS.length-1"> &nbsp;&nbsp;&nbsp;#{var+1}、#{ROLES_DEPTOFFICE_RIGHTS[var].get("ROLENAME")}<br />
+</looptag>

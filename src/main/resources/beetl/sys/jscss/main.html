@@ -1,0 +1,102 @@
+<% include("../../common/head.html"){} %>
+<form name="form1" id="form1">
+	<div id="fieldset_condition" style="margin: 0px;">
+		<fieldset>
+			<legend id="fieldset_legend" onclick="fieldsetToggle('fieldset_legend','${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/');" style="cursor: pointer;" title="点击：显示/隐藏">
+				<img src='${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/images/DHTMLSuite_minus.gif' />查询条件
+			</legend>
+			<table style="width: 100%;" id="fieldset_data">
+				<tr>
+					<td>文件名:<input style='width: 155px;' value="" name="FILENAME" type="text"> <a href="#" class="easyui-linkbutton btn_query" data-options="iconCls:'icon-search'" onclick='queryData()'>查询</a>
+					</td>
+				</tr>
+			</table>
+		</fieldset>
+	</div>
+	<div style="margin: 0px;">
+		<table id="dg" class="easyui-datagrid" title="">
+			<thead>
+				<tr>
+					<th data-options="field:'MD5',width:530,align:'left',halign:'center'">国密SM3摘要值</th>
+					<th data-options="field:'FILENAME',width:500,align:'left',fixed:true,halign:'center'">文件名</th>
+				</tr>
+			</thead>
+		</table>
+	</div>
+</form>
+<script>
+  //初始化加载
+  $(function() {
+	  queryData();
+  });
+    
+   //自动缩放
+   $(window).resize(function() {
+       $('#dg').resizeDataGrid($("#fieldset_condition").height()+1, 4, 0, 0);
+   });
+   
+   //查询
+   function queryData() {
+       var s_url = "restful?action=<#encAction action="query_js_css"/>";      
+       $('#dg').datagrid({
+           url : s_url,
+           pageSize:5000,
+           pageList: [5000], 
+           pageNumber:1,striped:true,
+           queryParams : $('#form1').serializeObject(),
+           onLoadSuccess:function(data){
+               //成功验证是否有无出错
+               if(data.g_result=="0"){
+                   showMsg(data.g_message);
+               }
+           }
+       });
+       var pager = $('#dg').datagrid('getPager'); //获取表格分页
+       pager.pagination({
+			buttons : stoolbar
+		});
+       $(window).resize();
+   }
+   
+   var stoolbar = [ {
+		text : '删除',
+		iconCls : 'icon-delete',
+		handler : function() {
+			 delData();
+		}
+	},'-',{
+		text : '清空',
+		iconCls : 'icon-clear',
+		handler : function() {
+			 delAllData();
+		}
+	}];
+   
+   function delAllData(){
+	   var param = {};
+	   param.action = "<#encAction action="delete_js_css"/>";
+	   param.flag ="1";
+	   postAjax("restful",param,"refreshQueryData");
+	   return;
+   }
+   
+   function delData(){
+		var param = {};
+		param.action = "<#encAction action="delete_js_css"/>";
+		
+	    var rows = $('#dg').datagrid('getSelections');
+	    if(rows.length!=1){
+	      showMsgAndExecFn("请选择一条数据！","");
+	      return;
+	    }
+	    param.FILENAME = rows[0].FILENAME;
+	    postAjax("restful",param,"refreshQueryData");
+		return;
+	}
+      
+   //刷新查询
+   function  refreshQueryData(jsondata){
+	   queryData();
+   }
+</script>
+<% include("../../common/end.html"){} %>

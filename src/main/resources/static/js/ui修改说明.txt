@@ -1,0 +1,7 @@
+1、修改jquery.easyui.min.js中，调整按钮放在分页栏的前面
+	例：var _af=$(_ac).addClass("pagination").html("<table cellspacing=\"0\" cellpadding=\"0\" border=\"0\"><tr></tr></table>");
+		var tr=_af.find("tr");
+		加在tr的后面，即调整下代码位置即可。
+		
+		
+2、字体大小更改，去除easyui.css样式文件中所有：/*font-size: 12px;*/

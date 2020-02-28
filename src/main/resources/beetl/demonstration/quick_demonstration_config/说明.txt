@@ -1,0 +1,6 @@
+1、全局配置文件名为：GLOBAL.txt
+
+2、页面配置文件名为：[页面ID].txt
+
+3、将配置目录（quick_demonstration_config）放置于项目运行所在磁盘根路径下，如：W:\quick_demonstration_config
+

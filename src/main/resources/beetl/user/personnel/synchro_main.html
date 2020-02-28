@@ -1,0 +1,265 @@
+<% include("../../common/head.html"){} %>
+<style>
+<!--
+.sel_div span {
+	padding-right: 5px;
+}
+-->
+</style>
+<div id="fieldset_condition" style="margin: 0px;">
+	<fieldset>
+		<legend id="fieldset_legend" onclick="fieldsetToggle('fieldset_legend','${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/');" style="cursor: pointer;" title="点击：显示/隐藏">
+			<img src='${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/images/DHTMLSuite_minus.gif' />查询条件
+		</legend>
+		<table style="width: 100%;" id="fieldset_data">
+			<tr>
+				<td>
+					<div id="sel_context_div" class="sel_div"></div>
+
+
+				</td>
+				<td width="150px"><a href="#" class="easyui-linkbutton btn_query" data-options="iconCls:'icon-search'" onclick='queryData()'>查询</a></td>
+			</tr>
+		</table>
+	</fieldset>
+</div>
+
+<div style="margin: 2px;">
+	<div class="easyui-tabs" id="id_tabs"></div>
+</div>
+
+
+<script>
+var start_tab=999;
+
+
+	
+	//后台传配置生成页面
+  	var config1={"flag":"dept","title":"部门信息","stoolbar":['-'<#hasButton code="userpower.personnel.synchro_2">,{
+		text : "同步数据",
+		iconCls : "icon-search",
+		handler :"synchroBean"}</#hasButton>],"datagridParam":{"singleSelect":false,"url":"restful?action=<#encAction action="act"/>&flagId=sys_dept_image_list_query","columns":[[{"field":"tilte1","colspan":4,"align":"center","title":"人资系统"},{"field":"title2","align":"center","colspan":2,"title":"统一用户系统"}],
+			[
+				{"field":"KEY","width":280,"align":"left","title":"ID","checkbox":true},
+				{"field":"IMGAE_DEPTNAME","width":280,"align":"left","title":"部门名称"},
+				{"field":"IMGAE_PARENTNAME","width":280,"align":"center","title":"上级名称(人事/统一用户)"},
+				{"field":"IMGAE_ISDEL","width":80,"align":"center","title":"是否删除"},
+				{"field":"DEPTNAME","width":280,"align":"center","title":"部门名称"},
+				{"field":"ISDEL","width":80,"align":"center","title":"是否删除"}]]}}
+	
+  	var config2={"flag":"user","title":"人员信息","stoolbar":["-"<#hasButton code="userpower.personnel.synchro_3">,{
+		text : "账号操作",
+		iconCls : "icon-search",
+		handler :"synchroUser"}</#hasButton><#hasButton code="userpower.personnel.synchro_3">,{
+			text : "账号删除",
+			iconCls : "icon-remove",
+			handler :"synchroDelUser"}</#hasButton>],"datagridParam":{"singleSelect":true,"url":"restful?action=<#encAction action="act"/>&flagId=sys_user_image_list_query","columns":[
+			[{"field":"tilte1","colspan":3,"align":"center","title":"人资系统"},{"field":"title2","colspan":3,"align":"center","title":"统一用户系统"}],
+			[{"field":"IMGAE_PERSONNAME","width":180,"align":"left","title":"姓名"},
+				{"field":"IMGAE_MOBILEPHONE","width":180,"align":"left","title":"电话"},
+				{"field":"IMGAE_ISDEL","width":80,"align":"center","title":"是否删除"},
+				{"field":"OPNAME","width":180,"align":"left","title":"姓名"},
+				{"field":"MOBILE","width":150,"align":"left","title":"电话"},
+				{"field":"ISDEL","width":80,"align":"center","title":"是否删除"}]]}}
+	
+	var selectParam1=[{"title":"部门名称","name":"SEL_DEPTNAME","id":"SEL_DEPTNAME","type":"i_text"},{"title":"机构名称","id":"SEL_UNIT","name":"SEL_UNIT","type":"select","otherParam":{"onchange":"getDeptList(this.value)"}}]
+  	var selectParam2=[{"title":"姓名","name":"SEL_OPNAME","id":"SEL_OPNAME","type":"i_text"}]
+    config1["selparam"]=selectParam1;
+  	config2["selparam"]=selectParam2;
+	var configs=[];
+  	configs.push(config1);
+  	configs.push(config2);
+  	
+  	var datagridConf={
+  			pageNumber:1, 
+  			onLoadSuccess : function(data) {
+		        $(window).resize();
+		        //成功验证是否有无出错
+		        if (data.g_result == "0") {
+		          showMsg(data.g_message);
+		        }
+		      }
+		    }
+  	
+	//初始化加载
+	$(function() {
+		$.each(configs, function(idx,obj) {
+			var runconf=datagridConf;
+			if(obj.datagridParam && obj.datagridParam.columns){
+				runconf["columns"]=obj.datagridParam.columns;
+			}
+			$('#dg'+obj.flag).datagrid(runconf);
+			var pager = $('#dg'+obj.flag).datagrid('getPager');//获取表格分页
+			var stoolbar=obj.stoolbar;
+			stoolbar=dataGridButtonFilter(obj.stoolbar);
+			pager.pagination({
+				buttons :stoolbar
+			});
+		});
+	});
+  	
+	/* 同步数据 */
+	
+	function synchroBean(){
+  		var index=getTabsIndexNumber('id_tabs');
+  		var type=configs[index].flag;
+  	    var rows = $('#dg'+configs[index].flag).datagrid('getSelections');
+        if (rows.length == 0) {
+          showMsgAndExecFn("请至少选择一条数据！", "");
+          return;
+        }
+		var keys="";
+		$.each(rows,function(index,obj){
+		
+			keys+=","+obj.KEY;
+		});
+
+		postAjax("restful", "action=<#encAction action="personnel_synchro_deptbase_by_ids"/>&flag="+ type+"&keys="+ keys, "refreshQueryData");
+
+      
+  	}
+	
+	
+	function synchroUser(){
+		var index=getTabsIndexNumber('id_tabs');
+  		var type=configs[index].flag;
+  	    var rows = $('#dg'+configs[index].flag).datagrid('getSelections');
+        if (rows.length != 1) {
+          showMsgAndExecFn("请选择一条数据！", "");
+          return;
+        }
+
+     	openWindow("账号操作", 'do?action=<#encAction action="goto_personnel_user_synchro_edit"/>&PERSONID=' + rows[0].KEY, 500, 1290, "refreshQueryData");
+	}
+	function synchroDelUser(){
+		var index=getTabsIndexNumber('id_tabs');
+  		var type=configs[index].flag;
+  	    var rows = $('#dg'+configs[index].flag).datagrid('getSelections');
+        if (rows.length != 1) {
+          showMsgAndExecFn("请选择一条数据！", "");
+          return;
+        }
+     	postAjax("restful", "action=<#encAction action="synchro_user_delete"/>&OPNO=" + rows[0].KEY, "refreshQueryData");
+	}
+  	function initPage(){
+  		//生成标签页面
+  		$.each(configs, function(idx,obj) {
+  		var tmp=$("<form></form>").attr("name","form_"+obj.flag).attr("id","form_"+obj.flag);
+  	
+  		if(obj.selparam){
+  			$.each(obj.selparam,function(i,cobj){
+  				tmp.append(drawHtmlItem(cobj));
+  	  		});
+  		}
+
+  		$("#sel_context_div").append(tmp);
+  			
+		$("#id_tabs").append($("<div></div>").attr("title",obj.title).append($("<table></table>").attr("id","dg"+obj.flag)));
+			if(idx==0){
+			// 	datagridrun(obj.flag,obj.datagridParam,obj.stoolbar);
+			}
+		});
+  		//初始化标签
+  		
+  		$('#id_tabs').tabs({
+			onSelect: function(title,index){
+				
+				if(start_tab!=999 && start_tab!=index){
+				//	datagridrun(configs[index].flag,configs[index].datagridParam,configs[index].stoolbar);
+				}
+				$("#sel_context_div form").hide();
+				$("#form_"+configs[index].flag).show();
+	
+				start_tab=index;
+				
+			}
+		});
+  	}
+  	
+  	
+  function	queryData(){
+		var index=getTabsIndexNumber('id_tabs');
+		datagridrun(configs[index].flag,configs[index].datagridParam,configs[index].stoolbar);
+  }
+  
+  	//添加录入元素
+  	function drawHtmlItem(json){
+  		var obj;
+
+  		switch(json.type){
+  		 case ("i_text"):
+  			obj=$("<input type=\"text\" />");
+             break;
+  		 case ("select"):
+  			obj=$("<select ></select>");
+             break;
+  		}
+  		if(json.name){
+  			obj.attr("name",json.name);
+  		}
+  		if(json.id){
+  			obj.attr("id",json.id);
+  		}
+  		if(json.otherParam){
+ 			 for(var key in json.otherParam){
+ 		       obj.attr(key,json.otherParam[key]);
+ 		    }
+  		}
+  		return $("<span></span>").append(json.title+"：").append(obj);;
+  		
+  	}
+  	
+  	//执行动态查询
+  	function datagridrun(flag,datagridParam,stoolbar){
+  		var runconf=datagridConf;
+  		 for(var key in datagridParam){
+  	      runconf[key]=datagridParam[key];
+  	    }
+  		 runconf["queryParams"]=$('#form_'+flag).serializeObject();
+		 $('#dg'+flag).datagrid(runconf);
+		 var pager = $('#dg'+flag).datagrid('getPager'); //获取表格分页
+		    pager.pagination({
+			buttons : stoolbar
+			});
+	}
+  	initPage();
+
+  	
+  	act_setSelectValue('<#encAction action="act"/>','SEL_UNIT','select_organid_query',null,'ALLORDIDX');
+    
+  	function getDeptList(ogranId){
+	   var json={};
+	   json["ORGANID"]=ogranId;
+	   $("#SEL_DEPARTMENT").empty();
+	   $("#SEL_DEPARTMENT").append("<option value=''>--</option>");
+	   act_setSelectValue('<#encAction action="act"/>',"SEL_DEPARTMENT","select_dept_query",json);
+  	}
+  	
+  	//自动缩放
+  	$(window).resize(function() {
+  		var s_width = ($(window).width() - 4);
+		$("#id_tabs").width(s_width);
+		$.each($("table[id^='dg']"), function() {
+			$(this).resizeDataGrid(	$("#fieldset_condition").height() + 4 + 43,	6, 0, 0);
+		});
+  	});
+
+  
+
+  	//刷新查询
+  	function refreshQueryData(jsondata) {
+
+	      if (jsondata.g_message) {
+	        //没有显示过的，显示
+	        showMsg(jsondata.g_message);
+	      }
+	      if(jsondata.g_result=='1'){
+	    	  queryData();
+	      }
+	     
+  	}
+
+
+  
+</script>
+<% include("../../common/end.html"){} %>

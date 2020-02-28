@@ -1,0 +1,52 @@
+[{
+ActPreposition:{"preposition": [{
+				"from": "RS#!ORGANID",
+				"type": "str_nonull",
+
+			}]},
+	"ActAction": {
+		"type": "selListSql",
+		"tableConfig": [{
+			"name": "SYS_DEPARTMENT_INFO",
+			"alias": "d",
+			"linkType": ",",
+			"linkStr": ""
+		}],
+		"paramConfig": [{
+			"name": "DEPTNAME",
+			"alias": "DMNR",
+			"tableAlias": "d"
+		},{
+			"name": "DEPTID",
+			"alias": "DM",
+			"tableAlias": "d"
+		},{
+			"name": "ALLORDIDX",
+			"alias": "ALLORDIDX",
+			"tableAlias": "d"
+		},{
+			"name": "PARENTID",
+			"alias": "PARENTID",
+			"tableAlias": "d"
+		}],
+		"keyName": "rows",
+		
+		"whereConfig": [{
+			"name": "ISDEL",
+			"tableAlias": "d",
+			"type": "=",
+			"value": "0"
+		},{
+			"from": "RS#!ORGANID",
+			"tableAlias": "D",
+			"type": "=",
+			"value": ""
+		}],
+		"orderConfig":[{
+			"name": "ALLORDIDX",
+			"tableAlias": "d",
+			"type": ""
+		
+		}]
+	}
+}]

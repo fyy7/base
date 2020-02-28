@@ -1,0 +1,117 @@
+<% include("../common/head.html"){} %>
+<form name="form1" id="form1">
+	<div id="fieldset_condition" style="margin: 0px;">
+		<fieldset>
+			<legend id="fieldset_legend" onclick="fieldsetToggle('fieldset_legend','${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/');" style="cursor: pointer;" title="点击：显示/隐藏">
+				<img src='${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/images/DHTMLSuite_minus.gif' />查询条件
+			</legend>
+			<table style="width: 100%;" id="fieldset_data">
+				<tr>
+					<td>日志级别 <select style="width: 160px;" name="LOGLEVEL">
+							<option value="">-请选择-</option>
+							<option value="I">普通</option>
+							<option value="E">异常</option>
+					</select>&nbsp;&nbsp;&nbsp;&nbsp; 操作信息：<input name='OP_RESULT' type="text" value='' style='width: 155px;' /> <!-- 耗时大于:<input name='OP_MILLISECOND' type="text" value='' style='width:155px;' />  --> <!-- 时间：<select name="ORDER" style='width: 155px;'>
+							<option value='2'>降序查询</option>
+							<option value='1'>升序查询</option>
+						</select> --> &nbsp;&nbsp;&nbsp;时间从：<input style='width: 155px;' value="${trim(date(),'yyyy-MM-dd HH:00:00')}" name="OPTIME1" type="text" id="BeginDate" class="Wdate" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:true,readOnly:true,maxDate:'#F{$dp.$D(\'EndDate\')}'})"> &nbsp;&nbsp;&nbsp;至： <input style='width: 155px;' value="${trim(date(),'yyyy-MM-dd')} 23:59:59" name="OPTIME2" type="text" id="EndDate" class="Wdate" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:true,readOnly:true,minDate:'#F{$dp.$D(\'BeginDate\')}'})"> &nbsp;&nbsp;&nbsp;&nbsp; <a href="#" class="easyui-linkbutton btn_query" data-options="iconCls:'icon-search'" onclick='queryData()'>查询</a>
+					</td>
+				</tr>
+			</table>
+		</fieldset>
+	</div>
+	<div style="margin: 0px;">
+		<table id="dg" class="easyui-datagrid" title="" data-options="">
+			<thead>
+				<tr>
+					<th data-options="field:'LOGID',hidden:true">主键</th>
+					<th data-options="field:'LINKID',hidden:true">关联ID</th>
+					<th data-options="field:'OPNAME',width:320,align:'left',fixed:true,halign:'center'">操作人</th>
+					<th data-options="field:'OPTIME',width:160,align:'left',halign:'center',formatter:formatterdatetime">操作日期</th>
+					<th data-options="field:'LOGLEVEL',width:80,halign:'center',align:'center',formatter:leveltype">日志级别</th>
+					<!-- <th data-options="field:'LOGTYPE',width:80,halign:'center',align:'center'">日志类型</th> -->
+					<th data-options="field:'LOGIP',width:100,align:'center',halign:'center'">操作IP</th>
+					<th data-options="field:'REQUEST_URL',width:400,align:'left',halign:'center'">请求地址</th>
+					<th data-options="field:'OP_MILLISECOND',width:60,align:'center',halign:'center'">耗时</th>
+					<th data-options="field:'OP_RESULT',width:300,align:'left',halign:'center'">操作信息</th>
+					<!-- <th data-options="field:'CONTENTS',align:'left',halign:'center'">日志内容</th> -->
+				</tr>
+			</thead>
+		</table>
+	</div>
+</form>
+<script>
+  //初始化加载
+  $(function() {
+	 
+  });
+    
+   //自动缩放
+   $(window).resize(function() {
+       $('#dg').resizeDataGrid($("#fieldset_condition").height()+1, 4, 0, 0);
+   });
+   
+   //查询
+   function queryData() {
+       var s_url = "restful?action=<#encAction action="query_syslogs"/>";      
+       $('#dg').datagrid({
+           url : s_url,
+           pageNumber : 1,
+           rownumbers: false,
+           queryParams : $('#form1').serializeObject(),
+           onLoadSuccess:function(data){
+               //成功验证是否有无出错
+               if(data.g_result=="0"){
+                   showMsg(data.g_message);
+               }
+           },
+			onDblClickRow : function(rowIndex, rowData) {
+				//双击
+				openData('日志详情',rowData.LOGID, "V");
+			}
+       });
+       var pager = $('#dg').datagrid('getPager'); //获取表格分页
+       pager.pagination({
+			buttons : stoolbar
+		});
+   }
+   var stoolbar = [ {
+		text : '日志详情',
+		iconCls : 'icon-information',
+		handler : function() {
+			var rows = $('#dg').datagrid('getSelections');
+			if (rows.length != 1) {
+				showMsgAndExecFn("请选择一条数据！", "");
+				return;
+			}
+			openData('日志详情',rows[0].LOGID, "V");
+		}
+	}];
+   
+/*    function openData(title, logid,linkid){
+	   if(!linkid){
+		   linkid="";
+	   }
+	   openWindow(title, 'do?action=<#encAction action="syslogs/detail"/>&LOGID=' + logid+"&LINKID=" + linkid, '95%', '95%', "refreshQueryData");
+	} */
+      
+   //刷新查询
+   function  refreshQueryData(jsondata){
+                
+   }
+   
+   function openData(title,uuid,cmd){
+		openWindow(title,'do?action=<#encAction action="detail_syslogs"/>&CMD='+cmd+'&LOGID='+uuid,"600","800","refreshQueryData");
+	}
+   //日志级别
+   function leveltype(val ,row){
+	   if (val=='I') {
+			return "<span>普通</span>";
+		}
+		if (val=='E') {
+			return "<span>异常</span>";
+		}
+		return "";
+   }
+</script>
+<% include("../common/end.html"){} %>

@@ -1,0 +1,112 @@
+<% include("../../common/head.html"){} %>
+<form name="form1" id="form1">
+	<div id="fieldset_condition" style="margin: 0px;">
+		<fieldset>
+			<legend id="fieldset_legend" onclick="fieldsetToggle('fieldset_legend','${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/');" style="cursor: pointer;" title="点击：显示/隐藏">
+				<img src='${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/images/DHTMLSuite_minus.gif' />查询条件
+			</legend>
+			<table style="width: 100%;" id="fieldset_data">
+				<tr>
+					<td>来源:<input name='SRC_FLAG' type="text" value='' style='width: 130px;' /> http状态:<input name='STATUS' type="text" value='' style='width: 50px;' /> 操作IP:<input name='IP' type="text" value='${!(ip)}' style='width: 130px;' /> 时间从:<input style='width: 155px;' value="${trim(date(),'yyyy-MM-dd HH:00:00')}" name="START_DATE" type="text" id="BeginDate" class="Wdate" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:true,readOnly:true,maxDate:'#F{$dp.$D(\'EndDate\')}'})"> 至: <input style='width: 155px;' value="${trim(date(),'yyyy-MM-dd')} 23:59:59" name="END_DATE" type="text" id="EndDate" class="Wdate" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:true,readOnly:true,minDate:'#F{$dp.$D(\'BeginDate\')}'})"> <a href="#" class="easyui-linkbutton btn_query" data-options="iconCls:'icon-search'" onclick='queryData()'>查询</a>
+					</td>
+				</tr>
+			</table>
+		</fieldset>
+	</div>
+	<div style="margin: 0px;">
+		<table id="dg" class="easyui-datagrid" title="">
+			<thead>
+				<tr>
+					<th data-options="field:'uuid',hidden:true">主键</th>
+					<th data-options="field:'SRC_FLAG',width:120,align:'center',halign:'center'">来源</th>
+					<th data-options="field:'status',width:70,align:'center',halign:'center'">http状态</th>
+					<th data-options="field:'request_time',width:70,align:'center',halign:'center'">响应时间</th>
+					<th data-options="field:'remote_addr',width:110,align:'center',halign:'center'">操作IP</th>
+					<th data-options="field:'time_local',width:150,align:'left',halign:'center',formatter:formatterdatetimeZ">操作日期</th>
+					<th data-options="field:'body_bytes_sent',width:120,halign:'center',align:'left'">页面大小(byte)</th>
+					<th data-options="field:'request',width:320,align:'left',fixed:true,halign:'center'">请求地址</th>
+					<th data-options="field:'request_body',width:320,align:'left',fixed:true,halign:'center'">请求参数</th>
+					<th data-options="field:'http_referer',width:320,align:'left',fixed:true,halign:'center'">来源地址</th>
+					<th data-options="field:'http_x_forwarded_for',width:150,halign:'center',align:'left'">x_forwarded_for</th>
+				</tr>
+			</thead>
+		</table>
+	</div>
+</form>
+<script>
+  //初始化加载
+  $(function() {
+	  if('${!(start_date)}'!=''){
+		  $("#BeginDate").val('${!(start_date)}');
+	  }
+	  if('${!(end_date)}'!=''){
+		  $("#EndDate").val('${!(end_date)}');
+	  }
+	  queryData();
+  });
+    
+   //自动缩放
+   $(window).resize(function() {
+       $('#dg').resizeDataGrid($("#fieldset_condition").height()+1, 4, 0, 0);
+   });
+   
+   function formatterdatetimeZ(val, row) {
+		if(val){
+			var newDate = new Date(val);
+		   	//newDate.setTime(val);
+			return newDate.Format("yyyy-MM-dd hh:mm:ss");
+		}
+		return '';   
+	}
+   
+   //查询
+   function queryData() {
+       var s_url = "restful?action=<#encAction action="nginx_query_list"/>";      
+       $('#dg').datagrid({
+           url : s_url,
+           pageNumber:1,striped:true,
+           queryParams : $('#form1').serializeObject(),
+           onLoadSuccess:function(data){
+               //成功验证是否有无出错
+               if(data.g_result=="0"){
+                   showMsg(data.g_message);
+               }
+           },
+			onDblClickRow : function(rowIndex, rowData) {
+				//双击
+				openData('详情', rowData.uuid);
+			}
+       });
+       var pager = $('#dg').datagrid('getPager'); //获取表格分页
+       pager.pagination({
+			buttons : stoolbar
+		});
+   }
+   var stoolbar = [ {
+		text : '详情',
+		iconCls : 'icon-information',
+		handler : function() {
+			var rows = $('#dg').datagrid('getSelections');
+			if (rows.length != 1) {
+				showMsgAndExecFn("请选择一条数据！", "");
+				return;
+			}
+			openData('日志详情', rows[0].uuid);
+		}
+	}];
+   
+   function openData(title, uuid){
+	   if(!uuid){
+		   uuid="";
+	   }
+	   openWindow(title, 'do?action=<#encAction action="nginx_detail_log"/>&uuid=' + uuid, '95%', '95%', "refreshQueryData");
+	}
+      
+   //刷新查询
+   function  refreshQueryData(jsondata){
+                
+   }
+   
+   
+</script>
+<% include("../../common/end.html"){} %>

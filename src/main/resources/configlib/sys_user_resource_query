@@ -1,0 +1,273 @@
+[{
+	"ActPostposition": [{
+		"type": "LISTTURNCODE",
+		"target": "rows",
+		"TURNCODE": [{
+				"field": "ENABLED",
+				"dmlx": "dmb.YESNODM"
+			},
+			{
+				"field": "MAIN_DEPT_FLAG",
+				"dmlx": "dmb.YESNODM"
+			}
+		]
+	}],
+	"preposition": [{
+				"from": "RS#!SEL_TYPE",
+				"type": "str_nonull",
+
+			},{
+				"from": "SS#!USER#OPNO",
+				"type": "str_nonull",
+
+			}],
+	"ActAction": {
+		"type": "selPaginSql",
+		"tableConfig": [{
+			"name": "SYS_N_USERS",
+			"alias": "a",
+			"linkType": "",
+			"linkStr": ""
+		}, {
+			"name": "SYS_N_USER_DEPT_INFO",
+			"alias": "b",
+			"linkType": ",",
+			"linkStr": " a.opno=b.opno "
+		}, {
+			"name": "SYS_DEPARTMENT_INFO",
+			"alias": "c",
+			"linkType": ",",
+			"linkStr": " b.DEPT_ID=c.DEPTID  "
+		}, {
+			"name": "SYS_ORGANIZATION_INFO",
+			"alias": "d",
+			"linkType": ",",
+			"linkStr": "  C.ORGANID = D.ORGANID  "
+		}],
+		"paramConfig": [{
+			"name": "MAIN_DEPT_FLAG",
+			"alias": "MAIN_DEPT_FLAG",
+			"tableAlias": "b"
+		}, {
+			"name": "opno",
+			"alias": "OPNO",
+			"tableAlias": "a"
+		}, {
+			"name": "OPNAME",
+			"alias": "OPNAME",
+			"tableAlias": "a"
+		}, {
+			"name": "OPACCOUNT",
+			"alias": "OPACCOUNT",
+			"tableAlias": "a"
+		}, {
+			"name": "ENABLED",
+			"alias": "ENABLED",
+			"tableAlias": "a"
+		}, {
+			"name": "NAME",
+			"alias": "UNNAME",
+			"tableAlias": "d"
+		}, {
+			"name": "DEPTNAME",
+			"alias": "DEPARTMENTNAME",
+			"tableAlias": "c"
+		}, {
+			"name": "DEPTID",
+			"alias": "DEPT_ID",
+			"tableAlias": "c"
+		}],
+		"keyName": "rows",
+		"orderConfig": [{
+			"name": "ALLORDIDX ",
+			"tableAlias": "D",
+			"type": ""
+		}],
+
+		"whereConfig": [{
+
+			"from": "RS#!SEL_OPNAME",
+			"name": "OPNAME",
+			"tableAlias": "a",
+
+			"type": "%%",
+			"value": ""
+		}, {
+			"from": "SS#!USER#OPNO",
+			"name": "OPNO",
+			"tableAlias": "a",
+
+			"type": "!=",
+			"value": ""
+		}, {
+			"name": "ISDEL",
+			"tableAlias": "a",
+			"type": "=",
+			"value": "0"
+		}, {
+			"from": "RS#!SEL_OPACCOUNT",
+			"name": "OPACCOUNT",
+			"tableAlias": "a",
+
+			"type": "%%",
+			"value": ""
+		}, {
+			"from": "RS#!SEL_UNIT",
+			"tableAlias": "B",
+			"name": "ORGAN_ID",
+			"type": "=",
+			"value": ""
+		}, {
+			"from": "RS#!SEL_DEPTID",
+			"tableAlias": "c",
+			"name": "DEPTID",
+			"type": "=",
+			"value": ""
+		}, {
+
+			"from": "EXISTS#!",
+			"preposition": [{
+				"from": "RS#!SEL_TYPE",
+				"type": "=",
+				"constant": "1"
+			}],
+			"tableConfig": [{
+				"name": "SYS_N_USERRIGHTS",
+				"linkType": "",
+				"linkStr": "OPNO=B.OPNO AND DEPT_ID=C.DEPTID "
+			}],
+			"whereConfig": [{
+
+				"from": "SS#!USER#OPNO",
+				"name": "CREATOR",
+
+				"type": "=",
+				"value": ""
+				}, {
+				"preposition": [{
+							"from": "SS#!USER#OPTYPE",
+							"type": "<",
+							"constant": "2"
+						}
+					],
+				"name": "CREATOR_DEPT_ID",
+				"type": "=",
+				"value": "DEPT_ID"
+			}, {
+
+				"from": "SS#!USER#DEPTID",
+				"preposition": [{
+							"from": "SS#!USER#OPTYPE",
+							"type": ">=",
+							"constant": "2"
+						}
+					],
+				"name": "CREATOR_DEPT_ID",
+				"type": "=",
+
+			}],
+			"paramConfig": [{
+				"name": "1"
+			}]
+
+
+		}, {
+
+			"from": "NOT EXISTS#!",
+			"preposition": [{
+				"from": "RS#!SEL_TYPE",
+				"type": "=",
+				"constant": "0"
+			}],
+			"tableConfig": [{
+				"name": "SYS_N_USERRIGHTS",
+				"linkType": "",
+				"linkStr": "OPNO=B.OPNO AND DEPT_ID=C.DEPTID "
+			}],
+			"whereConfig": [{
+
+				"from": "SS#!USER#OPNO",
+				"name": "CREATOR",
+
+				"type": "=",
+				"value": ""
+				}, {
+				"preposition": [{
+							"from": "SS#!USER#OPTYPE",
+							"type": "<",
+							"constant": "2"
+						}
+					],
+				"name": "CREATOR_DEPT_ID",
+				"type": "=",
+				"value": "DEPT_ID"
+			}, {
+
+				"from": "SS#!USER#DEPTID",
+				"preposition": [{
+							"from": "SS#!USER#OPTYPE",
+							"type": ">=",
+							"constant": "2"
+						}
+					],
+				"name": "CREATOR_DEPT_ID",
+				"type": "=",
+
+			}],
+			"paramConfig": [{
+				"name": "1"
+			}]
+
+
+		},{
+			"from": "EXISTS#!",
+			"tableConfig": [{
+					"name": "SYS_ORGANIZATION_INFO",
+					"linkType": "",
+					"linkStr": "d.allordidx like allordidx||'%' "
+				}],
+		
+			"whereConfig": [
+				{
+				"from": "SS#!USER#ORGID",
+				"name": "ORGANID",
+				"tableAlias": "",
+				"type": "=",
+	
+				}
+			],
+			"paramConfig": [{
+				"name": "1"
+			}]
+		}
+		,  {
+			"from": "GROUP#!",
+			"preposition": [{
+							"from": "RS#!SEL_DEPTID",
+							"type": "str_nonull",
+						
+						}
+			],
+			"group": [{
+					"from": "RS#!SEL_DEPTID",
+					"tableAlias": "c",
+					"name": "DEPTID",
+					"type": "="
+				},
+				{
+					"name": "DEPTID",
+					"preposition": [{
+							"from": "SS#!USER#OPTYPE",
+							"type": "=",
+							"constant": "0"
+						}
+					],
+					"logic":"or",
+					"tableAlias": "c",
+					"type": "=",
+					"value": "DEPT_ID"
+				}
+			]
+		}]
+	}
+}]

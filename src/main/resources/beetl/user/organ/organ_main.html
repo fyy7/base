@@ -1,0 +1,193 @@
+<% include("../../common/head.html"){} %>
+<SCRIPT type="text/javascript">
+	var setting = {
+		view: {
+			selectedMulti: false
+		},
+		data: {
+			key: {
+				title:"NAME"
+			},
+			simpleData: {
+				enable: true
+			}
+		},
+		callback: {
+			onClick:onClickTree
+		}
+	};
+
+	var zNodes =${ORGAN_LIST};
+	//节点点击
+	function onClickTree(event, treeId, treeNode){
+		if(treeNode.id=='O20120712150801'){
+			return false;
+		}else{
+			showResourceData(treeNode.id,treeNode.pId);
+		}
+	}
+	//展开，折叠
+	function expandNode(e) {
+		var zTree = $.fn.zTree.getZTreeObj("treeData");
+		var type = e.data.type;
+		var nodes = zTree.getSelectedNodes();
+		if (type.indexOf("All")<0 && nodes.length == 0) {
+			alert("请先选择一个父节点");
+		}
+		if (type == "expandAll") {
+			zTree.expandAll(true);
+		} else if (type == "collapseAll") {
+			zTree.expandAll(false);
+		}
+	}
+	
+    //初始化
+	$(function(){
+		
+		$.fn.zTree.init($("#treeData"), setting, zNodes);
+		var zTree = $.fn.zTree.getZTreeObj("treeData");
+		$("#expandAllBtn").bind("click", {type:"expandAll"}, expandNode);
+		$("#collapseAllBtn").bind("click", {type:"collapseAll"}, expandNode);
+		if("${ORGANID}"!=""){
+			//查找节点
+			var node = zTree.getNodeByParam("id","${ORGANID}",null);
+			//展开节点
+			zTree.expandNode(node.getParentNode(), true, null, true, true);
+			//选中节点
+			zTree.selectNode(node);
+			//打开信息
+			showResourceData(node.id,node.pId);
+		}else{
+			zTree.expandAll(true);
+		}
+	//	console.log("zTree complete initialization")
+	});
+	
+	//新增、修改
+	function addResource(){
+		var zTree = $.fn.zTree.getZTreeObj("treeData");
+		var nodes = zTree.getSelectedNodes();
+		if (nodes.length == 0) {
+			showResourceData("","");
+		}else{
+			showResourceData("",nodes[0].id);
+		}
+	}
+	function showResourceData(id,pId){
+		postAjaxAndGetHtml("do?action=<#encAction action="organ_edits"/>","&noHtmlHeadFlag=1&ORGANID="+id+"&PID="+pId,"getResourceHtml");
+	}
+	function getResourceHtml(data){
+		$("#id_div_resoure").html(data);
+		requiredSign();//必填红点
+		$.parser.parse($("#id_div_resoure"));//渲染  
+		if($("#ORGANID").val()!=''){
+			$("#id_a_del").show();
+		}
+		initSelect();//下拉框初始化
+	}
+	
+	//删除
+	function delData(){
+		showConfirm("是否确认删除?","delDataOK");		
+	}
+	function delDataOK(){
+		postAjax("restful?action=<#encAction action="organ_deletes"/>","ORGANID="+$("#ORGANID").val(),"getReturnData");
+	}
+	function getReturnData(jsondata){
+		showMsg(jsondata.g_message);
+		if(jsondata.g_result==1){
+			setGlobalParam("ORGANID","");
+		  setReturnValue();
+		}
+	}
+	
+    //保存
+	function saveData(){
+    	//增加父节点名称
+    	$("#PARENTNAME").val($("#PARENTID option:selected").attr("optext"));
+		submitFormData2("form1","setReturnValue");
+	}
+	function setReturnValue(){
+		var oid=getGlobalParam("ORGANID");
+		if(!oid){
+			oid="";
+		}
+		window.location.href="do?action=<#encAction action="organ_main"/>&ORGANID="+oid;
+	}
+	
+
+	//重排
+	function reIndexResource(){
+		showConfirm("确认需要重排?","reIndexResourceOK");
+	}
+	function reIndexResourceOK(){
+		postAjax("restful?action=<#encAction action="organ_reset"/>","TYPE=RESETALL","getReturnData");
+	}
+	
+	//上、下移
+	function moveNode(flag){
+		var zTree = $.fn.zTree.getZTreeObj("treeData");
+		var nodes = zTree.getSelectedNodes();
+		if(nodes.length==0){
+			showMsg("请选择要移动的节点!");
+			return;
+		}
+		var oid=nodes[0].id;
+		postAjax("restful?action=<#encAction action="organ_move"/>","ORGANID="+oid+"&FLAG="+flag,"getReturnData1");
+	}
+	function getReturnData1(jsondata){
+		setGlobalParam("ORGANID",jsondata.ORGANID);
+		showMsg(jsondata.g_message);
+		setReturnValue();
+	}
+	
+	function checkOrganDm(obj){
+		var dm = $(obj).val();
+		postAjax("restful?action=<#encAction action="organ_checkdm"/>","&DM="+dm+"&ID="+$("#ORGANID").val()+"&CMD="+$("#CMD").val(),"getCheckResult");
+	}
+	function getCheckResult(jsondata){
+		var num=jsondata.NUM;
+		if(num > 0){
+			alert("组织标识不能重复，请重新填写!");
+			$("#DEPTDM").attr("value","");
+			$("#DEPTDM").focus();
+			return false;
+		}
+	}
+	
+	//设置企业层级，只是界面上的展示
+	function setNlevel(obj){
+		var plevel=$("#PARENTID option:selected").attr("opnlevel");
+		$("#CNLEVEL").val(Number(plevel)+1).attr("disabled","disabled");
+	}
+	
+</SCRIPT>
+<table width="100%" id='id_table'>
+	<tr>
+		<td width="330" valign="top">
+			<div class="easyui-panel">
+				<div id='id_div_head' style="height: 30px; padding-top: 2px; padding-left: 2px;">
+					<#hasButton code="userpower.organ_2">
+					<a id="id_a_add" href="#" class="btn_edit_small" onclick="addResource();return false;">新增</a></#hasButton>
+					<a id="id_a_add" href="#" class="btn_edit_small" onclick="reIndexResource();return false;">重排</a> <a id="id_a_add" href="#" class="btn_edit_small" onclick="moveNode(1);return false;">上移</a> <a id="id_a_add" href="#" class="btn_edit_small" onclick="moveNode(2);return false;">下移</a> <a id="expandAllBtn" href="#" class="btn_edit_small" onclick="return false;">展开</a> <a id="collapseAllBtn" href="#" class="btn_edit_small" onclick="return false;">折叠</a>
+				</div>
+				<div id="id_div_tree" style="overflow-y: auto; height: 100%; border: 1px solid #ccc;">
+					<ul id="treeData" class="ztree"></ul>
+				</div>
+			</div>
+		</td>
+		<td valign="top">
+			<div id='id_div_resoure' class="easyui-panel" style="overflow-y: auto; height: 100%"></div>
+		</td>
+	</tr>
+</table>
+
+<script type="text/javascript">
+	//自动缩放
+	$(window).resize(function() {
+		$('#id_div_tree').height($(window).height() - $('#id_div_head').height() -10);
+		$('#id_div_resoure').height($(window).height());
+		$('#id_div_resoure').width($(window).width() -340 );
+	});
+</script>
+<% include("../../common/end.html"){} %>

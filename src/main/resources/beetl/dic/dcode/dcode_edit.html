@@ -1,0 +1,133 @@
+<form name="form1" id="form1" action="restful" method="POST">
+	<input name="action" type="hidden" value="<#encAction action="dcode_save"/>"/>
+	<input type="hidden" name="CMD" value="${CMD}">
+	<input type="hidden" name="UUID" value="${BEAN.UUID!}"/>
+	<input type="hidden" name="APP_ID" value="${APP_ID!}"/>
+	<input type="hidden" name="ALLORDIDX" value="${BEAN.ALLORDIDX!}"/>
+	
+	<input type="hidden" name="OLD_CNO" value="${BEAN.CNO!}"/>
+	<input type="hidden" name="OLD_PARENTNO" value="${BEAN.PARENTNO!}"/>
+	<input type="hidden" name="OLD_CATEGORYNO" value="${BEAN.CATEGORYNO!}"/>
+	<input type="hidden" name="OLD_CVALUE" value="${BEAN.CVALUE!}"/>
+	<input type="hidden" name="OLD_ORDIDX" value="${BEAN.ORDIDX!}"/>
+
+	<table width="100%" class='dataintable form_bod'>
+		<tr height="30">
+			<td style="font-size: 15px; font-weight: bold; border-bottom: 1px solid #ccc;" colspan="2" align="left">${CMD=='A'?"新增":"修改"}数据字典：</td>
+		</tr>
+		<tr height='25'>
+			<td height="25" width="125px" align='right' >分类编号:</td>
+			<td align='left' class='infofield'>
+				<select id="CATEGORYNO" name='CATEGORYNO' select-value="${BEAN.CATEGORYNO!}" onchange="changeCategoryno(this.value)" style="width: 70%;" required="true" check="yz_notblank" warning="分类编号不能为空！">
+					<option value="" selected>--请选择--</option>
+				  <% 
+             for(DCG in DCODECATEGORY){
+          %>
+             <option value="${DCG.CNO}" >${DCG.CNAME}</option>
+          <%  
+             }
+          %>
+				</select>
+			</td>
+		</tr>
+		<tr height='25'>
+			<td align='right' >上级代码:</td>
+			<td align='left' class='infofield'>
+             	<select id='PARENTNO' name='PARENTNO' select-value="${BEAN.PARENTNO!}" style="width: 70%;" required="true" check="yz_selectone" warning="上级代码不能为空！" ><option value=" ">--顶级--</option></select>
+			</td>
+		</tr>
+		<tr height='25'>
+			<td align='right' >代码:</td>
+			<td align='left' class='infofield'>
+				<input type='text' id="CNO" name='CNO' value="${BEAN.CNO!}" size='10' style="width: 70%;" maxnum="200" title="代码" required="true" check="yz_notblank" warning="代码不能为空！" />
+			</td>
+		</tr>
+		<tr height='25'>
+			<td align='right' >代码名称:</td>
+			<td align='left' class='infofield'>
+				<input type='text' name='CVALUE' value="${BEAN.CVALUE!}" size='20' style="width: 70%;" maxnum="200" title="代码名称" required="true" check="yz_notblank" warning="代码名称不能为空！"/>
+			</td>
+		</tr>
+		<tr height='25'>
+			<td align='right' >排序:</td>
+			<td align='left' class='infofield'>
+				<input type='text' name='ORDIDX' value="${BEAN.ORDIDX!}" size='10' style="width: 70%;" required="true" check="yz_number" warning="排序号不能为空且必须为数字！"/>
+			</td>
+		</tr>
+		<tr height='25'>
+			<td align='right' >是否可用:</td>
+			<td align='left' class='infofield'><select name='ENABLED' select-value="${BEAN.ENABLED!1}" option-action="<#encAction action='select_init'/>" option-type="DM_YESNODM" ></select></td>
+		</tr>
+		<tr>
+			<td colspan="2" align="center">
+				<#hasButton code="dictionary.code_2"><a class="easyui-linkbutton btn_edit" data-options="iconCls:'icon-save'" href="#" id="id_submit">保存</a></#hasButton>
+				<#hasButton code="dictionary.code_8"><a class="easyui-linkbutton btn_close" data-options="iconCls:'icon-remove'" href="#" id="id_delete" style="display:${CMD=='A'?'none':''}">删除</a></#hasButton>
+			</td>
+		</tr>
+	</table>
+</form>
+<form name="form2" id="form2" action="restful" method="POST">
+	<input name="action" type="hidden" value="<#encAction action="dcode_delete"/>"/>
+	<input type="hidden" id="CNO2" name='CNO2' value="${BEAN.CNO!}"/>
+	<input type="hidden" id="APP_ID2" name="APP_ID2" value="${APP_ID!}"/>
+	<input type="hidden" id="CATEGORYNO2" name='CATEGORYNO2' value="${BEAN.CATEGORYNO!}"/>
+	<input type="hidden" id="PARENTNO2" name='PARENTNO2' value="${BEAN.PARENTNO!}"/>
+	<input type="hidden" id="ALLORDIDX2" name="ALLORDIDX2" value="${BEAN.ALLORDIDX!}"/>
+</form>
+<script>
+	$(document).ready(function() {
+		$("#id_submit").click(function() {
+			saveData();
+			return false;
+		});
+		
+		$("#id_delete").click(function(){
+			showConfirm("是否删除该数据！", "deleteData");
+		});
+	});
+
+	function saveData() {
+		submitFormData2("form1", "setReturnValue");
+	}
+	
+	function deleteData() {
+		submitFormData2("form2", "setReturnValue");
+	}
+	
+	//根据数据字典分类查询上级代码
+	function changeCategoryno(categoryno){
+		
+		//清除所有
+		$("#PARENTNO option").remove();
+		
+		//$("#PARENTNO").val($("#CATEGORYNO").val());
+		var categoryno=$("#CATEGORYNO").val(); 
+		var app_id=$("#APP_ID").val();
+		if(null==categoryno || ""==categoryno){
+			$("#PARENTNO").attr("disabled",true);
+			//$("#PARENTNO").find("option:eq(0)").attr("selected",true);
+		}else{
+			//赋值
+			$("#PARENTNO").append("<option value='"+categoryno+"'>"+$("#CATEGORYNO").find("option:selected").text()+"</option>");
+			$("#PARENTNO").attr("disabled",false);
+			postAjax("restful","action=<#encAction action="dcode_option"/>&CATEGORYNO="+categoryno+"&APP_ID="+app_id,"setParentno");
+		}
+	}
+	function setParentno(jsondata){
+		if(jsondata.g_result=='0'){
+			showMsg(jsondata.g_message);
+			return;
+		}
+		var jsonArray=jsondata.D_CODE_LIST;
+		var parentno=null;
+		//parentno += "<option value='"+jsondata.CATEGORYNO+"'"+ (("${BEAN.PARENTNO!}" == jsondata.CATEGORYNO)?"selected":"") +">--顶级--</option>";
+		$.each(jsonArray,function(index,value){
+			if(!(value.CNO == "${BEAN.CNO!}")){
+				var selected = (value.CNO == "${BEAN.PARENTNO!}")?" selected":"";
+			  parentno += "<option value='"+value.CNO+"'"+selected+">" +value.CVALUE+"</option>";
+			}
+		});
+		$("#PARENTNO").append(parentno);
+	}
+	
+</script>

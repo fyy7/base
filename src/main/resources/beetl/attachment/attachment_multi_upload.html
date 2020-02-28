@@ -1,0 +1,120 @@
+<% include("../common/head.html"){} %>
+<link rel='stylesheet' type='text/css' href='<#jsCssPath url="/uploadify/uploadify.css"/>' rel='stylesheet' />
+<script type="text/javascript" src='<#jsCssPath url="/js/ajaxfileupload.js"/>'></script>
+<style>
+	.infotitle {height: 30px; width: 90px; text-align: right;}
+</style>
+<script type="text/javascript">
+
+	// TODO待修改为通用页面
+	
+	var uploaderCount = 1;
+	
+	var _parent = null;
+
+	// 初始化
+	$(function() {
+		if (!parent.CTX) {
+			_parent = getTabsCurrentWindow();
+		} else {
+			_parent = parent;
+		}
+		
+		// 应用下拉框
+		initSelectOption("appInfos", _parent.appInfos);
+		
+		// 校验类型
+		initSelectOption("attachmentCheckTypes", _parent.attachmentCheckTypes);
+		
+		$("#form1").attr("action", _parent.CTX.url.add);
+		
+		$(window).unload(function(){
+			_parent.queryList(); 
+	    });
+	});
+	
+	function addRow() {
+		$(getUploaderRow(uploaderCount++)).insertBefore("#fileBottom");
+	}
+	
+	function delRow(rowId) {
+		$("#" + rowId).remove();
+	}
+	
+	// 批量上传可有两种方式：1、多个附件独立异步上传；2、一次性表单提交上传。
+	function uploads() {
+		if ($(".file-to-upload").length == 0) {
+			showMsg("请添加附件");
+		}
+		
+		$(".file-to-upload").each( function() {
+			var id = $(this).attr("id");
+			if ($("#" + id + "_result").html() != "完成") {
+				upload(id);
+			}
+		});
+	}
+	
+	// 单附件上传
+	function upload(uploaderId) {
+		var appId = $("#appInfos").val();
+		var checkType = $("#attachmentCheckTypes").val();
+		var sizeLimit = 5 * 1024 * 1024;
+		
+		// data: {"g_result":1,"g_message":"上传文件完成","files":[{"uid":"add03cda312940d5a50efb3c5fc345d8"}]}
+		uploadFile("upload?APP_ID=" + appId + "&CHECK_TYPE=" + checkType + "&FDFS=1&SAVE_DIRECT=1", uploaderId, "",  sizeLimit, function (data) {
+			if (data.g_result == 1 && data.files && data.files.length == 1) {
+				$("#" + uploaderId + "_result").html("完成");
+				$("#" + uploaderId + "_result").css("color", "green");
+			} else {
+				$("#" + uploaderId + "_result").html("失败");
+				$("#" + uploaderId + "_result").css("color", "red");
+			}
+		});
+	}
+	
+	function getUploaderRow(rowId) {
+		var _html = '';
+		_html += '<tr id="fileUploader' + rowId + '_row">';
+		_html += '	<td class="infotitle">附件' + rowId + '：</td>';
+		_html += '	<td colspan="3">';
+		_html += '		<input type="file" id="fileUploader' + rowId + '" name="filesToUpload" class="file-to-upload" style="width: 88%"><span id="fileUploader' + rowId + '_result"></span>&nbsp;<a href="javascript:;" onclick="delRow(\'fileUploader' + rowId + '_row\')"><img src="${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/js/themes/icons/clear.png"/></a>';
+		_html += '	</td>';
+		_html += '</tr>';
+		
+		return _html;
+	}
+	
+</script>
+
+<form id="form1" name="form1" method="post" action="restful">
+	<table class="dataintable form_bod">
+		<tr style="height: 5px;"></tr>
+		<tr>
+			<td class="infotitle">系统：</td>
+			<td style="width: 35%;">
+				<select id="appInfos" value="" class="txtitem" style="width: 90%;">
+				</select>
+			</td>
+			<td class="infotitle">校验类型：</td>
+			<td style="width: 35%;">
+				<select id="attachmentCheckTypes" value="" class="txtitem" style="width: 90%;">
+				</select>
+			</td>
+		</tr>
+		<!-- <tr id="fileUploader1_row">
+			<td class="infotitle">附件：</td>
+			<td colspan="3">
+				<input type="file" id="fileUploader1" name="filesToUpload" style="width: 85%"><span id="fileUploader1_result">完成</span>&nbsp;<a href="javascript:;" onclick="addRow()">+</a>&nbsp;<a style="display: none;" href="javascript:;" onclick="delRow('fileUploader1_row')">-</a>
+			</td>
+		</tr> -->
+		<tr id="fileBottom">
+			<td colspan="4" align="center" width="100%">
+				<a id="id_submit_add" class="easyui-linkbutton btn_edit" style="border-color: #4bc6e8; background-color: #4bc6e8;" data-options="iconCls:'icon-add'" href="javascript:;" onclick="addRow();">添加附件</a>
+				<a id="id_submit_add" class="easyui-linkbutton btn_edit" data-options="iconCls:'icon-save'" href="javascript:;" onclick="uploads();">上传</a>
+			</td>
+		</tr>
+	</table>
+</form>
+
+<% include("../common/end.html"){} %>

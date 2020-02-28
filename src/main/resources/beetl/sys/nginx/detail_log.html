@@ -1,0 +1,61 @@
+<% include("../../common/head.html"){} %>
+<style>
+.title {
+	width: 130px;
+	text-align: right;
+}
+</style>
+
+<table class="dataintable" style='width: 99%; margin: 3px 3px;'>
+	<tr>
+		<td class='title'>来源：</td>
+		<td>${!(map.SRC_FLAG)}</td>
+		<td class='title'>http状态：</td>
+		<td>${!(map.status)}</td>
+		<td class='title'>操作时间：</td>
+		<td><script>
+				var newDate = new Date("${!(map.time_local)}");
+				document.write(newDate.Format("yyyy-MM-dd hh:mm:ss"));
+				</script></td>
+	</tr>
+	<tr>
+		<td class='title'>操作IP：</td>
+		<td>${!(map.remote_addr)}</td>
+		<td class='title'>发送大小：</td>
+		<td>${!(map.body_bytes_sent)}(byte)</td>
+		<td class='title'>remote_user：</td>
+		<td>${!(map.remote_user)}</td>
+	</tr>
+
+	<tr>
+		<td class='title'>响应时间：</td>
+		<td>${!(map.request_time)}</td>
+
+		<td class='title'>x_forwarded_for：</td>
+		<td colspan="3">${!(map.http_x_forwarded_for)}</td>
+	</tr>
+	<tr>
+		<td class='title'>来源地址：</td>
+		<td colspan="5">${!(map.http_referer)}</td>
+	</tr>
+	<tr>
+		<td class='title'>请求地址：</td>
+		<td colspan="5">${!(map.request)}</td>
+	</tr>
+	<tr>
+		<td class='title'>请求参数：</td>
+		<td colspan="5">${!(map.request_body)}</td>
+	</tr>
+	<tr>
+		<td class='title'>用户信息：</td>
+		<td colspan="5">${!(map.http_user_agent)}</td>
+	</tr>
+
+	<tr>
+		<td colspan="6" align="center"><a class="easyui-linkbutton btn_edit" data-options="iconCls:'icon-ok'" href="javascript:;" onclick="closeWindow();">关闭</a></td>
+	</tr>
+</table>
+
+
+
+<% include("../../common/end.html"){} %>

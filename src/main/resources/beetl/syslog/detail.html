@@ -1,0 +1,46 @@
+<% include("../common/head.html"){} %>
+
+<div style="margin: 0px;">
+	<table id="dg" class="easyui-datagrid" title="">
+		<thead>
+			<tr>
+				<th data-options="field:'OPNAME',width:120,align:'left',fixed:true,halign:'center'">操作人</th>
+				<th data-options="field:'OPTIME',width:160,align:'left',halign:'center',formatter:formatterdatetime">操作日期</th>
+				<th data-options="field:'LOGLEVEL',width:70,halign:'center',align:'left'">日志级别</th>
+				<th data-options="field:'LOGTYPE',width:70,halign:'center',align:'left'">日志类型</th>
+				<th data-options="field:'LOGIP',width:100,align:'left',halign:'center'">操作IP</th>
+				<th data-options="field:'REQUEST_URL',width:180,align:'left',halign:'center'">请求地址</th>
+				<th data-options="field:'OP_MILLISECOND',width:50,align:'left',halign:'center'">耗时</th>
+				<th data-options="field:'OP_RESULT',width:160,align:'left',halign:'center'">操作信息</th>
+				<th data-options="field:'CONTENTS',align:'left',halign:'center'">日志内容</th>
+			</tr>
+		</thead>
+	</table>
+</div>
+
+<script>
+  //初始化加载
+  $(function() {
+	  queryData();
+  });
+    
+   //自动缩放
+   $(window).resize(function() {
+       $('#dg').resizeDataGrid(1, 4, 0, 0);
+   });
+   
+   //查询
+   function queryData() {
+       var s_url = "restful?action=<#encAction action="detail_syslogs"/>&LINKID=${LINKID!}&LOGID=${LOGID!}&TRACEID=${TRACEID!}";      
+       $('#dg').datagrid({
+           url : s_url,
+           pageNumber:1,
+           striped:true
+       });
+       
+       $(window).resize();
+   }
+   
+  
+</script>
+<% include("../common/end.html"){} %>

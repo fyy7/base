@@ -1,0 +1,229 @@
+<% include("../../common/head.html"){} %>
+<SCRIPT type="text/javascript">
+	var setting = {
+		view: {
+			selectedMulti: false
+		},
+		data: {
+			key: {
+				title:"TITLE"
+			},
+			simpleData: {
+				enable: true
+			}
+		},
+		callback: {
+			onClick:onClickTree
+		}
+	};
+	var zNodes =null;	
+
+	function onClickTree(event, treeId, treeNode, clickFlag){
+		if(treeNode.PARENTID=='ResourceTop'){
+			return true;
+		}
+		showResourceData(treeNode.DEPTID,treeNode.PARENTID);
+	}
+	
+	function showResourceData(rid,pid){
+		var organid=$("#ORGANID").val();
+		if(organid==""){
+			showMsg("所属机构为空，不能操作！");
+		}
+		postAjaxAndGetHtml("do?action=<#encAction action="dept_edit"/>","&noHtmlHeadFlag=1&DEPTID="+rid+"&PID="+pid+"&ORGANID="+organid,"getResourceHtml");
+	}
+	
+	
+	function getResourceHtml(data){
+		$("#id_div_resoure").html(data);
+		requiredSign();//必填红点
+		$.parser.parse($("#id_div_resoure"));//渲染  
+		if($("#DEPTID").val()!=''){
+			$("#id_a_del").show();
+		}
+	}
+	
+
+	function expandNode(e) {
+		var zTree = $.fn.zTree.getZTreeObj("treeData");
+		var type = e.data.type;
+		var nodes = zTree.getSelectedNodes();
+		if (type.indexOf("All")<0 && nodes.length == 0) {
+			alert("请先选择一个父节点");
+		}
+
+		if (type == "expandAll") {
+			zTree.expandAll(true);
+		} else if (type == "collapseAll") {
+			zTree.expandAll(false);
+		}
+	}
+	//新增、修改
+	
+	function addResource(){
+		var zTree = $.fn.zTree.getZTreeObj("treeData");
+		var nodes = zTree.getSelectedNodes();
+		if (nodes.length == 0) {
+			showResourceData("","");
+		}else{
+			showResourceData("",nodes[0].id);
+		}
+	}
+
+	$(function(){
+		//return;		
+	});
+	
+	function getChgTreeData(){
+		showWaitMsg();
+		
+		var organid=$("#ORGANID").val();
+		if(organid==''){
+			hideWaitMsg();
+			return;
+		}
+		g_rid="";
+		$("#id_div_resoure").html("");
+		postAjax("restful?action=<#encAction action="dept_tree_data"/>&ORGAN_TYPE=99&ORGANID="+organid,"","getTreeDataValue");
+		hideWaitMsg();
+	}
+	
+	function getTreeData(){
+		showWaitMsg();
+		var organid=$("#ORGANID").val();
+		if(organid==''){
+			hideWaitMsg();
+			return;
+		}
+		postAjax("restful?action=<#encAction action="dept_tree_data"/>&ORGAN_TYPE=99&ORGANID="+organid,"","getTreeDataValue");
+		hideWaitMsg();
+	}
+	
+	function getTreeDataValue(jsondata){
+		//alert(JSON.stringify(jsondata));
+		
+		if(jsondata.g_result=='0'){
+			showMsg(jsondata.g_message);
+			return;
+		}
+		zNodes =jQuery.parseJSON(jsondata.TREE_DATAS);	
+		initTreeData();
+	}
+	var g_rid="${DEPTID}";
+	
+	function initTreeData(){
+		$.fn.zTree.init($("#treeData"), setting, zNodes);
+		var zTree = $.fn.zTree.getZTreeObj("treeData");
+		$("#expandAllBtn").bind("click", {type:"expandAll"}, expandNode);
+		$("#collapseAllBtn").bind("click", {type:"collapseAll"}, expandNode);
+		if(g_rid!=""){
+			//查找节点
+			var node = zTree.getNodeByParam("id","${DEPTID}",null);
+			//展开节点
+			zTree.expandNode(node.getParentNode(), true, null, true, true);
+			//选中节点
+			zTree.selectNode(node);
+			//打开信息
+			showResourceData(node.DEPTID,node.PARENTID);
+		}else{
+			zTree.expandAll(true);
+		}
+	}
+	
+	function setReturnValue(){
+
+		var oid=getGlobalParam("DEPTID");
+		if(!oid){
+			oid="";
+		}
+		getChgTreeData();
+	}
+	
+	//删除
+	function delData(){
+		showConfirm("是否确认删除?","delDataOK");
+	}
+	function delDataOK(){
+		postAjax("restful?action=<#encAction action="dept_delete"/>","DEPTID="+$("#DEPTID").val(),"getReturnData");
+	}
+    //保存
+	function saveData(){
+		/* if($("#TYPE").val() == 0){
+    		showMsg("类型需要大于两个!");
+    	}else{ */
+    		submitFormData2("form1","setReturnValue");
+    	/* } */
+	
+	}
+	//重排
+	function reIndexResource(){
+		showConfirm("确认需要重排?","reIndexResourceOK");
+	}
+	function reIndexResourceOK(){
+		postAjax("restful?action=<#encAction action="dept_reset"/>","&ORGANID="+$("#ORGANID").val(),"getReturnData");
+	}
+	//上、下移
+	function moveNode(flag){
+		var zTree = $.fn.zTree.getZTreeObj("treeData");
+		var nodes = zTree.getSelectedNodes();
+		if(nodes.length==0){
+			showMsg("请选择要移动的节点!");
+			return;
+		}
+		var oid=nodes[0].id;
+		postAjax("restful?action=<#encAction action="dept_move"/>","DEPTID="+oid+"&FLAG="+flag,"getReturnData1");
+	}
+	
+	function getReturnData(jsondata){
+		showMsg(jsondata.g_message);
+		setGlobalParam("DEPTID","");
+		setReturnValue();
+	}
+	function getReturnData1(jsondata){
+		setGlobalParam("DEPTID",jsondata.DEPTID);
+		showMsg(jsondata.g_message);
+		setReturnValue();
+	}
+	
+</SCRIPT>
+
+<table width="100%" id='id_table'>
+	<tr>
+		<td width="330" valign="top">
+			<div class="easyui-panel">
+				<div id='id_div_head'>
+					<table>
+						<tr>
+							<td>[当前机构]：</td>
+							<td><select name='ORGANID' id='ORGANID' style="width: 230px;" onchange="getChgTreeData();" select-value="${!(ORGANID)}"> <% for(SUPER in SUPER_LIST){ %>
+									<option value="${SUPER.ORGANID}">${SUPER.NAME}--${SUPER.ORGANDM}</option> <% } %>
+							</select></td>
+						</tr>
+						<tr>
+							<td colspan="2"><#hasButton code="userpower.branch_2">
+								<a id="id_a_add" href="#" class="btn_edit_small" onclick="addResource();return false;">新增</a></#hasButton> <a id="id_a_add" href="#" class="btn_edit_small" onclick="reIndexResource();return false;">重排</a> <a id="id_a_add" href="#" class="btn_edit_small" onclick="moveNode(1);return false;">上移</a> <a id="id_a_add" href="#" class="btn_edit_small" onclick="moveNode(2);return false;">下移</a> <a id="expandAllBtn" href="#" class="btn_edit_small">展开</a> <a id="collapseAllBtn" href="#" class="btn_edit_small">折叠</a></td>
+						</tr>
+					</table>
+				</div>
+				<div id="id_div_tree" style="overflow-y: auto; height: 100%; border: 1px solid #ccc;">
+					<ul id="treeData" class="ztree"></ul>
+				</div>
+			</div>
+		</td>
+		<td valign="top">
+			<div id='id_div_resoure' class="easyui-panel" style="overflow-y: auto; height: 100%"></div>
+		</td>
+	</tr>
+</table>
+
+<script type="text/javascript">
+	//自动缩放
+	$(window).resize(function() {
+		$('#id_div_tree').height($(window).height() - $('#id_div_head').height());
+		$('#id_div_resoure').height($(window).height());
+	});
+	$(window).load(function(){
+		getTreeData();
+	});
+</script>
+<% include("../../common/end.html"){} %>

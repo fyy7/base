@@ -1,0 +1,40 @@
+<script type="text/javascript">
+</script>
+<form id="form1" name="form1" method="post" action="HttpChannel">
+	<input type="hidden" name="action" value="<#encAction action="ajax__user_order_save"/>"> <input type="hidden" name="DEPTID" id="DEPTID"> <input type="hidden" name="DLEVEL" value="">
+	<!-- 层次 -->
+	<input type="hidden" name="ALLORDIDX" value="">
+	<!-- 全部排序号 -->
+	<input type="hidden" name="ORGANID" value="">
+	<!-- 所属组织 -->
+	<input type="hidden" name="CMD" id="CMD" value="#{CMD}">
+	<div id='div_data_list' style='overflow-y: auto;'>
+		<table width="90%" border="0" class="dataintable">
+			<tr height="30">
+				<td style="font-size: 15px; font-weight: bold; border-bottom: 1px solid;" colspan="2" align="left">当前部门：#{LIST[0].get('DEPTNAME')}</td>
+			</tr>
+			<tr height="30">
+				<td align="center" class="infotitle" width="70">排序号</td>
+				<td align="center">用户姓名</td>
+			</tr>
+
+			<looptag item="var1" for1="0" for2="DEPT_TYPE_LIST.size()-1"> #{var1%1==0?"
+			<tr>
+				":""}
+				<td width="70" align="center"><input name="ORDIDX" value="#{DEPT_TYPE_LIST[var1].get('ORDIDX')}" type='text' style="width: 50px;" /></td>
+				<td><input name="OPNO" id="OPNP_#{var1}" value="#{DEPT_TYPE_LIST[var1].get('OPNO')}" type='hidden' /> #{DEPT_TYPE_LIST[var1].get('OPNAME')} <!-- <input name="BTITLE" value="#{DEPT_TYPE_LIST[var1].get('OPNAME')}" type='text' style="width: 120px;"/> --></td> #{(var1%3==0 && var1<>0)?"
+			</tr>
+			":""} </looptag>
+		</table>
+	</div>
+	<div id="btn_bottom" align="center" style="overflow: hidden; border-top: 1px solid;">
+		<a id="id_a_add" href="#" class="easyui-linkbutton btn_edit" onclick="saveData();return false;">保存</a>
+	</div>
+
+</form>
+
+<!--Form Setting Start-->
+<var name="DEPTID" value="DEPTID" />
+<var name="ORGANID" value="ORGANID" />
+<var name="ORDIDX" required="true" check="yz_positivenum1" warning="排序号不能为空，且只能为整数！" />
+<!--Form Setting End-->

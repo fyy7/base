@@ -1,0 +1,118 @@
+body, li, p, ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-family: 'microsoft Yahei';
+    font-size: 14px;
+}
+
+.cqs {
+    overflow: hidden
+}
+
+.cqs__head {
+    background: -webkit-linear-gradient(left, #247aed, #5e1ae7);
+    /* Safari 5.1 - 6.0 */
+    background: -o-linear-gradient(right, #247aed, #5e1ae7);
+    /* Opera 11.1 - 12.0 */
+    background: -moz-linear-gradient(right, #247aed, #5e1ae7);
+    /* Firefox 3.6 - 15 */
+    background: linear-gradient(to right, #247aed, #5e1ae7);
+    /* 标准的语法 */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#247aed', endColorstr='#5e1ae7', GradientType=1);
+    height: 50px;
+    line-height: 50px;
+    padding: 0 10px;
+    font-size: 18px;
+    color: #fff;
+    font-weight: bold;
+}
+
+.cqs__bod {
+    padding: 20px;
+    overflow: hidden;
+    ;
+}
+
+.cqs__sidedata {
+    width: 240px;
+    float: left;
+    background: #fff;
+    border-radius: 5px;
+    padding: 10px;
+    box-sizing: border-box;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1)
+}
+
+.cqs__sidehd {
+    width: 100%;
+    background: #2e6aec;
+    color: #fff;
+    height: 46px;
+    line-height: 46px;
+    font-size: 16px;
+    font-weight: bold;
+    box-sizing: border-box;
+    padding-left: 50px;
+    border-radius: 3px;
+}
+
+.cqs__sidehd span {
+    background: url(./images/side_i1.png) no-repeat center left;
+    padding-left: 40px;
+}
+
+.cqs__sidebod {
+    padding: 15px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.cqs__sidebod--noboder {
+    border: none
+}
+@media screen and (max-width:1500px){
+	.cqs__sidebod{
+	 padding: 5px 0;
+	}
+	
+	.cqs__sidebod li{
+	 font-size:15px;
+	}
+}
+
+.cqs__sidebod li {
+    line-height: 40px;
+    padding: 0 10px;
+    overflow: hidden;
+}
+
+.cqs__sidenum {
+    float: right;
+    cursor: pointer;
+    text-decoration: underline;
+    font-weight: bold;
+}
+
+.cqs__sidenum--red {
+    text-decoration: none;
+    color: #ee3958
+}
+
+
+
+
+.ztree * {
+font-size: 18px;
+}
+
+.ztree li span.button.switch {
+    height: 23px !important;
+}
+
+.ztree li a.curSelectedNode {
+    height: 23px !important;
+}
+
+.ztree li a {
+    height: 23px !important;
+}

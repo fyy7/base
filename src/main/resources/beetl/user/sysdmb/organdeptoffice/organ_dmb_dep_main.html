@@ -1,0 +1,149 @@
+<% include("../../../common/head.html"){} %>
+<form name="form1" id="form1">
+	<div id="fieldset_condition" style="margin: 0px;">
+		<fieldset>
+			<legend id="fieldset_legend" onclick="fieldsetToggle('fieldset_legend','${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/');" style="cursor: pointer;" title="点击：显示/隐藏">
+				<img src='${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/images/DHTMLSuite_minus.gif' />查询条件
+			</legend>
+			<table style="width: 100%;" id="fieldset_data">
+				<tr>
+					<td><input name="DMLX" type="hidden" value="${FLAG}" /> <input name="APP_ID" type="hidden" value="COMMON" /> 机构：<select name="SEL_UNIT" id='SEL_UNIT' class="txtitem" style="width: 200px;">
+							<option value=''>--</option>
+					</select> 部门代码：<input name="DM" type="text" size="10" class="txtitem" /> 部门名称：<input name="DMNR" type="text" size="10" class="txtitem" /> <!-- 备注：<input name="BZ" type="text" size="10"  class="txtitem" /> --> <a href="#" class="easyui-linkbutton btn_query" data-options="iconCls:'icon-search'" onclick='queryData()'>查询</a></td>
+				</tr>
+			</table>
+		</fieldset>
+	</div>
+
+	<div style="margin: 0px;">
+		<table id="dg" class="easyui-datagrid" title="">
+			<thead>
+				<tr>
+					<th data-options="field:'UUID',hidden:true">主键</th>
+					<th data-options="field:'ORGAN_ID',hidden:true">机构id</th>
+					<th data-options="field:'DMLX',hidden:true,width:160,align:'left',halign:'center'">代码类型</th>
+					<th data-options="field:'DM',width:160,align:'left',halign:'center'">部门代码</th>
+					<th data-options="field:'DMNR',width:200,align:'left',halign:'center'">部门名称</th>
+					<th data-options="field:'BZ',width:300,align:'left',halign:'center'">备注</th>
+					<th data-options="field:'ORGAN',width:300,align:'left',halign:'center'">机构</th>
+				</tr>
+			</thead>
+		</table>
+	</div>
+</form>
+<script>
+	//初始化加载
+	$(function() {
+		act_setSelectValue('<#encAction action="act"/>','SEL_UNIT','select_organid_query',null,'ALLORDIDX');
+		var pager = $('#dg').datagrid('getPager');//获取表格分页
+		pager.pagination({
+			buttons : stoolbar
+		});
+		queryData();
+	});
+	
+	//自动缩放
+	$(window).resize(function() {
+		$('#dg').resizeDataGrid($("#fieldset_condition").height()+1, 4, 0, 0);
+	});
+
+	//查询
+	function queryData() {
+		var s_url = "restful?action=<#encAction action="${FLAG =='DEPT.TYPE'?'organ_dept_type_query':'organ_office_type_query'}"/>";
+		$('#dg').datagrid({
+			url : s_url,
+			pageNumber:1,
+			rownumbers:false,
+			queryParams : $('#form1').serializeObject(),
+			onLoadSuccess : function(data) {
+				$(window).resize();
+				//成功验证是否有无出错
+				if (data.g_result == "0") {
+					showMsg(data.g_message);
+				}
+			},
+			onDblClickRow : function(rowIndex, rowData) {
+				//双击
+				updateData('修改','U', rowData.DM, rowData.DMNR, rowData.ORGAN_ID);
+			}
+		});
+		var pager = $('#dg').datagrid('getPager'); //获取表格分页
+		pager.pagination({
+			buttons : stoolbar
+		});
+	}
+
+	//刷新查询
+	function refreshQueryData(jsondata) {
+		if (jsondata.g_result && jsondata.g_result == '1') {
+			if (!jsondata.showMsgFlag) {
+				//没有显示过的，显示
+				showMsg(jsondata.g_message);
+			}
+			queryData();
+		}
+	}
+
+	//底部按钮
+	var stoolbar = ['-'              
+	<#hasButton code="dictionarys.organdepttype_1">
+    ,'-',{
+		text : '新增',
+		iconCls : 'icon-add',
+		handler : function() {
+			updateData('新增',"A","");
+		}
+	}
+	</#hasButton>
+	<#hasButton code="dictionarys.organdepttype_2">
+	,'-', {
+		text : '修改',
+		iconCls : 'icon-edit',
+		handler : function() {
+			var rows = $('#dg').datagrid('getSelections');
+			if (rows.length != 1) {
+				showMsgAndExecFn("请选择一条数据！", "");
+				return;
+			}
+			updateData('修改',"U", rows[0].DM, rows[0].DMNR, rows[0].ORGAN_ID);
+		}
+	}
+	</#hasButton>
+	<#hasButton code="dictionarys.organdepttype_8">
+	,'-', {
+		text : '删除',
+		iconCls : 'icon-remove',
+		handler : function() {
+			var rows = $('#dg').datagrid('getSelections');
+			if (rows.length != 1) {
+				showMsgAndExecFn("请选择一条数据！", "");
+				return;
+			}
+			showConfirm("删除该条数据吗？", "delData");
+		}
+	}
+	</#hasButton>];
+	
+	//处理按钮多余的坚线
+  	stoolbar=dataGridButtonFilter(stoolbar);
+
+	function updateData(title,cmd, dm, dmnr,organ_id) {
+		var flag = $("input[name='DMLX']").val();
+		openWindow(title, "do?action=<#encAction action="${FLAG =='DEPT.TYPE'?'organ_dept_type_modify':'organ_office_type_modify'}"/>&CMD="+cmd+'&DMNR=' + dmnr+'&FLAG='+flag+'&DM='+dm+'&ORGAN_ID='+organ_id, 300, 350, "refreshQueryData");
+	}
+
+	function delData(){
+		var param = {};
+		param.action = "<#encAction action="${FLAG =='DEPT.TYPE'? 'organ_dept_type_delete':'organ_office_type_delete'}"/>";
+	    var rows = $('#dg').datagrid('getSelections');
+	    if(rows.length!=1){
+	      showMsgAndExecFn("请选择一条数据！","");
+	      return;
+	    }
+	    param.DMLX = rows[0].DMLX;
+	    param.DM = rows[0].DM;
+	    param.ORGAN_ID = rows[0].ORGAN_ID;
+	    postAjax("restful",param,"refreshQueryData");    
+	}
+</script>
+<% include("../../../../common/end.html"){} %>

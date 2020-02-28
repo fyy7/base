@@ -1,0 +1,72 @@
+[{
+
+	"ActAction": {
+		"type": "selListSql",
+		"tableConfig": [{
+			"name": "SYS_ORGANIZATION_INFO",
+			"alias": "d",
+			"linkType": ",",
+			"linkStr": ""
+		}],
+		"paramConfig": [{
+			"name": "NAME",
+			"alias": "NAME",
+			"tableAlias": "d"
+		},{
+			"name": "organid",
+			"alias": "ID",
+			"tableAlias": "d"
+		},{
+			"name": "allordidx",
+			"alias": "ALLORDIDX",
+			"tableAlias": "d"
+		},{
+			"name": "nlevel",
+			"alias": "NLEVEL",
+			"tableAlias": "d"
+		},{
+			"name": "organdm",
+			"alias": "ORGANDM",
+			"tableAlias": "d"
+		},{
+			"name": "PARENTID",
+			"alias": "PID",
+			"tableAlias": "d"
+		},{
+			"name": "ACCOUNT_PERFIX",
+			"alias": "ACCOUNT_PERFIX",
+			"tableAlias": "d"
+		}],
+		"keyName": "rows",
+
+		"whereConfig": [{
+			"name": "ISDEL",
+			"tableAlias": "d",
+			"type": "=",
+			"value": "0"
+		},{
+			"name": "PARENTID",
+			"tableAlias": "D",
+			"type": "!=%",
+			"value": "OrganizationTop"
+		},{
+			"from": "RS#!BEG_NLEVEL",
+			"name": "NLEVEL",
+			"tableAlias": "D",
+			"type": ">=",
+			"value": ""
+		},{
+			"from": "RS#!END_NLEVEL",
+			"name": "NLEVEL",
+			"tableAlias": "D",
+			"type": "<",
+			"value": ""
+		}],
+		"orderConfig":[{
+			"name": "allordidx",
+			"tableAlias": "d",
+			"type": ""
+		
+		}]
+	}
+}]

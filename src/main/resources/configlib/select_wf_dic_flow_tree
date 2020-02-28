@@ -1,0 +1,51 @@
+[{
+
+	"ActAction": {
+		"type": "selPaginSql",
+		"tableConfig": [{
+			"name": "WF_DIC_FLOW",
+			"alias": "d",
+			"linkType": ",",
+			"linkStr": ""
+		}],
+		"paramConfig": [{
+			"name": "FLOW_NAME",
+			"alias": "NAME",
+			"tableAlias": "d"
+		},{
+			"name": "FLOW_ID",
+			"alias": "ID",
+			"tableAlias": "d"
+		},{
+			"name": "ORG_ID",
+			"alias": "PID",
+			"tableAlias": "d"
+		}],
+		"keyName": "rows",
+
+		"whereConfig": [{
+			"name": "FLAG",
+			"tableAlias": "d",
+			"type": "!=",
+			"value": "0"
+		},{
+		"from": "RS#!SEL_FLOW_NAME",
+			"name": "FLOW_NAME",
+			"tableAlias": "D",
+			"type": "%%",
+			"value": ""
+		},{
+		"from": "RS#!SEL_FLOW_ID",
+			"name": "FLOW_ID",
+			"tableAlias": "D",
+			"type": "%%",
+			"value": ""
+		}],
+		"orderConfig":[{
+			"name": "UPDATE_AT",
+			"tableAlias": "d",
+			"type": ""
+		
+		}]
+	}
+}]

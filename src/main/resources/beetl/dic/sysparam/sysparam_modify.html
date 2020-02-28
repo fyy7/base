@@ -1,0 +1,47 @@
+<% include("../../common/head.html"){} %>
+<script>
+    $(function() {
+      $("#id_submit").click(function() {
+          saveData();
+          return false;
+      });
+    });
+    
+    function saveData() {
+        submitFormData("form1", "setReturnValue");
+    }
+    function setReturnValue() {
+        //setGlobalParam("g_result","1");
+    }
+</script>
+
+<form id="form1" name="form1" method="post" action="restful">
+	<input name="action" type="hidden" value="<#encAction action="save_sysparam"/>"> <input type="hidden" name="CMD" id='CMD' value='${CMD}' /> <input type="hidden" name="APP_ID_OLD" value='${BEAN.APP_ID!}' /> <input type="hidden" name="UUID" id='CMD' value='${BEAN.UUID!}' />
+
+	<table class='dataintable form_bod'>
+		<tr>
+			<td height="30" align="right" class="infotitle" width='60'>参数号:</td>
+			<td><input name="PARAID" value="${!(BEAN.PARAID)}" type="text" size="30" class="txtitem" maxlength="9" title="参数号" style="width: 90%" required check="yz_number" warning="参数号不能为空，且只能为数字！" ${CMD== 'U'?'readonly':''} /></td>
+		</tr>
+		<tr>
+			<td height="30" align="right" class="infotitle" width='60'>参数名:</td>
+			<td><input name="PARANAME" value="${!(BEAN.PARANAME)}" type="text" size="30" class="txtitem" maxnum="100" title="参数名" style="width: 90%" required warning="参数名不能为空！" /></td>
+		</tr>
+		<tr>
+			<td height="30" align="right" class="infotitle" width='60'>参数值:</td>
+			<td><input name="PARAVALUE" value="${!(BEAN.PARAVALUE)}" type="text" size="30" class="txtitem" maxnum="200" title="参数值" style="width: 90%" required warning="参数值不能为空！" /></td>
+		</tr>
+		<tr style="display: none">
+			<td height="30" align="right" class="infotitle" width='60'>是否有效:</td>
+			<td><input type="radio" name="ISVISIBLE" value="1" checked="checked"> 是 <input type="radio" name="ISVISIBLE" value="0"> 否</td>
+		</tr>
+		<tr>
+			<td height="30" align="right" class="infotitle" width='60'>备注:</td>
+			<td><textarea name="NOTES" cols="50" rows="4" maxnum="255" title="备注" style="width: 88%">${!(BEAN.NOTES)}</textarea></td>
+		</tr>
+		<tr>
+			<td colspan="2" align="center" width="100%"><A class="easyui-linkbutton btn_edit" data-options="iconCls:'icon-save'" href="#" id="id_submit">保存</A></td>
+		</tr>
+	</table>
+</form>
+<% include("../../common/end.html"){} %>

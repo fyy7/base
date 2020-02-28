@@ -1,0 +1,38 @@
+<% include("../../common/head.html"){} %>
+<script>
+	$(function() {
+		$("#id_submit").click(function() {
+			saveData();
+			return false;
+		});
+	});
+	function saveData() {
+		submitFormData("form1", "setReturnValue");
+	}
+	function setReturnValue() {
+		//setGlobalParam("g_result","1");
+	}
+</script>
+
+<form id="form1" name="form1" method="post" action="restful">
+	<input name="action" type="hidden" value="<#encAction action="codecategory_save"/>"/> <input type="hidden" name="OLD_CNO" value="${BEAN.CNO!}" /> <input type="hidden" name="UUID" value="${BEAN.UUID!}" /> <input type="hidden" name="CMD" value="${CMD}">
+	<table >
+		<tr>
+			<td height="30" width="15%" align="right">编号:</td>
+			<td><input name="CNO" value="${BEAN.CNO!}" type="text" style="width: 360px;" class="txtitem" maxnum="10" title="编号" required="true" check="yz_letterAndNumber" warning="编号不能为空,且只能包含字母或数字!" /></td>
+		</tr>
+		<tr>
+			<td height="30" align="right">名称:</td>
+			<td><input name="CNAME" value="${BEAN.CNAME!}" type="text" style="width: 360px;" class="txtitem" maxnum="50" title="名称" required="true" check="yz_containblank" warning="名称不能为空,且不能包含空格!" /></td>
+		</tr>
+
+		<tr>
+			<td height="30" align="right">备注:</td>
+			<td><textarea name="NOTES" cols="56" rows="2" style="width: 350px;" maxnum="250" title="备注">${BEAN.NOTES!}</textarea></td>
+		</tr>
+		<tr>
+			<td colspan="2" align="center"><A class="easyui-linkbutton btn_edit" data-options="iconCls:'icon-save'" href="#" id="id_submit">保存</A></td>
+		</tr>
+	</table>
+</form>
+<% include("../../common/end.html"){} %>

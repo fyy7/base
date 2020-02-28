@@ -1,0 +1,93 @@
+[{
+	"ActPostposition":[{
+	"type":"LISTTURNCODE",
+	"target":"rows",
+	"TURNCODE":[{
+		"field":"IMGAE_ISDEL",
+		"dmlx":"dmb.YESNODM",
+	},
+	{
+		"field":"ISDEL",
+		"dmlx":"dmb.YESNODM",
+	}
+	]
+	}],
+	"ActAction": {
+		"type": "selPaginSql",
+		"tableConfig": [{
+			"name": "SYS_DEPARTMENT_INFO_IMAGE",
+			"alias": "d",
+			"linkType": ",",
+			"linkStr": ""
+		},{
+			"name": "HR_DEPARTMENT_PARENT",
+			"alias": "c",
+			"linkType": "left",
+			"linkStr": "d.PARENTID=c.deptid"
+		},{
+			"name": "SYS_DEPARTMENT_PARENT",
+			"alias": "e",
+			"linkType": "left",
+			"linkStr": "d.PARENTID=e.deptid"
+		},{
+			"name": "SYS_DEPARTMENT_INFO",
+			"alias": "a",
+			"linkType": "left",
+			"linkStr": "a.deptid=d.deptid"
+		}],
+		"paramConfig": [{
+			"name": "DEPTNAME",
+			"alias": "IMGAE_DEPTNAME",
+			"tableAlias": "d"
+		},{
+			"name": "ifnull(c.DEPTNAME,'')||'/'||ifnull(e.DEPTNAME,'')",
+			"alias": "IMGAE_PARENTNAME",
+		
+		},{
+			"name": "ISDEL",
+			"alias": "IMGAE_ISDEL",
+			"tableAlias": "d"
+		},{
+			"name": "DEPTNAME",
+			"alias": "DEPTNAME",
+			"tableAlias": "a"
+		},{
+			"name": "ISDEL",
+			"alias": "ISDEL",
+			"tableAlias": "a"
+		},{
+			"name": "DEPTID",
+			"alias": "KEY",
+			"tableAlias": "d"
+		}],
+		"keyName": "rows",
+		
+		"whereConfig": [
+		
+		{
+			"name": "data_exchange_flag",
+			"tableAlias": "D",
+			"type": "=",
+			"value": "1"
+		},
+		{
+			"from": "RS#!SEL_UNIT",
+			"name": "ORGANID",
+			"tableAlias": "D",
+			"type": "=",
+			"value": ""
+		},{
+			"from": "RS#!SEL_DEPTNAME",
+			"name":"DEPTNAME",
+			"tableAlias": "D",
+			"type": "%%",
+			"value": ""
+		}],
+		"orderConfig":[{
+			"name": "ALLORDIDX",
+			"tableAlias": "d",
+			"type": ""
+		
+		}]
+	}
+}]

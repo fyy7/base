@@ -1,0 +1,358 @@
+<% include("../../common/head.html"){} %>
+<script>
+	var cmd = '${CMD}';
+	var maxnum = 1;
+	var g_i_num=${has(SYS_DEPT_LIST)?SYS_DEPT_LIST.~size:0};
+	
+	$(function() {
+		// 提交按钮初始化
+		$("#id_submit").click(function() {
+			var i_find=0;
+			$.each($("select[id^='id_select_organ_']"),function(){
+				i_find++;
+				if(i_find==2){
+					return false;
+				}
+			});
+			
+			if(i_find!=2){
+				showMsg("请添加任职机构！");
+				return false;
+			}
+			
+			i_find=0;
+			$.each($("input[id^='id_main_dept_flag_y_']"),function(){
+				if($(this).val()=='1'){
+					i_find++;
+					return false;
+				}
+			});
+			if(i_find==0){
+				showMsg("请设置一个任职主要部门！");
+				return false;
+			}
+			
+			i_find=0;
+			//判断有没机构与部门重复的
+			$.each($("select[id^='id_select_organ_']"),function(){
+				var s_id=$(this).attr("id");
+				if(s_id!='id_select_organ_x'){
+					var s_organ_val=$(this).val();
+					var s_dept_val=$("#"+s_id.replace('id_select_organ_','id_select_dept_')).val();
+					
+					$.each($("select[id^='id_select_organ_']"),function(){
+						if(s_id!=$(this).attr("id") && $(this).attr("id")!='id_select_organ_x'){
+							if((s_organ_val==$(this).val()) && (s_dept_val==$("#"+$(this).attr("id").replace('id_select_organ_','id_select_dept_')).val())){
+								i_find=1;
+								return false;
+							}
+						}
+					});
+					if(i_find==1){
+						return false;
+					}
+				}
+				
+			});
+			if(i_find==1){
+				showMsg("任职机构中存在重复的机构、部门！");
+				return false;
+			}
+			
+			saveData();
+			return false;
+		});
+	});
+	
+	function saveData() {
+		var a = setJsondata();
+		if(a){
+			submitFormData("form1", "setReturnValue");
+		}
+	}
+	
+	function setReturnValue() {
+		//setGlobalParam("g_result","1");
+	}
+	
+	function setJsondata(){
+		var jsonArr = new Array();
+		$("#ptable tr[detail]").each(function(index){
+			var jsonObj = {
+				CMD : $(this).attr("cmd"),
+				ORG_OLDID : $(this).find("input[name='OR_ID']").val(),
+				ORDIDX : $(this).find("input[name='ORDIDX']").val(),
+			  DEPT_OLDID : $(this).find("input[name='DE_ID']").val(),
+			  PEOPLE_ID : $(this).find("input[name='PEOPLE_ID']").val(),
+			  ISCHANGE : $(this).find("input[name='PEOPLE_ID']").attr("ischange"),
+				OFFICE_TYPE : $(this).find("input[name='OFFICE_TYPE']").val(),
+				MAIN_DEPT_FLAG : $(this).find("input[name='MAIN_DEPT_FLAG']").val(),
+				ORGAN_ID : $(this).find("select[name='ORGAN_ID']").val(),
+				DEPT_ID : $(this).find("select[name='DEPT_ID']").val()
+			};
+			jsonArr[index]=jsonObj;
+		});
+	//	console.log(JSON.stringify(jsonArr));
+		$("input[name='JSONDATA']").val(JSON.stringify(jsonArr));
+		
+		return true;
+	}
+	
+	$(window).resize(function() {
+		$("#formbody").height($(window).height()-$("#formfoot").height());
+	});
+	
+	//增加机构、部门
+	function addDeptInfo(){
+		if((g_i_num+1)> maxnum){
+			showMsg("最多添加"+maxnum+"项！");
+			return false;
+		}
+		g_i_num++;
+		var s_html=$("#id_table_tr_model").html();
+		s_html=s_html.replace(/_x/g,"_"+g_i_num);
+		s_html=s_html.replace(/'x'/g,g_i_num);
+		$("#id_table_dept_info").append("<tr id='id_tr_dept_"+g_i_num+"' detail cmd='A'>"+s_html+"</tr>");
+		$("#id_tr_dept_"+g_i_num).find("span[name='order_num']").html(g_i_num);
+		requiredSign();//必填红点
+	}
+	
+	//根据机构获取部门列表
+	function getDeptList(num){	
+		v_i_num=num;
+		//同步
+		postSyncAjax("restful?action=<#encAction action="dept_tree_data"/>&ORGANID="+$("#id_select_organ_"+num).val(),"","getDetpListDatas");
+		if($("#id_main_dept_flag_"+num).prop('checked')){
+			selectMainDept(num);
+		}	
+	}
+
+	function getDetpListDatas(jsondata){
+		if(jsondata.g_result=='0'){
+			showMsg(jsondata.g_message);
+			return;
+		}
+		$("#id_select_dept_"+v_i_num+" option").remove(); 		 
+		var s_dept="<option value=''>--</option>";		
+		var arr_json=jQuery.parseJSON(jsondata.TREE_DATAS);		
+		for(var i=0;i<arr_json.length;i++){
+			if(arr_json[i].DEPTID!=$("#id_select_organ_"+v_i_num).val()){
+				var s_order=arr_json[i].ALLORDIDX;
+				var len=(s_order.length - (s_order.replace(/\./g,'')).length -1);
+				var s_name="";
+				while(len>0){
+					s_name+="　";
+					len=len-1;
+				}
+				s_name+='|-';				
+				s_dept+="<option value='"+arr_json[i].DEPTID+"'>"+s_name+arr_json[i].name+"</option>";
+				$("#id_account_perfix_"+v_i_num).val(arr_json[i].ACCOUNT_PERFIX);
+			}
+		}
+		$("#id_select_dept_"+v_i_num).append(s_dept);
+		if($("#id_main_dept_flag_"+v_i_num).prop('checked')){
+			$("#id_opaccount1").val($("#id_account_perfix_"+v_i_num).val());	
+		}
+	}
+	
+	//选择主要部门
+	function selectMainDept(num){
+		if($("#id_main_dept_flag_"+num).prop('checked')){
+			$("#id_opaccount1").val($("#id_account_perfix_"+num).val());			
+			$("#id_main_dept_flag_y_"+num).val("1");
+			$.each($("input[id^='id_main_dept_flag_']"),function(){
+				if($(this).attr("id")!=("id_main_dept_flag_y_"+num+"") && $(this).attr("id")!=("id_main_dept_flag_"+num)){
+					$(this).prop("checked",false);
+					$(this).val("0");
+				}
+			});
+		}else{
+			$("#id_opaccount1").val("");
+			$("#id_main_dept_flag_"+num).val("0");
+			$("#id_main_dept_flag_y_"+num).val("0");
+		}
+	}
+	function selectOfficeType(num){
+		//打开职务选择的窗口
+		var organ_id = $("#id_select_organ_"+num).val();
+		openWindow("请选择职务", 'do?action=<#encAction action="select_office_type"/>&NUM=' +num+'&ORGAN_ID='+organ_id, 310, 500, "");
+	}
+	
+	// 删除
+	function deleteDetail(obj){
+		var tr = $(obj).closest("tr");
+		if(tr.attr("cmd")=="U"){
+			tr.attr("cmd","D");
+			tr.find("input[name='PEOPLE_ID']").attr('ischange','1');
+			tr.find("select").each(function(){
+				$(this).attr("disabled", "disabled");	
+			});	
+			tr.find("input").each(function(){
+				var na = $(this).attr("name");
+				var ty = $(this).attr("type");
+				if(ty!='hidden'){
+					if(na!='TRANSFER_NAME'){
+						if(na=="CHECK"){
+							if($(this).prop('checked')){
+								$(this).prop("checked",false);
+							}
+						}				
+						$(this).attr("disabled", "disabled");	
+					}
+				}
+			});	
+		
+			tr.find("a").each(function(){
+				if($(this).attr("name")=="CHOSE"){
+					if($(this).attr("flag")=='1'){
+						$(this).hide();
+						$(this).after("已删除")
+					}
+					$(this).attr("onclick", "");
+				}
+			});
+
+			tr.find("div[name='TRANSFER']").show();
+		}else{
+			$(obj).parent().parent().remove();
+			g_i_num--;
+		}
+	}
+	var targer_num;
+	function selectPeople(num){
+		//打开选择的窗口
+		targer_num=num;
+
+    openWindow("选择移交人","do?action=<#encAction action="user_select"/>&ORG_MODIFY=0&ID_DEPTID="+$("#DE_ID_"+num).val()+"&ORGANID="+$("#OR_ID_"+num).val(), "520", "900", "returnSelectUsersValue");
+
+	}
+	  function returnSelectUsersValue(json_obj) {
+		   if (json_obj.clear==1) {
+			   $("#id_select_people_"+targer_num).val("");
+	           $("#id_people_id_"+targer_num).val("");
+		   } else if (json_obj.userIdsValue) {
+	           $("#id_select_people_"+targer_num).val(json_obj.userNamesValue);
+	           $("#id_people_id_"+targer_num).val(json_obj.userIdsValue);
+	       }
+	   }
+	/*--判断部门已经机构是否改变--*/
+	function isChange(obj){
+		var pdeptid = $(obj).val();
+		var org_oldid = $(obj).closest("tr").find("input[name='OR_ID']").val();
+		var dept_oldid = $(obj).closest("tr").find("input[name='DE_ID']").val();
+		if(pdeptid != dept_oldid){
+			$(obj).closest("tr").find("div[name='TRANSFER']").show();
+			$(obj).closest("tr").find("input[name='PEOPLE_ID']").attr('ischange','1');
+		}else{
+			$(obj).closest("tr").find("div[name='TRANSFER']").css("display", "none");
+			$(obj).closest("tr").find("input[name='PEOPLE_ID']").attr('ischange','0');
+		}
+	}
+</script>
+
+<form id="form1" name="form1" method="post" action="restful">
+	<input type="hidden" name="action" value="<#encAction action="user_save"/>"> <input type="hidden" name="OPNO" id="OPNO" value="${BEAN.OPNO!}" /> <input type="hidden" name="JSONDATA" /> <input type="hidden" name="OPTYPE" class="txtitem" style="width: 91%" value="2">
+	<div id="formbody" style="overflow-y: auto;">
+		<table id="ptable" style="width: 95%; ">
+			<!--form_bod-->
+			<tr>
+				<td align="right"><strong>用户信息：</strong></td>
+				<td colspan="5" align="left"></td>
+			</tr>
+			<tr>
+				<td width="10%" align="right" class="infotitle">姓名:</td>
+				<td width="24%"><input name="OPNAME" value="${BEAN.OPNAME!}" type="text" class="txtitem" style="width: 90%;" maxnum="100" title="姓名" required="true" check="yz_containblank" warning="姓名不能为空，可以包含空格！" /></td>
+				<td align="right" class="infotitle" width="13%">账号:</td>
+				<td width="20%"><input name="OPACCOUNT1" value="${BEAN.OPACCOUNT1!}" id='id_opaccount1' type="text" size=5 readonly="readonly" value="" style="text-align: right; width: 31%;" />&nbsp; <input name="OPACCOUNT2" value="${BEAN.OPACCOUNT2!}" type="text" style="width: 55%;" maxnum="50" required="true" check="yz_notblank" warning="登陆帐号不能为空，且不能包含空格！" /></td>
+				<td width="15%" align="right" class="infotitle">是否启用:</td>
+				<td width="18%"><select name="ENABLED" select-value="${BEAN.ENABLED!1}" class="txtitem" required="true" warning="参数号不能为空，且只能为数字！">
+						<option value="1">启用</option>
+						<option value="0">停用</option>
+				</select></td>
+			</tr>
+			<tr>
+				<td align="right">手机号:</td>
+				<td><input name="MOBILE" value="${BEAN.MOBILE!}" type='text' check="yz_mobilephone" required="true" warning="手机号码不能为空，且必须是11位正确格式！" style="width: 90%;" maxnum="11" title="手机号" /></td>
+				<td align="right">身份证号码:</td>
+				<td><input name="PKI" value="${BEAN.PKI!}" type='text' maxnum="30" required="true" check="yz_cnidcard2" warning="身份证号码不能为空，且格式必须正确！" style="width: 90%;" currentname="身份证号码" /></td>
+				<td align="right">备注:</td>
+				<td><input name="REMARK" value="${BEAN.REMARK!}" type='text' style="width: 95%;" maxnum="250" title="备注" /></td>
+			</tr>
+			<tr>
+				<td align="right" rowspan="2"><strong>任职机构信息：</strong></td>
+				<td colspan="5" align="left"><a class="easyui-linkbutton btn_edit" data-options="iconCls:'icon-add'" style="margin-left: 0" href="#" id="id_add_dept" onclick='addDeptInfo();return false;'>新增机构、所属部门</a></td>
+			</tr>
+			<tr>
+				<td colspan="6">
+					<table id="id_table_dept_info" width="100%" class="form_data" style="float: left">
+						<tr height="35px" style="font-weight: bold;">
+							<td align="center" width="5%">序号</td>
+							<td align="center" width="21%">机构名称</td>
+							<td align="center" width="21%">所属部门</td>
+							<td align="center" width="15%">职务</td>
+							<td align="center" width="10%">任职主要部门</td>
+							<td align="center" width="8%">部门排序</td>
+							<td align="center" width="11%" style="display: none;">权限移交人</td>
+							<td align="center" width="5%">操作</td>
+						</tr>
+						<span style="display: none;" id='id_span_OFFICE_TYPE_NAMES'>${OFFICE_TYPE_NAMES!}</span>
+						<span style="display: none;" id='id_span_OFFICE_TYPE_IDS'>${OFFICE_TYPE_IDS!}</span> <% if(has(SYS_DEPT_LIST)){ for(var i=0;i
+						<SYS_DEPT_LIST.~size;i++){
+		        %>
+						<tr id='id_tr_dept_${i}' detail cmd="U">
+							<td align="center"><span>${i+1}</span></td>
+							<td><select id='id_select_organ_${i}' name='ORGAN_ID' style="width: 200px;" onchange="getDeptList(${i})" required="true" warning="机构不能为空！">
+									<option value=''>--</option> <% for(SUPER in SUPER_LIST){ %>
+									<option value="${SUPER.ORGANID}">${SUPER.NAME}--${SUPER.ORGANDM}</option> <% } %>
+							</select></td>
+							<td><select id='id_select_dept_${i}' name='DEPT_ID' style="width: 200px;" onchange="isChange(this)" required="true" warning="部门不能为空！"><option value=''>--</option></select></td>
+							<td><input type="text" id="id_select_office_${i}" name="OFFICE_NAME" readonly="readonly" style="width: 65%" onclick="selectOfficeType(${i});return false;" value="${SYS_DEPT_LIST[i].OFFICE_TYPE_NAMES!}" title="${SYS_DEPT_LIST[i].OFFICE_TYPE_NAMES!}" /> <input type="hidden" id="id_office_type_${i}" name="OFFICE_TYPE" value="${SYS_DEPT_LIST[i].OFFICE_TYPE_IDS!}" /> <a class="easyui-linkbutton" href="#" name="CHOSE" flag="0" ${SYS_DEPT_LIST[i].SHOW==1? "disabled":""} onclick="selectOfficeType(${i});return false;">选择</a></td>
+							<td align="center"><input id="id_account_perfix_${i}" type="hidden" /> <input id="id_main_dept_flag_y_${i}" type="hidden" name="MAIN_DEPT_FLAG" value="0" /> <input id="id_main_dept_flag_${i}" type="checkbox" onclick="selectMainDept(${i})" value="0" /> <label for="id_main_dept_flag_${i}">主要部门</label></td>
+							<td align="center"><input name='ORDIDX' type='text' size="5" value='${SYS_DEPT_LIST[i].ORDIDX!}' required="true" warning="部门排序不能为空！" /></td>
+							<td style="display: none;"><input id="OR_ID_${i}" type="hidden" name="OR_ID" value="${SYS_DEPT_LIST[i].ORGAN_ID!}" /> <input id="DE_ID_${i}" type="hidden" name="DE_ID" value="${SYS_DEPT_LIST[i].DEPT_ID!}" />
+								<div style="display: none" name='TRANSFER'>
+									<input type='text' id='id_select_people_${i}' name='TRANSFER_NAME' readonly="readonly" style="width: 65%" onclick='selectPeople(${i});return false;' title='' /> <input type="hidden" id='id_people_id_${i}' name='PEOPLE_ID' ischange='0' /> <a class="easyui-linkbutton" href="#" onclick='selectPeople(${i});return false;'>选择</a>
+								</div></td>
+							<td align="center"><a class="easyui-linkbutton btn_close" href="#" id="id_del_dept" name='CHOSE' flag='1' ${SYS_DEPT_LIST[i].SHOW==1? "disabled":""} onclick="deleteDetail(this);" style="height: 35px; width: 60px; margin: 0">删除</a></td>
+							<script type="text/javascript">
+                 /*  $("#id_select_organ_${i}").html($("#id_select_organ_x").html()); */
+                  $("#id_select_organ_${i}").val('${SYS_DEPT_LIST[i].ORGAN_ID!}');
+                  $("#id_main_dept_flag_y_${i}").val('${SYS_DEPT_LIST[i].MAIN_DEPT_FLAG!}'); 
+                  
+                  if('${SYS_DEPT_LIST[i].MAIN_DEPT_FLAG!}'=='1'){
+                    $("#id_main_dept_flag_${i}").prop("checked",true);
+                  }
+                  getDeptList(${i});
+                  $("#id_select_dept_${i}").val('${SYS_DEPT_LIST[i].DEPT_ID!}');
+                </script>
+						</tr>
+						<% } } %> 
+					</table>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div id="formfoot" style="width: 100%; height: 55px; text-align: center; border-top: 1px solid #ccc">
+		<A class="easyui-linkbutton btn_edit" data-options="iconCls:'icon-save'" href="#" id="id_submit">保存</A> <A class="easyui-linkbutton btn_close" data-options="iconCls:'icon-cancel'" href="#" onclick="closeWindow();">关闭</A>
+	</div>
+</form>
+<table style="display: none;">
+	<tr id='id_table_tr_model'>
+		<td align="center"><span name="order_num"></span></td>
+		<td><select id='id_select_organ_x' name='ORGAN_ID' style="width: 200px;" onchange="getDeptList('x')">
+				<option value=''>--</option> <% for(SUPER in SUPER_LIST){ %>
+				<option value="${SUPER.ORGANID}">${SUPER.NAME}--${SUPER.ORGANDM}</option> <% } %>
+		</select></td>
+		<td><select id='id_select_dept_x' name='DEPT_ID' style="width: 200px;" onchange="isChange(this)" required="true" warning="部门不能为空！"><option value=''>--</option></select></td>
+		<td><input id='id_select_office_x' type='text' style="width: 65%" name='OFFICE_NAME' onclick="selectOfficeType('x');return false;" /> <input type="hidden" name='OFFICE_TYPE' id='id_office_type_x' value='' readonly="readonly" /> <a class="easyui-linkbutton" href="#" onclick="selectOfficeType('x');return false;">选择</a></td>
+		<td align="center"><input id='id_account_perfix_x' type='hidden' value='' /> <input id='id_main_dept_flag_y_x' name='MAIN_DEPT_FLAG' type='hidden' value='0' /> <input id='id_main_dept_flag_x' type='checkbox' onclick="selectMainDept('x')" /> <label for="id_main_dept_flag_x">主要部门</label></td>
+		<td align="center"><input name='ORDIDX' type='text' size="5" value='' required="true" warning="部门排序不能为空！" /></td>
+		<td style="display: none">
+			<div style="display: none">
+				<input id='id_select_people_x' readonly="readonly" type='text' style="width: 65%" onclick='selectPeople(' x');return false;' title='' name='TRANSFER_NAME' /> <input type="hidden" name='PEOPLE_ID' ischaneg='0' id='id_people_id_x' /> <a class="easyui-linkbutton" href="#" onclick='selectPeople(' x');returnfalse;'>选择</a>
+			</div>
+		</td>
+		<td align="center"><a class="easyui-linkbutton btn_close" href="#" id="id_del_dept" onclick="deleteDetail(this);" style="height: 35px; width: 60px; margin: 0">删除</a></td>
+	</tr>
+</table>
+<% include("../../common/end.html"){} %>

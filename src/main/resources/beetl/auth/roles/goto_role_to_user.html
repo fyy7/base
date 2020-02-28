@@ -1,0 +1,297 @@
+<% include("../../common/head.html"){} %>
+<SCRIPT type="text/javascript">
+	var setting = {
+		view: {
+			selectedMulti: false
+		},
+		data: {
+			key: {
+				title:"DMNR",
+				name:"DMNR"
+			},
+			simpleData: {
+				enable: true,
+				idKey: "DM",
+				pIdKey: "PARENTID"
+	
+			}
+		},
+		callback: {
+			onClick:onClickTree
+		}
+	};
+	var zNodes =null;	
+
+	function onClickTree(event, treeId, treeNode, clickFlag){
+		if(treeNode.PARENTID=='ResourceTop'){
+			$("#id_dept_name").html("");
+			$("#id_dept_id").val("");
+			queryData();
+			return true;
+		}
+		setDeptData(treeNode.DM,treeNode.DMNR);
+	}
+	
+	function setDeptData(deptId,deptName){
+		$("#id_dept_name").html("当前部门：[<font color=red>" + deptName + "</font>]&nbsp;");
+		$("#id_dept_id").val(deptId);
+		queryData();
+	}
+
+
+	function getChgTreeData(){
+		showWaitMsg();
+		var organid=$("#ORGANID").val();
+		if(organid==''){
+			hideWaitMsg();
+			return;
+		}
+		$("#id_dept_name").html("");
+		$("#id_dept_id").val("");
+		queryData();
+		
+		postAjax("restful?action=<#encAction action="act"/>&flagId=select_dept_query&ORGANID="+organid,"","getTreeDataValue");
+		hideWaitMsg();
+	}
+	
+	function getTreeData(){
+		showWaitMsg();
+		var organid="${ORGANID!}";
+		if(organid!=""){
+			$("#ORGANID").val(organid);
+		}
+		var uuid=$("#ORGANID").val();
+		if(uuid==''){
+			hideWaitMsg();
+			return;
+		}
+		postAjax("restful?action=<#encAction action="act"/>&flagId=select_dept_query&ORGANID="+uuid,"","getTreeDataValue");
+		hideWaitMsg();
+	}
+	
+	function getTreeDataValue(jsondata){
+		if(jsondata.g_result=='0'){
+			showMsg(jsondata.g_message);
+			return;
+		}
+
+		zNodes =jsondata.rows;
+		initTreeData();
+	}
+	
+	function initTreeData(){
+		$.fn.zTree.init($("#treeData"), setting, zNodes);
+		var zTree = $.fn.zTree.getZTreeObj("treeData");
+		zTree.expandAll(true);
+	}
+	
+	function saveData(){
+		submitFormData2("form1","setReturnValue");
+	}
+	function setReturnValue(){
+	}
+	
+	
+    //保存
+	function saveData(){
+		submitFormData2("form1","setReturnValue");
+	}
+	
+</SCRIPT>
+<form name="form1" id="form1">
+	<table width="100%" id='id_table'>
+		<tr>
+			<td width="220" valign="top">
+				<div class="easyui-panel">
+					<div id='id_div_head' style="border-bottom: solid 1px; height: 40px;">
+						[机构]：<select name='ORGANID' id='ORGANID' style="width: 166px;" onchange="getChgTreeData();" sucFunc="getTreeData"></select>
+					</div>
+					<div id="id_div_tree" style="overflow-y: auto; height: 100%">
+						<ul id="treeData" class="ztree"></ul>
+					</div>
+				</div>
+			</td>
+			<td valign="top">
+				<div id='id_div_resoure' class="easyui-panel"height: 100%">
+					<div id="fieldset_condition" style="margin: 0px;">
+						<fieldset>
+							<legend id="fieldset_legend" onclick="fieldsetToggle('fieldset_legend','${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/');" style="cursor: pointer;" title="点击：显示/隐藏">
+								<img src='${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/images/DHTMLSuite_minus.gif' />查询条件
+							</legend>
+							<table id="fieldset_data">
+								<tr>
+									<td>当前角色名称：<font color="red">[<a herf='#' onclick='openRoleInfo();return false;' style="cursor: pointer;">${ROLE_BEAN.ROLENAME}</a>]
+									</font> <span id='id_dept_name'></span> <br /> <br /> <input name="ROLEID" type="hidden" size="20" value='${ROLE_BEAN.ROLEID}' /> <input name="DEPT_ID" id="id_dept_id" type="hidden" size="20" value="" /> <input name="DATA_FLAG" id="id_data_flag" type="hidden" size="20" value="1" /> <span id='id_type_title'>用户姓名</span>：<input name="SEL_NAME" type="text" size="10" class="txtitem" /> &nbsp;[<input type="radio" name='ROLE_TYPE' checked="checked" id='id_role_type_0' value='0' onclick="queryData()"><label for="id_role_type_0">未授权</label> <input type="radio" name='ROLE_TYPE' id='id_role_type_1' value='1' onclick="queryData()"><label for="id_role_type_1">已授权</label>] ${(session[session_name].opType==0 || session[session_name].opType==1)?'&nbsp;<span id="id_span_p_type"><input id="id_p_type" name="P_TYPE" type="checkbox" value="1" onclick="queryData()"><label for="id_p_type">机构管理员</label></span>':''} <a href="#" class="easyui-linkbutton btn_query"
+										data-options="iconCls:'icon-search'" onclick='queryData()'>查询</a>
+									</td>
+								</tr>
+							</table>
+						</fieldset>
+					</div>
+					<div>
+						<div class="easyui-tabs" id="id_tabs">
+							<div title="人员列表" style="padding: 1px">
+								<table id="dg0" class="easyui-datagrid" title="" data-options="singleSelect:false">
+									<thead>
+										<tr>
+											<th data-options="field:'ck',checkbox:true"></th>
+											<th data-options="field:'OPACCOUNT',width:100,align:'left',halign:'center',sortable:true">用户账号</th>
+											<th data-options="field:'OPNAME',width:100,align:'left',halign:'center',sortable:true">用户姓名</th>
+											<th data-options="field:'ORGANNAME',width:200,align:'left',halign:'center',sortable:true">机构名称</th>
+											<th data-options="field:'DEPTNAME',width:100,align:'left',halign:'center',sortable:true">部门名称</th>
+											<th data-options="field:'ROLE_TYPE',width:60,align:'left',halign:'center',sortable:true">是否授权</th>
+										</tr>
+									</thead>
+								</table>
+							</div>
+							<div title="部门列表" style="padding: 1px">
+								<table id="dg1" class="easyui-datagrid" title="" data-options="singleSelect:false">
+									<thead>
+										<tr>
+											<th data-options="field:'ck',checkbox:true"></th>
+											<th data-options="field:'ORGANNAME',width:200,align:'left',halign:'center',sortable:true">机构名称</th>
+											<th data-options="field:'DEPTNAME',width:200,align:'left',halign:'center',sortable:true">部门名称</th>
+											<th data-options="field:'ROLE_TYPE',width:60,align:'left',halign:'center',sortable:true">是否授权</th>
+										</tr>
+									</thead>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</td>
+		</tr>
+	</table>
+</form>
+<form id="form2" name="form2" method="post" action="restful">
+	<input type="hidden" name="action" value="<#encAction action="sys_role_operate_role_save"/>" /> <INPUT type="hidden" name="ROLEID" value='${ROLE_BEAN.ROLEID}' /> <input name="FLAG" id="id_flag" type="hidden" /> <input name="ROWS" id="id_rows" type="hidden" /> <input name="TYPE" id="id_type" type="hidden" />
+</form>
+
+<script type="text/javascript">
+	function openRoleInfo(){
+		openWindow("角色信息",'do?action=<#encAction action="goto_sys_role_edit"/>&ROLEID=${ROLE_BEAN.ROLEID}',1024,900,"");
+	}
+	var start_tab=999;
+	//初始化加载
+	$(function() {
+		
+		act_setSelectValue('<#encAction action="act"/>','ORGANID','select_organid_query',null,'ALLORDIDX');
+		
+		
+		$('#id_tabs').tabs({
+			onSelect: function(title,index){
+				if(start_tab!=999 && start_tab!=index){					
+					queryData();
+				}
+				start_tab=index;
+				if(index==0){
+					$("#id_type_title").html("用户姓名");
+					$("#id_span_p_type").show();
+				}else{
+					$("#id_type_title").html("部门名称");
+					$("#id_span_p_type").hide();
+				}
+			}
+		});
+		
+	});
+	//查询
+	function queryData() {		
+		var index=getTabsIndexNumber('id_tabs');
+		$("#id_data_flag").val(index+1);
+		
+		var s_url = "restful?action=<#encAction action="sys_role_get_role_list"/>";		
+		$('#dg'+index).datagrid({
+			url : s_url,
+			pageNumber:1,
+			queryParams : $('#form1').serializeObject(),
+			onLoadSuccess:function(data){
+				//成功验证是否有无出错
+				if(data.g_result=="0"){
+					showMsg(data.g_message);
+				}
+			},
+			onDblClickRow : function(rowIndex, rowData) {
+			}
+		});
+		var role_type=($("#id_role_type_0").prop('checked')?"0":"1");
+		var pager = $('#dg'+index).datagrid('getPager');//获取表格分页
+		pager.pagination({
+			buttons : eval("stoolbar"+index+"_"+role_type)
+		});
+	}
+	
+	//角色操作
+	function operateDataRole(flag,type){
+		//flag =0 用户列表，1为部门列表
+		//type=1 增加，0为取消
+		var index=getTabsIndexNumber('id_tabs');
+		var rows = $('#dg'+index).datagrid('getSelections');
+		if (rows.length == 0) {
+			showMsgAndExecFn("请选择数据！", "");
+			return;
+		}
+		$("#id_flag").val(flag);
+		$("#id_type").val(type);
+		var jsonData=[];
+		for(var i=0;i<rows.length;i++){
+			jsonData[i]={};
+			if(rows[i].OPNO){
+				jsonData[i].OPNO=rows[i].OPNO;
+			}
+			if(rows[i].DEPT_ID){
+				jsonData[i].DEPT_ID=rows[i].DEPT_ID;
+			}
+			if(rows[i].DEPTID){
+				jsonData[i].DEPT_ID=rows[i].DEPTID;
+			}
+		}
+		$("#id_rows").val(JSON.stringify(jsonData).replace(/"/g,'@'));
+		submitFormData2("form2","queryData");
+	}
+	
+	//底部按钮
+	var stoolbar0_0 = [<#hasButton code="resource.role_5"> {
+		text : '授权',
+		iconCls : 'icon-add',
+		handler : function() {
+			operateDataRole(0,1);			
+		}
+	}</#hasButton>];
+	var stoolbar0_1 = [ <#hasButton code="resource.role_5">{
+		text : '取消授权',
+		iconCls : 'icon-remove',
+		handler : function() {
+			operateDataRole(0,0);
+		}
+	}</#hasButton>];
+	
+	var stoolbar1_0 = [<#hasButton code="resource.role_5"> {
+		text : '授权',
+		iconCls : 'icon-add',
+		handler : function() {
+			operateDataRole(1,1);
+		}
+	}</#hasButton>];
+	var stoolbar1_1 = [ <#hasButton code="resource.role_5">{
+		text : '取消授权',
+		iconCls : 'icon-remove',
+		handler : function() {
+			operateDataRole(1,0);
+		}
+	}</#hasButton>];
+
+	//自动缩放
+	$(window).resize(function() {
+		$('#id_div_tree').height($(window).height() - $('#id_div_head').height());
+		$('#id_div_resoure').height($(window).height());
+		
+		$.each($.find('.easyui-datagrid'),function(){
+			$(this).resizeDataGrid($("#fieldset_condition").height()+67, 260, 0, 0);
+		});
+	});
+
+	
+
+</script>
+<% include("../../common/end.html"){} %>

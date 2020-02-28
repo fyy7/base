@@ -1,0 +1,211 @@
+<SCRIPT type="text/javascript">
+	var setting = {
+		view: {
+			selectedMulti: false
+		},
+		data: {
+			key: {
+				title:"TITLE"
+			},
+			simpleData: {
+				enable: true
+			}
+		},
+		callback: {
+			onClick:onClickTree
+		}
+	};
+	var zNodes =null;	
+
+	function onClickTree(event, treeId, treeNode, clickFlag){
+		if(treeNode.PARENTID=='ResourceTop'){
+			return true;
+		}
+		showResourceData(treeNode.DEPTID,treeNode.PARENTID);
+	}
+	
+	function showResourceData(rid,pid){
+		var organid=$("#ORGANID").val();
+		if(organid==""){
+			showMsg("所属机构为空，不能操作！");
+		}
+		postAjaxAndGetHtml("HttpChannel?action=html__user_order_edit","&noHtmlHeadFlag=1&DEPTID="+rid+"&PID="+pid+"&ORGANID="+organid,"getResourceHtml");
+	}
+
+	function getResourceHtml(data){
+		$("#id_div_resoure").html(data);
+		$.parser.parse($("#id_div_resoure"));//渲染  
+		if($("#DEPTID").val()!=''){
+			$("#id_a_del").show();
+		}
+		
+		var val = $("input[name='OPNO']").val();
+    	if(val == null){
+    		$("#btn_bottom").hide();
+    	}else{
+    		$("#btn_bottom").show();
+    	}
+    	$(window).resize();
+	}
+	
+
+	function expandNode(e) {
+		var zTree = $.fn.zTree.getZTreeObj("treeData");
+		var type = e.data.type;
+		var nodes = zTree.getSelectedNodes();
+		if (type.indexOf("All")<0 && nodes.length == 0) {
+			alert("请先选择一个父节点");
+		}
+
+		if (type == "expandAll") {
+			zTree.expandAll(true);
+		} else if (type == "collapseAll") {
+			zTree.expandAll(false);
+		}
+	}
+	//新增、修改
+	function addResource(){
+		var zTree = $.fn.zTree.getZTreeObj("treeData");
+		var nodes = zTree.getSelectedNodes();
+		if (nodes.length == 0) {
+			showResourceData("","");
+		}else{
+			showResourceData("",nodes[0].id);
+		}
+	}
+	
+	function getChgTreeData(){
+		showWaitMsg();
+		var organid=$("#ORGANID").val();
+		if(organid==''){
+			hideWaitMsg();
+			return;
+		}
+		g_rid="";
+		$("#id_div_resoure").html("");
+		postAjax("HttpChannel?action=ajax__dept_get_tree_data&ORGAN_TYPE=99&ORGANID="+organid,"","getTreeDataValue");
+		hideWaitMsg();
+	}
+	
+	function getTreeData(){
+		showWaitMsg();
+		var organid="#{ORGANID}";
+		if(organid!=""){
+			$("#ORGANID").val(organid);
+		}
+		var uuid=$("#ORGANID").val();
+		if(uuid==''){
+			hideWaitMsg();
+			return;
+		}
+		postAjax("HttpChannel?action=ajax__dept_get_tree_data&ORGAN_TYPE=99&ORGANID="+uuid,"","getTreeDataValue");
+		hideWaitMsg();
+	}
+	
+	function getTreeDataValue(jsondata){
+		if(jsondata.g_result=='0'){
+			showMsg(jsondata.g_message);
+			return;
+		}
+		zNodes =jQuery.parseJSON(jsondata.TREE_DATAS);	
+		initTreeData();
+	}
+	var g_rid="#{DEPTID}";
+	
+	function initTreeData(){
+		$.fn.zTree.init($("#treeData"), setting, zNodes);
+		var zTree = $.fn.zTree.getZTreeObj("treeData");
+		$("#expandAllBtn").bind("click", {type:"expandAll"}, expandNode);
+		$("#collapseAllBtn").bind("click", {type:"collapseAll"}, expandNode);
+		if(g_rid!=""){
+			//查找节点
+			var node = zTree.getNodeByParam("id","#{DEPTID}",null);
+			//展开节点
+			zTree.expandNode(node.getParentNode(), true, null, true, true);
+			//选中节点
+			zTree.selectNode(node);
+			//打开信息
+			showResourceData(node.DEPTID,node.PARENTID);
+		}else{
+			zTree.expandAll(true);
+		}
+	}
+	
+ 	function setReturnValue(){
+ 		var oid=$("#DEPTID").val();
+		if(!oid){
+			oid="";
+		}
+		window.location.href="HttpChannel?action=html__user_dept_main&type=U&DEPTID="+oid+"&ORGANID="+$("#ORGANID").val();
+	}
+    //保存
+	function saveData(){
+    	var val = $("input[name='OPNO']").val();
+    	if(val == null){
+    		showMsg("无数据不能保存");	
+    	}else{
+    		submitFormData2("form1","setReturnValue");
+    	}
+	} 
+	
+	function getReturnData(jsondata){
+		showMsg(jsondata.g_message);
+		setGlobalParam("DEPTID","");
+		setReturnValue();
+	}
+	function getReturnData1(jsondata){
+		setGlobalParam("DEPTID",jsondata.DEPTID);
+		showMsg(jsondata.g_message);
+		setReturnValue();
+	}	
+	
+</SCRIPT>
+
+<table width="100%" id='id_table'>
+	<tr>
+		<td width="330" valign="top">
+			<div class="easyui-panel">
+				<div id='id_div_head'>
+					<table style="border-bottom: solid 1px;">
+						<tr>
+							<td>[当前机构]：</td>
+							<td><select name='ORGANID' id='ORGANID' style="width: 230px;" onchange="getChgTreeData();"></select></td>
+						</tr>
+					</table>
+				</div>
+				<div id="id_div_tree" style="overflow-y: auto; height: 100%">
+					<ul id="treeData" class="ztree"></ul>
+				</div>
+			</div>
+		</td>
+		<td valign="top">
+			<div id='id_div_resoure' class="easyui-panel" style="overflow-y: auto; height: 100%"></div>
+		</td>
+	</tr>
+</table>
+<style>
+#id_div_head .btn_edit {
+	margin: 0px;
+	width: 48px;
+	height: 22px;
+	padding: 0px
+}
+</style>
+<script type="text/javascript">
+	//自动缩放
+	$(window).resize(function() {
+		$('#id_div_tree').height($(window).height() - $('#id_div_head').height());
+		$('#id_div_resoure').height($(window).height());
+		$('#id_div_resoure').width($(window).width() -340 );
+		
+		$("#div_data_list").height($(window).height() - $("#btn_bottom").height() -10);
+		$("#div_data_list").width($(window).width() - 350);
+		$("#btn_bottom").width($("#div_data_list").width());
+	});
+	$(window).load(function(){
+		getTreeData();
+	});
+</script>
+<!--Form Setting Start-->
+<var name="ORGANID" codesrcsql="select ORGANID,#{fjkind.common.utils.ConvertSql.getstrjoinSQL(fjkind.common.utils.ConvertSql.getBlankString('ALLORDIDX','.')," NAME")} from SYS_ORGANIZATION_INFO where ISDEL=0 AND ORGANDM!='OrganizationTop' and ALLORDIDX like (select #{fjkind.common.utils.ConvertSql.getstrjoinSQL("ALLORDIDX","'%'")} from SYS_ORGANIZATION_INFO where ORGANID='#{SESSION_USER_BEAN.sysUserPO.unit}' ) order by ALLORDIDX" codevisible="false" />
+<!--Form Setting End-->

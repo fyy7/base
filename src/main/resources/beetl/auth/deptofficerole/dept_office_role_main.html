@@ -1,0 +1,140 @@
+<% include("../../common/head.html"){} %>
+<form name="form1" id="form1">
+	<div id="fieldset_condition" style="margin: 0px;">
+		<fieldset>
+			<legend id="fieldset_legend" onclick="fieldsetToggle('fieldset_legend','${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/');" style="cursor: pointer;" title="点击：显示/隐藏">
+				<img src='${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/images/DHTMLSuite_minus.gif' />查询条件
+			</legend>
+			<table style="width: 100%;" id="fieldset_data">
+				<tr>
+					<td>机构名称：<select name='ORGAN_ID' style="width: 200px;">
+							<option value=''>--</option> <% for(SUPER in SUPER_LIST){ %>
+							<option value="${SUPER.ORGANID}" ${ORGAN_ID==SUPER.ORGANID?'selected':''}>${SUPER.NAME}</option> <% } %>
+					</select> 权限名称：<input type='text' name='SEL_ROLENAME' size='20' class="txtitem" /> <a href="#" class="easyui-linkbutton btn_query" data-options="iconCls:'icon-search'" onclick='queryData()'>查询</a>
+					</td>
+				</tr>
+			</table>
+		</fieldset>
+	</div>
+	<div>
+		<table id="dg" class="easyui-datagrid" title="" data-options="">
+			<thead>
+				<tr>
+					<th data-options="field:'ROLEID',hidden:true">主键</th>
+					<td data-options="field:'ORGAN_ID',hidden:true">机构id
+					</th>
+					<th data-options="field:'ORGAN_NAME',width:160,align:'left',fixed:true,halign:'center'">机构名称</th>
+					<th data-options="field:'ROLENAME',width:160,align:'left',fixed:true,halign:'center'">权限名称</th>
+					<th data-options="field:'DEPT_TYPE_NAME',width:100,align:'left',halign:'center'">部门类型</th>
+					<th data-options="field:'OFFICE_TYPE_NAME',width:100,align:'left',halign:'center'">职务类型</th>
+					<th data-options="field:'CREATE_OPNAME',width:100,align:'left',halign:'center'">创建者</th>
+
+					<th data-options="field:'REMARK',width:200,align:'left',halign:'center'">备注</th>
+				</tr>
+			</thead>
+		</table>
+	</div>
+</form>
+<script>
+	//初始化加载
+	$(function() {
+		var pager = $('#dg').datagrid('getPager');//获取表格分页
+		pager.pagination({buttons:stoolbar});
+	});
+
+	
+	//自动缩放
+	$(window).resize(function() {
+		$('#dg').resizeDataGrid($("#fieldset_condition").height(), 4, 0, 0);
+	});
+	
+	//查询
+	function queryData() {
+		var s_url = "restful?action=<#encAction action="dept_office_role_query"/>";		
+		$('#dg').datagrid({
+			url : s_url,
+			pageNumber:1,
+			queryParams : $('#form1').serializeObject(),
+			onLoadSuccess:function(data){
+				//成功验证是否有无出错
+				if(data.g_result=="0"){
+					showMsg(data.g_message);
+				}
+			},
+			onDblClickRow:function(rowIndex, rowData){
+				//双击
+				updateData('修改【部门、职务】权限',rowData.ROLEID,rowData.ORGAN_ID);
+			}
+		});
+		var pager = $('#dg').datagrid('getPager');	//获取表格分页
+		pager.pagination({buttons:stoolbar});
+	}
+	
+	//刷新查询
+	function  refreshQueryData(jsondata){
+		if(jsondata.g_result ){
+			if(!jsondata.showMsgFlag){
+				//没有显示过的，显示
+				showMsg(jsondata.g_message);
+			}
+			if(jsondata.g_result=='1'){
+				queryData();
+			}
+		}				
+	}
+	
+	//底部按钮
+	var stoolbar = [ '-'
+		<#hasButton code="resources.dept_person.power_1">,{
+		text : '新增',
+		iconCls : 'icon-add',
+		handler : function() {
+			updateData('新增【部门、职务】权限','','');
+		}
+	}</#hasButton>
+	<#hasButton code="resources.dept_person.power_2">,'-',{
+		text : '修改',
+		iconCls : 'icon-edit',
+		handler : function() {
+			var rows = $('#dg').datagrid('getSelections');
+			if(rows.length!=1){
+				showMsgAndExecFn("请选择一条数据！","");
+				return;
+			}
+			updateData('修改【部门、职务】权限',rows[0].ROLEID,rows[0].ORGAN_ID);
+		}
+	}</#hasButton>
+	<#hasButton code="resources.dept_person.power_8">,'-', {
+		text : '删除',
+		iconCls : 'icon-remove',
+		handler : function() {
+			var rows = $('#dg').datagrid('getSelections');
+			if(rows.length!=1){
+				showMsgAndExecFn("请选择一条数据！","");
+				return;
+			}
+			showConfirm("删除该条数据吗？","delData");	
+		}
+	
+	}
+	</#hasButton>];
+	
+	//处理按钮多余的坚线
+  	stoolbar=dataGridButtonFilter(stoolbar);
+	
+	function updateData(title,roleId,organId){
+		openWindow(title,'do?action=<#encAction action="dept_office_role_edit"/>&ROLEID='+roleId+'&ORGAN_ID='+organId,1024,900,"refreshQueryData");
+	}
+	
+	function delData(){
+		var rows = $('#dg').datagrid('getSelections');
+		if(rows.length!=1){
+			showMsgAndExecFn("请选择一条数据！","");
+			return;
+		}
+		for(var i=0; i<rows.length; i++){
+			postAjax("restful","action=<#encAction action="dept_office_role_del"/>&ROLEID="+rows[i].ROLEID,"refreshQueryData");		
+		}
+	}
+</script>
+<% include("../../common/end.html"){} %>

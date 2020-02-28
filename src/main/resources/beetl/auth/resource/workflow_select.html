@@ -1,0 +1,313 @@
+<% include("../../common/head.html"){} %>
+<form name="form1" id="form1">
+				<div id='id_div_resoure' class="easyui-panel" style="height: 100%; overflow: hidden;">
+					<div id="fieldset_condition" style="margin: 0px;">
+						<fieldset>
+							<legend id="fieldset_legend" onclick="fieldsetToggle('fieldset_legend','${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/');" style="cursor: pointer;" title="点击：显示/隐藏">
+								<img src='${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/images/DHTMLSuite_minus.gif' />查询条件
+							</legend>
+							<table id="fieldset_data">
+								<tr>
+									<td><input type="hidden" name="OLD_FLOW_IDS" id="OLD_FLOW_IDS"> 
+									<span id='id_type_title'>流程名称</span>：<input name="SEL_FLOW_NAME" type="text" size="10" class="txtitem" /> 
+									<a href="#" class="easyui-linkbutton btn_query" data-options="iconCls:'icon-search'" onclick='queryData()'>查询</a> <a href="#" style='display: none;' class="easyui-linkbutton" data-options="iconCls:'icon-add'" onclick='addSelectData()' id='id_add_select_data'>添加</a></td>
+								</tr>
+							</table>
+						</fieldset>
+					</div>
+
+					<div class="easyui-tabs" id="id_tabs">
+				
+						<div title="选择区" style="display:none;">   
+						<table>
+							<tr>
+								<td>
+									<table id="dg0" class="easyui-datagrid">
+										<thead>
+											<tr>
+												<th data-options="field:'ck',checkbox:true"></th>
+												<th data-options="field:'NAME',width:350,align:'left',halign:'center',sortable:false">名称</th>
+												<th data-options="field:'ID',width:215,align:'left',halign:'center',sortable:false">标识</th>
+											</tr>
+										</thead>
+									</table>
+								</td>
+								<td><span style="display: "> <a href="#" class="btn_edit_small" onclick='delSelectData()' title='删除选择'>删除</a> <a href="#" class="btn_edit_small" onclick='clearSelectData()' title='清空选择'>清空</a> <a href="#" class="btn_edit_small" onclick='downMove()'>下移</a> <a href="#" class="btn_edit_small" onclick='upMove()'>上移</a> <br />
+								</span> <select multiple="multiple" id='id_select_datas' size='2'></select> <br /> <a href="#" class="btn_edit_small" onclick='selectOk()' data-options="iconCls:'icon-ok'" title='确定所选择的，并返回至前一操作界面'>确定</a> <a href="#" class="btn_edit_small" onclick='cancelReturn()' data-options="iconCls:'icon-cancel'" title='取消当前选择，并返回至前一操作界面'>取消</a> <a href="#" class="btn_edit_small" onclick='clearReturn()' data-options="iconCls:'icon-remove'" title='清空之前所选择的内容，并返回至前一操作界面'>清空返回</a></td>
+							</tr>
+						</table>
+						</div>
+					<div title="已关联情况"  style="display:none;"> 
+									<table id="dg1" class="easyui-datagrid" style="width: 100%">
+										<thead>
+											<tr>
+												<th data-options="field:'ck',checkbox:true"></th>
+												<th data-options="field:'MENU_NAME',width:200,align:'left',halign:'center',sortable:false">资源名称</th>
+												<th data-options="field:'FLOW_NAME',width:385,align:'left',halign:'center',sortable:false">关联工作流</th>
+												<th data-options="field:'FLOW_ID',width:155,align:'left',halign:'center',sortable:false">工作流标识</th>
+											</tr>
+										</thead>
+									</table>
+					</div>
+					</div>
+				</div>
+</form>
+
+<script type="text/javascript">
+	//自动缩放
+	$(window).resize(function() {
+	
+		$('#id_div_resoure').height($(window).height());
+		$("#dg0").resizeDataGrid(	$("#fieldset_condition").height() + 67 ,255, 0, 0);
+		$("#dg1").resizeDataGrid(	$("#fieldset_condition").height() + 82 ,0, 0, 0);
+		$("#id_select_datas").height($(window).height() - $('#fieldset_condition').height() -160);		
+		$("#id_select_datas").width($(window).width() - 580);
+	});
+	
+	
+
+	function upMove(){
+		//上移
+		var so = $("#id_select_datas option:selected");
+		if(!( so.length>0)){
+			return;
+		}
+		 
+	    if(so.get(0).index!=0){
+	        so.each(function(){
+	            $(this).prev().before($(this));
+	        });
+	    }
+	    addNumberInfoSelectDatas();
+	}
+	
+	function downMove(){
+		//下移
+		var alloptions = $("#id_select_datas option");
+		var so = $("#id_select_datas option:selected");
+		
+		if(!(alloptions.length>0 && so.length>0)){
+			return;
+		}
+   
+	    if(so.get(so.length-1).index!=alloptions.length-1){
+	        for(i=so.length-1;i>=0;i--){
+	            var item = $(so.get(i));
+	            item.insertAfter(item.next());
+	        }
+	    }	
+	    addNumberInfoSelectDatas();
+	}
+
+	//删除
+	function delSelectData(){
+		var rows=$('#dg0').datagrid('getRows');
+		$("#id_select_datas option:selected").each(function() {
+		    for(var i=0;i<rows.length;i++){
+                if($(this).attr("ID")==rows[i].ID){
+                    $('#dg0').datagrid('unselectRow',i);
+                }
+            };
+		    $(this).remove();
+        })
+		addNumberInfoSelectDatas();
+	}
+	//清空
+	function clearSelectData(){
+		var rows=$('#dg0').datagrid('getRows');
+        $("#id_select_datas option").each(function() {
+            for(var i=0;i<rows.length;i++){
+                if($(this).attr("USERID")==rows[i].USERID && $(this).attr("DEPTID")==rows[i].DEPTID){
+                    $('#dg0').datagrid('unselectRow',i);
+                }
+            };
+            $(this).remove();
+        })
+	}
+	
+	var multi = "${MULTI}";
+	//查询
+	function queryData() {
+		$(window).resize();
+		var index=getTabsIndexNumber('id_tabs');
+		var s_url ;
+		if(index==0){
+			s_url	= "restful?action=<#encAction action="act"/>&flagId=select_wf_dic_flow_tree${@com.kind.common.utils.CodeSwitching.getReidiosJsonDm("sys", "61")=='1'?"_free":""}";		
+			$('#dg0').datagrid({
+				url : s_url,
+				pageNumber:1,
+				queryParams : $('#form1').serializeObject(),
+				singleSelect : (multi==1)?false:true,
+				onSelect:function(rowIndex, rowData){
+					var rows=new Array();
+					rows[0]=rowData;
+					addSelectData(rows);
+				},
+				onUnselect:function(rowIndex, rowData){
+					var rows=new Array();
+					rows[0]=rowData;
+					delSelectData2(rows);
+				},
+				onSelectAll:function(rows){
+					addSelectData(rows);
+				},
+				onUnselectAll:function(rows){
+					delSelectData2(rows);
+				},
+				onLoadSuccess:function(data){
+					//成功验证是否有无出错
+					if(data.g_result=="0"){
+						showMsg(data.g_message);
+					}else{
+						var rows=$('#dg0').datagrid('getRows');
+						for(var i=0;i<rows.length;i++){				
+							$("#id_select_datas option").each(function() {
+					        	if($(this).attr("ID")==rows[i].ID){
+					        		$('#dg0').datagrid('selectRow',i);
+					            }
+							});
+						}
+					}
+				}
+			});	
+		}else{
+			s_url	= "restful?action=<#encAction action="act"/>&flagId=select_wf_dic_flow_link";		
+			$('#dg1').datagrid({
+				url : s_url,
+				pageNumber:1,
+				queryParams : $('#form1').serializeObject(),
+				singleSelect :false,
+				onLoadSuccess:function(data){
+					//成功验证是否有无出错
+					if(data.g_result=="0"){
+						showMsg(data.g_message);
+					}
+				}
+			});	
+		}
+	
+			
+	}
+	
+	//删除选择的行
+	function delSelectData2(rows){
+		for(var i=0;i<rows.length;i++){				
+			$("#id_select_datas option").each(function() {
+	        	if($(this).attr("ID")==rows[i].ID ){
+	        		$(this).remove();
+	        		//重新排序
+	        		addNumberInfoSelectDatas();
+	            }
+			});
+		}
+	}
+	
+	var ID_dataId="${ID_DATAID!}"; //数据id定位
+	var ID_dataName="${ID_DATANAME!}";//用户名串定位
+	
+	
+	var dataIds="", dataNames="";
+	//添加
+	function addSelectData(rows){
+		for(var i=0;i<rows.length;i++){
+			var i_find=false;
+			$("#id_select_datas option").each(function() {
+	        	if($(this).attr("ID")==rows[i].ID ){
+	            	i_find=true;
+		            return false;
+	            }
+			});
+			 
+			if(i_find){
+				continue;
+			}
+			var s_info="<option ID='"+rows[i].ID+"' NAME='"+rows[i].NAME+"' >"+rows[i].NAME+"（"+rows[i].ID+"）</option>";
+			if (multi==0) {
+				$("#id_select_datas").html("");
+			}
+			$("#id_select_datas").append(s_info);
+		}
+		addNumberInfoSelectDatas();
+	}
+	
+	function addNumberInfoSelectDatas(){
+		$("#id_select_datas option").each(function(i) {
+			if($(this).text().indexOf("、")>0){
+				$(this).text((i+1)+"、"+$(this).text().split("、")[1])
+			}else{
+				$(this).text((i+1)+"、"+$(this).text())
+			}
+		});
+	}
+	
+	$(function(){
+
+
+		var g_win_top = window.top;
+		if (g_win_top.g_openModelWinNum == 1) {
+			var currTab = g_win_top.$('#tabs').tabs('getSelected');
+            parent_win_id = g_win_top.$(currTab.panel('options').content).attr('id');
+        } else if (g_win_top.g_openModelWinNum > 1) {
+        	parent_win_id = "g_win_iframe" + (g_win_top.g_openModelWinNum - 1);
+        }
+
+		if(window.top.$("#"+parent_win_id).contents().find('#'+ID_dataId).val()!=''){
+		
+			var arr_dataId=window.top.$("#"+parent_win_id).contents().find('#'+ID_dataId).val().split(",");
+			var arr_dataName=window.top.$("#"+parent_win_id).contents().find('#'+ID_dataName).val().split(",");
+			$("#OLD_FLOW_IDS").val(arr_dataId);
+			for(var i=0;i<arr_dataId.length;i++){
+				var s_info="<option ID='"+arr_dataId[i]+"' NAME='"+arr_dataName[i]+"' >"+arr_dataName[i]+"（"+arr_dataId[i]+"）</option>";
+				$("#id_select_datas").append(s_info);
+			}
+			
+			addNumberInfoSelectDatas();
+			
+		}
+		queryData();
+	});
+
+	function selectOk(){
+		//确定返回
+		dataIds="";
+		dataNames="";
+		var i_num=0;
+		$("#id_select_datas option").each(function(i) {
+			if(i!=0){
+				dataIds+=',';
+				dataNames+=',';
+			}
+			dataIds+=$(this).attr("ID");
+			dataNames+=$(this).attr("NAME");
+			i_num++;
+		});
+		
+		if(i_num==0){
+			setGlobalParam("clear",1);
+			setGlobalParam("dataId",ID_dataId);
+			setGlobalParam("dataNameId",ID_dataName);
+			setReturnData();
+			return;
+		}
+		
+		setReturnData();
+	}
+	
+	function setReturnData(){
+		//设置返回数据
+		setGlobalParam("dataIdsValue",dataIds);
+		setGlobalParam("dataNamesValue",dataNames);
+		closeWindow();
+	}
+	
+	function clearReturn(){
+		//清空用户返回
+
+		closeWindow();
+	}
+	function cancelReturn(){
+		//取消返回
+		closeWindow();
+	}
+</script>
+<% include("../../common/end.html"){} %>

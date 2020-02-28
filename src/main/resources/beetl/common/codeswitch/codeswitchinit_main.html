@@ -1,0 +1,48 @@
+<% include("../../common/head.html"){} %>
+<form name="form1" id="form1">
+
+	<table style="width: 100%;" class='form_data'>
+		<tr height="30">
+			<td style="font-size: 15px; font-weight: bold; border-bottom: 1px solid #ccc;" colspan="3" align="left">redis代码初始化：</td>
+		</tr>
+		<tr>
+			<th width="20%">代码标识
+			</td>
+			<th width="70%">对应语句
+			</td>
+			<th>操作
+			</td>
+		</tr>
+		<% for(APP in flag_info){ %>
+
+
+		<tr>
+			<td align="center">${APP.flag}</td>
+			<td align="center">${APP.sql}</td>
+			<td align="center"><a href="#" class="easyui-linkbutton btn_query" id="init_button" data-options="iconCls:'icon-building'" onclick="init('${APP.flag}')">重新初始化</a></td>
+		</tr>
+		<% } %>
+	</table>
+</form>
+<script>
+	$(function() {
+		
+
+	})
+	
+	function init(flag){
+		var param = {};
+		param.action = "<#encAction action="code_switch_init"/>";
+		param.FLAG = flag;
+	    postAjax("restful",param,"setReturnValue");  
+	}
+	function setReturnValue(json) {
+		
+		if(json.g_message){
+			showMsg(json.g_message);
+		}
+
+	}
+	
+</script>
+<% include("../../common/end.html"){} %>

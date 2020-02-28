@@ -1,0 +1,75 @@
+[{
+
+	"ActAction": {
+		"type": "selPaginSql",
+		"tableConfig": [{
+			"name": "WF_DIC_FLOW",
+			"alias": "d",
+			"linkType": ",",
+			"linkStr": ""
+		}],
+		"paramConfig": [{
+			"name": "FLOW_NAME",
+			"alias": "NAME",
+			"tableAlias": "d"
+		},{
+			"name": "FLOW_ID",
+			"alias": "ID",
+			"tableAlias": "d"
+		},{
+			"name": "ORG_ID",
+			"alias": "PID",
+			"tableAlias": "d"
+		}],
+		"keyName": "rows",
+
+		"whereConfig": [{
+			"name": "FLAG",
+			"tableAlias": "d",
+			"type": "!=",
+			"value": "0"
+		},{
+		"from": "RS#!SEL_FLOW_NAME",
+			"name": "FLOW_NAME",
+			"tableAlias": "D",
+			"type": "%%",
+			"value": ""
+		},{
+		"from": "RS#!SEL_FLOW_ID",
+			"name": "FLOW_ID",
+			"tableAlias": "D",
+			"type": "%%",
+			"value": ""
+		},{
+			"from": "GROUP#!",
+			"group":[
+						{
+					"from": "NOEXISTS#!",
+					"tableConfig": [{
+							"name": "SYS_RESOURCES_WORKFLOW",
+							"linkType": ",",
+							"linkStr": "D.FLOW_ID=FLOW_ID"
+						}],
+				
+					"whereConfig": [],
+					"paramConfig": [{
+						"name": "1"
+					}]
+				},{
+					"logic":"or",
+					"from": "RS#!OLD_FLOW_IDS",
+					"name": "FLOW_ID",
+					"tableAlias": "d",
+					"type": "instrb",
+					"value": ""
+					}
+			]
+		}],
+		"orderConfig":[{
+			"name": "UPDATE_AT",
+			"tableAlias": "d",
+			"type": ""
+		
+		}]
+	}
+}]

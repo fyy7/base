@@ -1,0 +1,82 @@
+<script type="text/javascript">
+   var pid = '${PARENTID}';
+   $("#PARENTID").attr("value",pid);
+  
+   var pai_cnlevel = [
+		{key: "3", value: "一级"},
+		{key: "4", value: "二级"},
+		{key: "5", value: "三级"},
+		{key: "6", value: "四级"},
+		{key: "7", value: "五级"}
+	];
+   
+   var pai_controltype = [
+		{key: "", value: "--"},
+		{key: "1", value: "全资"},
+		{key: "2", value: "控股"},
+		{key: "3", value: "参股"},
+		{key: "4", value: "金融产权"}
+	];
+   
+	$(function(){
+		 initSelectOption("CNLEVEL", pai_cnlevel);
+		 initSelectOption("CONTROLTYPE", pai_controltype);
+	});
+</script>
+<form id="form1" name="form1" method="post" action="restful">
+	<input type="hidden" name="action" value="<#encAction action="organ_saves"/>"> <input type="hidden" name="ORGANID" id="ORGANID" value="${!(BEAN.ORGANID)}" /> <input type="hidden" name="ORDIDX" value="${!(BEAN.ORDIDX)}" />
+	<!-- 排序号 -->
+	<input type="hidden" name="ALLORDIDX" value="${!(BEAN.ALLORDIDX)}" />
+	<!-- 全部排序号 -->
+	<input type="hidden" name="NLEVEL" value="${!(BEAN.NLEVEL)}" />
+	<!-- 层次 -->
+	<input type="hidden" name="CMD" id='CMD' value="${CMD}" /> <input type="hidden" name="PARENTNAME" id='PARENTNAME' />
+
+	<table width="100%" cellspacing="1" class="infotable" border="0" class="dataintable form_bod">
+		<tr height="30">
+			<td style="font-size: 16px; font-weight: bold; border-bottom: 1px solid #ddd;" colspan="2" align="left">${ORGANID == "" ? "新增":"修改"}组织机构：</td>
+		</tr>
+		<tr height="30">
+			<td align="right" class="infotitle" style="width: 120px">组织标识：</td>
+			<td><input type="text" name="ORGANDM" id="ORGANDM" value="${!(BEAN.ORGANDM)}" class="txtitem" maxnum="50" title="组织标识" style="width: 91%" onBlur="checkOrganDm(this)" required="true" check="yz_notblank" warning="组织标识不能为空，且不能包含空格！" /></td>
+		</tr>
+		<tr height="30">
+			<td align="right" class="infotitle">组织账号前缀：</td>
+			<td><input type="text" name="ACCOUNT_PERFIX" id="ACCOUNT_PERFIX" value="${!(BEAN.ACCOUNT_PERFIX)}" class="txtitem" maxnum="25" title="组织账号前缀" style="width: 91%" required="true" check="yz_notblank" warning="组织账号前缀不能为空，且不能包含空格！" /></td>
+		</tr>
+		<tr height="30">
+			<td align="right" class="infotitle">组织名称：</td>
+			<td><input type="text" name="NAME" value="${!(BEAN.NAME)}" class="txtitem" maxnum="100" title="组织名称" style="width: 91%" required="true" check="yz_notblank" warning="组织名称不能为空，且不能包含空格！"></td>
+		</tr>
+		<tr height="30">
+			<td align="right" class="infotitle">组织标识：</td>
+			<td><select name="GROUPTYPE" id="GROUPTYPE" style="width: 91%" required="true" check="yz_selectone" warning="组织标识必须选择一项！" select-value='${!(BEAN.GROUPTYPE)}'> <% for(SUPER in GROUPTYPE_LIST){ %>
+					<option value="${SUPER.DM}">${SUPER.DMNR}</option> <% } %>
+			</select></td>
+		</tr>
+		<tr height="30">
+			<td align="right" class="infotitle">上级组织：</td>
+			<td><select name="PARENTID" id="PARENTID" class="kind-select" style="width: 91%" required="true" select-value='${!(BEAN.PARENTID)}' check="yz_selectone" warning="上级组织必须选择一项!" onchange="setNlevel(this);"> <% for(SUPER in SUPER_LIST){ %>
+					<option value="${SUPER.ORGANID}" style="" optext="${!(SUPER.ORGANNAME)}" opnlevel="${!(SUPER.NLEVEL)}">${SUPER.NAME}--${SUPER.ORGANDM}</option> <% } %>
+			</select></td>
+		</tr>
+		<tr height="30">
+			<td align="right" class="infotitle">企业层级：</td>
+			<!-- select-value -->
+			<td><select name="CNLEVEL" id="CNLEVEL" select-value="${BEAN.NLEVEL!}" addDefaultOption="1" style="width: 91%;"></select></td>
+		</tr>
+		<tr height="30">
+			<td align="right" class="infotitle">控制类型：</td>
+			<td><select name="CONTROLTYPE" id="CONTROLTYPE" select-value="${BEAN.CONTROLTYPE!}" style="width: 91%;"></select></td>
+		</tr>
+		<tr height="30">
+			<td align="right" class="infotitle">备注：</td>
+			<td><textarea name="REMARK" rows="3" maxnum="255" title="备注" style="width: 89.5%">${!(BEAN.REMARK)}</textarea></td>
+		</tr>
+		<tr height="30">
+			<td colspan="2" align="center"><#hasButton code="userpower.organ_2">
+				<a id="id_a_add" href="#" class="easyui-linkbutton btn_edit" onclick="saveData();return false;">保存</a></#hasButton> <#hasButton code="userpower.organ_8">
+				<a id="id_a_del" href="#" class="easyui-linkbutton btn_close" onclick="delData();return false;" style="display: none;">删除</a></#hasButton></td>
+		</tr>
+	</table>
+</form>

@@ -1,0 +1,23 @@
+{
+	"code": {
+		"dmnrField": "cvalue",
+		"flag": "code",
+		"dmlxField": "categoryno",
+		"dmField": "cno",
+		"table": "d_code",
+		"order": "allordidx"
+	},
+	"dmb": {
+		"dmnrField": "dmnr",
+		"flag": "dmb",
+		"dmlxField": "dmlx",
+		"dmField": "dm",
+		"table": "sys_dmb"
+	},
+	"sys": {
+		"dmnrField": "paravalue",
+		"flag": "sys",
+		"dmField": "paraid",
+		"table": "sys_sysparm"
+	}
+}

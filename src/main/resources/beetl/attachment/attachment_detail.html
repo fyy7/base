@@ -1,0 +1,199 @@
+<% include("../common/head.html"){} %>
+
+<link href='<#jsCssPath url="/uploadify/uploadify.css"/>' type='text/css' rel='stylesheet' />
+<script type="text/javascript" src='<#jsCssPath url="/js/ajaxfileupload.js"/>'></script>
+<style>
+
+	.infotitle {height: 30px; width: 90px; text-align: right;}
+
+</style>
+<script type="text/javascript">
+
+	var cmd = "${!(CMD)}";
+	
+	var _parent = null;
+	
+	// 初始化
+	$(function() {
+		if (!parent.CTX) {
+			_parent = getTabsCurrentWindow();
+		} else {
+			_parent = parent;
+		}
+		
+		// 应用下拉框
+		initSelectOption("appInfos", _parent.appInfos);
+		
+		// 附件类型
+		initSelectOption("attachmentTypes", _parent.attachmentTypes);
+		
+		// 校验类型
+		initSelectOption("attachmentCheckTypes", _parent.attachmentCheckTypes);
+		
+		initFormState("${!(CMD)}");
+	});
+	
+	// 设置表单状态
+	function initFormState(cmd) {
+		if (cmd == "A") {
+			$("#form1").attr("action", _parent.CTX.url.add);
+			$("#id_submit_add").show();
+			$("#id_submit_modify").hide();
+		} else if (cmd == "U") {
+			$("#form1").attr("action", _parent.CTX.url.modify);
+			
+			$("#appInfos").val("${!(ENTITY.APP_ID)}");
+			$("#attachmentCheckTypes").val("${!(ENTITY.CHECK_TYPE)}");
+			$("#attachmentTypes").val("${!(ENTITY.ATTACHMENT_TYPE)}");
+			
+			$("#appInfos").attr("disabled", true);
+			$("#attachmentCheckTypes").attr("disabled", true);
+			$("#attachmentTypes").attr("disabled", true);
+			$("#fileUploaderRow").hide();
+			
+			$("#id_submit_add").hide();
+			$("#id_submit_modify").show();
+		}
+	}
+	
+	function add() {
+		if ($("#CACHE_UID").val() == "") {
+			// data: {"g_result":1,"g_message":"上传文件完成","files":[{"uid":"add03cda312940d5a50efb3c5fc345d8"}]}
+			uploadFile("upload?APP_ID=" + $("#appInfos").val() + "&CHECK_TYPE=" + $("#attachmentCheckTypes").val() +"&FDFS=1", "fileUploader", "",  100 * 1024 * 1024, function (data) {
+				if (data.g_result == 1) {
+					if (data.files && data.files.length > 0) {
+						$("#CACHE_UID").val(data.files[0].uid);
+						
+						submitFormData("form1", "_parent.refreshDataGrid");
+					} else {
+						alert("上传失败，服务器未返回临时文件UID");
+					}
+				} else {
+					alert(data.g_message);
+				}
+			});
+		} else {
+			submitFormData("form1", "_parent.refreshDataGrid");
+		}
+	}
+	
+	function modify() {
+		$("#appInfos").attr("disabled", false);
+		$("#attachmentCheckTypes").attr("disabled", false);
+		$("#attachmentTypes").attr("disabled", false);
+		
+		submitFormData("form1", "_parent.refreshDataGrid");
+	}
+	
+	 /* 00：普通文件
+		01：图片
+		02：音频
+		03：视频
+		04：压缩包 */
+	function getFileTypeBySuffix(suffix) {
+		if (suffix == null || suffix == "") {
+			return "00";
+		}
+		
+		suffix = suffix.toLowerCase();
+		
+		if ("png|jpg|jepg|bmp|gif".indexOf(suffix) > -1) {
+			return "01";
+		}
+		
+		if ("mp3|ogg|wav|wma|rm|midi".indexOf(suffix) > -1) {
+			return "02";
+		}
+		
+		if ("rmvb|rm|wmv|avi|3gp|mp4".indexOf(suffix) > -1) {
+			return "03";
+		}
+		
+		if ("rar|zip|gzip|gz|tar|jar|war|iso|bz2|cab".indexOf(suffix) > -1) {
+			return "04";
+		}
+		
+		return "00";
+	}
+
+</script>
+
+<form id="form1" name="form1" method="post" action="restful">
+	<input id="PK_UID" name="PK_UID" type="hidden" value="${!(ENTITY.PK_UID)}" />
+	<input id="CACHE_UID" name="CACHE_UID" type="hidden"/>
+	<table class="dataintable form_bod">
+		<tr style="height: 5px;"></tr>
+		<tr>
+			<td class="infotitle">名称：</td>
+			<td colspan="3">
+				<input type="text" id="attachmentName" name="ATTACHMENT_NAME" value="${!(ENTITY.ATTACHMENT_NAME)}" size="60" class="txtitem" maxnum="100" title="名称" style="width: 95%" required="true" check="yz_notblank" warning="名称不能为空!"/>
+			</td>
+		</tr>
+		<tr id="fileUploaderRow">
+			<td class="infotitle">附件：</td>
+			<td colspan="3">
+				<input type="file" id="fileUploader" name="filesToUpload" style="width: 90%" onchange="$('#attachmentSuffix').val(getFileSuffix('fileUploader')); $('#attachmentName').val(getFileName('fileUploader')); $('#attachmentTypes').val(getFileTypeBySuffix(getFileSuffix('fileUploader')))">
+			</td>
+		</tr>
+		<tr>
+			<td class="infotitle">系统：</td>
+			<td>
+				<!-- <input name="APP_ID" type="hidden" value="${!(ENTITY.APP_ID)}" size="30" class="txtitem" maxnum="100" title="系统" style="width: 90%" required="true" check="yz_notblank" warning="系统不能为空!"/> -->
+				<select id="appInfos" name="APP_ID" value="${ENTITY.APP_ID!}" class="txtitem" style="width: 90%;">
+				</select>
+			</td>
+			<td class="infotitle">创建时间：</td>
+			<td>
+				<input name="CREATE_TIME" value="${!(ENTITY.CREATE_TIME)}" type="text" size="30" class="txtitem" maxnum="100" title="创建时间" style="width: 90%" readonly="readonly"/>
+			</td>
+		</tr>
+		<tr>
+			<td class="infotitle">类型：</td>
+			<td>
+				<!-- <input name="ATTACHMENT_TYPE" type="hidden" value="${!(ENTITY.ATTACHMENT_TYPE)}" size="30" class="txtitem" maxnum="100" title="类型" style="width: 90%" required="true" check="yz_notblank" warning="类型不能为空!"/> -->
+				<select id="attachmentTypes" name="ATTACHMENT_TYPE" value="${ENTITY.ATTACHMENT_TYPE!}" class="txtitem" style="width: 90%;">
+				</select>
+			</td>
+			<td class="infotitle">后缀：</td>
+			<td>
+				<input id="attachmentSuffix" name="ATTACHMENT_SUFFIX" value="${!(ENTITY.ATTACHMENT_SUFFIX)}" type="text" size="30" class="txtitem" maxnum="100" title="后缀" style="width: 90%" readonly="readonly"/>
+			</td>
+		</tr>
+		<tr>
+			<td class="infotitle">校验类型：</td>
+			<td>
+				<!-- <input name="CHECK_TYPE" type="hidden" value="${!(ENTITY.CHECK_TYPE)}" size="30" class="txtitem" maxnum="100" title="校验类型" style="width: 90%" required="true" check="yz_notblank" warning="校验类型不能为空!"/> -->
+				<select id="attachmentCheckTypes" name="CHECK_TYPE" value="${ENTITY.CHECK_TYPE!}" class="txtitem" style="width: 90%;">
+				</select>
+			</td>
+			<td class="infotitle">校验值：</td>
+			<td>
+				<input name="CHECK_VALUE" value="${!(ENTITY.CHECK_VALUE)}" type="text" size="30" class="txtitem" maxnum="100" title="校验值" style="width: 90%" readonly="readonly"/>
+			</td>
+		</tr>
+		<tr>
+			<td class="infotitle">大小(b)：</td>
+			<td>
+				<input name="ATTACHMENT_SIZE" type="text" value="${!(ENTITY.ATTACHMENT_SIZE)}" size="30" class="txtitem" maxnum="100" title="大小" style="width: 90%" readonly="readonly"/>
+			</td>
+			<td class="infotitle">存储路径：</td>
+			<td>
+				<input name="SAVE_PATH" value="${!(ENTITY.SAVE_PATH)}" type="text" size="30" class="txtitem" maxnum="100" title="存储路径" style="width: 90%" readonly="readonly"/>
+			</td>
+		</tr>
+		<tr>
+			<td class="infotitle">备注：</td>
+			<td colspan="3">
+				<textarea name="COMMENTS" value="" cols="50" rows="4" maxnum="2000" title="备注" style="width: 94%">${!(ENTITY.COMMENTS)}</textarea>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="4" align="center" width="100%">
+				<a id="id_submit_add" class="easyui-linkbutton btn_edit" data-options="iconCls:'icon-save'" href="javascript:;" onclick="add();">添加</a>
+				<a id="id_submit_modify" class="easyui-linkbutton btn_edit" data-options="iconCls:'icon-save'" href="javascript:;" onclick="modify();">修改</a>
+			</td>
+		</tr>
+	</table>
+</form>
+
+<% include("../common/end.html"){} %>

@@ -1,0 +1,114 @@
+<% include("../common/head.html"){} %>
+<form name="form1" id="form1">
+	<div id="fieldset_condition" style="margin: 0px;">
+		<fieldset>
+			<legend id="fieldset_legend" onclick="fieldsetToggle('fieldset_legend', '${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/');" style="cursor: pointer;" title="点击：显示/隐藏">
+				<img src='${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/images/DHTMLSuite_minus.gif' />查询条件
+			</legend>
+			${!(SEARCH_BAR_HTML)}
+		</fieldset>
+	</div>
+	<div style="margin: 0px;">
+		<table id="dg"></table>
+	</div>
+</form>
+
+<script>
+
+	// 初始化
+	$(function() {
+		initDataGrid();
+	});
+	
+	// 初始化数据表格
+	function initDataGrid() {
+		$("#dg").datagrid({
+			pageNumber: 1,
+		    pageSize: CTX.datagrid.pageSize,
+		    pageList: CTX.datagrid.pageSizeList,
+			fitColumns: true,
+			striped: false,
+			columns: [${!(DATAGRID_COLUMNS_HTML)}],
+			data: ${!(DATAGRID_DATA_HTML)}
+		});
+		
+		var pager = $("#dg").datagrid("getPager");	//获取表格分页
+		pager.pagination({buttons: stoolbar});
+		
+		// 自动缩放
+		$(window).resize(function() {
+			$("#dg").resizeDataGrid($("#fieldset_condition").height() + 1, 4, 0, 0);
+		});
+	}
+	
+	// 分页栏按钮
+	var stoolbar = [
+		"-" , "-", {
+			text : "新增",
+			iconCls : "icon-add",
+			handler : function() {
+				openDetailWin("新增");
+			}
+		}, "-", {
+			text : "查看",
+			iconCls : "icon-search",
+			handler : function() {
+				openDetailWin("查看");
+			}
+		}, "-", {
+			text : "修改",
+			iconCls : "icon-edit",
+			handler : function() {
+				openDetailWin("修改");
+			}
+		}, "-", {
+			text : "删除",
+			iconCls : "icon-remove",
+			handler : function() {
+				showConfirm("确认删除该条数据？", "del");
+			}
+		}
+	];
+	
+	//处理按钮多余的坚线
+  	stoolbar = dataGridButtonFilter(stoolbar);
+	
+	// 打开详情窗口
+	function openDetailWin(title, cmd, id){	
+		openWindow(title, "do?action=demonstration_goto_detail_page&pageId=${!(PAGEID)}", "90%", "60%", "refreshDataGrid");
+	}
+	
+	// 刷新表格
+	function refreshDataGrid(jsondata) {
+		
+	}
+	
+	// 查询表格
+	function queryList() {
+		$("#dg").datagrid("reload", $("#form1").serializeObject());
+	}
+	
+	function del() {
+	    postAjax(CTX.url.del, param, "refreshDataGrid"); 
+	}
+	
+</script>
+
+<script>
+
+	(function (pageSize, pageSizeList) {
+		
+		function PageContext () {
+			this.datagrid = {
+				pageSize: pageSize,  // 每页显示条数，该值需在pageSizeList里存在
+				pageSizeList: pageSizeList  // 条数列表，数组，如 [10, 20, 30, 50, 100]
+			}
+		}
+		
+		window.CTX = new PageContext();
+		
+	}) (20, [10, 20, 30, 50, 100]);
+
+</script>
+
+<% include("../common/end.html"){} %>

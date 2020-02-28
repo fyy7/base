@@ -1,0 +1,101 @@
+<% include("../common/head.html"){} %>
+<form id="form1" name="form1" method="post" action="restful" enctype="multipart/form-data">
+	<input name='action' type="hidden" value='<#encAction action="syslog_save"/>' /> <input type="hidden" name="CMD" id='CMD' value='${CMD!}' /> <input type="hidden" name="LOGID" id='LOGID' value='${BEAN.LOGID!}' />
+	<div id="formbody" style="overflow-y: auto; margin: 2px;">
+		<table width="100%" cellspacing="1" class='dataintable form_bod'>
+			<tr>
+				<td width="120" align="right">日志级别：</td>
+				<td><select disabled="disabled" name="LOGLEVEL" style="width: 90%;" select-value="${BEAN.LOGLEVEL!}">
+						<option value="I">普通</option>
+						<option value="E">异常</option>
+				</select> <!-- <input name="LOGLEVEL" type="text" class="txtitem"
+					value="${BEAN.LOGLEVEL!}"
+					style="width: 90%; background-color: white;" disabled="disabled" /> --></td>
+				<td width="120" align="right">日志类型：</td>
+				<td><input name="LOGTYPE" type="text" class="txtitem" value="${BEAN.LOGTYPE!}" style="width: 90%; background-color: white;" disabled="disabled" /></td>
+			</tr>
+			<tr>
+				<td width="120" align="right">操作人编号：</td>
+				<td colspan="3"><input name="OPNO" type="text" class="txtitem" value="${BEAN.OPNO!}" style="width: 96%; background-color: white;" disabled="disabled" /></td>
+			</tr>
+			<tr>
+				<td width="120" align="right">操作人名称：</td>
+				<td colspan="3"><input name="OPNAME" type="text" class="txtitem" value="${BEAN.OPNAME!}" style="width: 96%; background-color: white;" disabled="disabled" /></td>
+			</tr>
+			<tr>
+				<td width="120" align="right">操作时间：</td>
+				<td><input name="OPTIME" type="text" class="txtitem" value="${BEAN.OPTIME!}" id="OPTIME" style="width: 90%; background-color: white;" disabled="disabled" /></td>
+				<td width="120" align="right">操作人IP：</td>
+				<td><input name="LOGIP" type="text" class="txtitem" value="${BEAN.LOGIP!}" style="width: 90%; background-color: white;" disabled="disabled" /></td>
+			</tr>
+			<tr>
+				<td align="right">APP_ID：</td>
+				<td><input name="APP_ID" value="${BEAN.APP_ID!}" type='text' style="width: 90%; background-color: white;" disabled="disabled" /></td>
+				<td width="120" align="right">操作响应时间&nbsp;&nbsp;&nbsp;<br />（毫秒）：
+				</td>
+				<td><input name="OP_MILLISECOND" type="text" class="txtitem" value="${BEAN.OP_MILLISECOND!}" style="width: 90%; background-color: white;" disabled="disabled" /></td>
+
+			</tr>
+			<tr>
+				<td align="right">请求url：</td>
+				<td colspan="3"><input name="REQUEST_URL" currentname="请求url" value="${BEAN.REQUEST_URL!}" type='text' style="width: 96%; background-color: white;" disabled="disabled" /></td>
+			</tr>
+			<tr>
+				<td width="120" align="right">操作结果：</td>
+				<td colspan="3"><input name="OP_RESULT" type="text" class="txtitem" value="${BEAN.OP_RESULT!}" style="width: 96%; background-color: white;" disabled="disabled" /></td>
+			</tr>
+			<tr>
+				<td align="right">操作内容：</td>
+				<td colspan="3"><textarea currentname="操作内容" name="CONTENTS" cols="50" rows="6" style="width: 94.5%; background-color: white;" disabled="disabled">${!(BEAN.CONTENTS)}</textarea></td>
+			</tr>
+			<!-- <tr>
+				<td width="120" align="right">链接ID：</td>
+				<td><input name="LINKID" type="text" class="txtitem"
+					value="${BEAN.LINKID!}"
+					style="width: 90%; background-color: white;" disabled="disabled" /></td>
+				<td width="120" align="right">源类型：</td>
+				<td><input name="SRCTYPE" type="text" class="txtitem"
+					value="${BEAN.SRCTYPE!}" style="width: 90%; background-color: white;"
+					disabled="disabled" /></td>
+			</tr>
+			<tr>
+				<td width="120" align="right">跟踪ID：</td>
+				<td><input name="TRACEID" type="text" class="txtitem"
+					value="${BEAN.TRACEID!}"
+					style="width: 90%; background-color: white;" disabled="disabled" /></td>
+				<td width="120" align="right">跟踪ID2：</td>
+				<td><input name="TRACEID2" type="text" class="txtitem"
+					value="${BEAN.TRACEID2!}" style="width: 90%; background-color: white;"
+					disabled="disabled" /></td>
+			</tr> -->
+		</table>
+	</div>
+	<div id="formfoot" style="width: 100%; height: 55px; position: fixed; bottom: 0px; text-align: center; border-top: 1px solid #ccc">
+		<A class="easyui-linkbutton btn_close" data-options="iconCls:'icon-cancel'" href="#" onclick="closeWindow();">关闭</A>
+	</div>
+</form>
+
+<script>
+	$(function() {
+		//时间截取
+		$("#OPTIME").each(function(){
+   		    $(this).val($(this).val().substring(0,19));
+   		});
+		$("#id_submit").click(function() {
+			saveData();
+			return false;
+		});
+	});
+
+	function saveData() {
+		submitFormData("form1", "setReturnValue");
+	}
+	function setReturnValue() {
+
+	}
+	/* 设置页面滚动条 */
+	$(window).resize(function() {
+		$("#formbody").height($(window).height() - $("#formfoot").height());
+	});
+</script>
+<% include("../common/end.html"){} %>

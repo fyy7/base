@@ -1,0 +1,138 @@
+<% include("../../common/head.html"){} %>
+<div style="padding: 10px;">
+	<input type="hidden" id="FLAG" value="${FLAG}" />
+	<p style="border-bottom: solid 1px; font-size: 14px; width: 100%;">请选择您的部门：</p>
+	<p>
+		所属机构： <select style="width: 165px;" id='id_organ_id' onchange="getDeptSelectList(${CLIENT});">
+		</select> 部门： <select style="width: 165px;" id='id_dept_id'></select> <A class="easyui-linkbutton btn_edit" data-options="iconCls:'icon-ok'" href="javascript:void(0)" id="id_submit">部门切换</A>
+	</p>
+	<div style="${CLIENT =='2'?'': 'display:none'}" re="${CLIENT!'null'}">
+		<p style="border-bottom: solid 1px; font-size: 14px; width: 100%;">请选择委托人的部门：</p>
+		<!--<p>所属机构： <select style="width: 165px;" id='id_organ_id2' onchange="getDeptSelectList(${CLIENT});">
+	</select> 部门： <select style="width: 165px;" id='id_dept_id2'></select> 
+	<A class="easyui-linkbutton btn_edit" data-options="iconCls:'icon-ok'" href="javascript:void(0)" id="id_submit1">委托身份切换</A>
+	</p> -->
+		<table>
+			<tr>
+				<td style="width: 160px;" align="center">机构</td>
+				<td style="width: 160px;" align="center">部门</td>
+				<td style="width: 160px;" align="center">委托人</td>
+				<td style="width: 160px;">起止时间</td>
+				<td style="width: 160px;">终止时间</td>
+				<td align="center">切换委托</td>
+			</tr>
+			<% for(var i=0;i
+			<ENTRUST_ROLE.~size;i++){
+        %>
+			<tr height="40">
+				<input type="hidden" name="total" value="${ENTRUST_ROLE[i].DEPT_ID},${ENTRUST_ROLE[i].DEPTNAME},${ENTRUST_ROLE[i].ORGAN_ID},${ENTRUST_ROLE[i].NAME},${ENTRUST_ROLE[i].OPEMAN},${ENTRUST_ROLE[i].CREATOR}">
+				<td align="center">${ENTRUST_ROLE[i].NAME}</td>
+				<td align="center">${ENTRUST_ROLE[i].DEPTNAME}</td>
+				<td align="center">${ENTRUST_ROLE[i].OPEMAN}</td>
+				<td>${ENTRUST_ROLE[i].BEGINDATE}</td>
+				<td>${ENTRUST_ROLE[i].ENDDATE}</td>
+				<td><A class="easyui-linkbutton btn_edit" data-options="iconCls:'icon-ok'" href="javascript:void(0)" onclick="changeEntrust(this)">切换委托</A></td>
+			</tr>
+			<% } %> 
+		</table>
+	</div>
+</div>
+
+<script type="text/javascript">
+	//获取组织结构列表
+	function getOrganSelectList() {
+		postSyncAjax("restful?action=<#encAction action="user_login_get_organ_list"/>","","getOrganSelectListData");
+	}
+	function getOrganSelectListData(jsondata) {
+		if (jsondata.ORGAN_TREE) {
+			for (var i = 0; i < jsondata.ORGAN_TREE.length; i++) {
+				var level = parseInt(jsondata.ORGAN_TREE[i].NLEVEL) - 2;
+				var s_blank = "";
+				for (var j = 0; j < level; j++) {
+					s_blank += "　";
+				}
+				s_blank += "|-";
+				$("#id_organ_id").append("<option opaccount='"+jsondata.ORGAN_TREE[i].OPACCOUNT+"' nlevel='"+jsondata.ORGAN_TREE[i].NLEVEL+"' value='"+jsondata.ORGAN_TREE[i].ORGANID+"'>" + s_blank + jsondata.ORGAN_TREE[i].NAME + "</option>");
+			}
+		}
+		if (jsondata.MAIN_ORG_ID && jsondata.MAIN_ORG_ID != "") {
+			$("#id_organ_id").val(jsondata.MAIN_ORG_ID);
+		}
+
+		getDeptSelectList(${CLIENT});
+	}
+	//获取部门列表
+	function getDeptSelectList(num) {
+
+			$("#id_dept_id option").remove();
+			if ($("#id_organ_id").val() == '' || $("#id_organ_id").val() == null) {
+				return;
+			}
+			postSyncAjax("restful?action=<#encAction action="user_login_get_dept_list"/>&ORGANID="+$("#id_organ_id").val()+"&OPACCOUNT="+$("#id_organ_id option:selected").attr("opaccount"),"","getDeptSelectListData");			
+
+			if(num == '2'){
+			}
+	}
+	function getDeptSelectListData(jsondata) {
+		$("#id_dept_id option").remove();
+		if (jsondata.DEPT_TREE) {
+			for (var i = 0; i < jsondata.DEPT_TREE.length; i++) {
+				var level = parseInt(jsondata.DEPT_TREE[i].DLEVEL) - 1;
+				var s_blank = "";
+				for (var j = 0; j < level; j++) {
+					s_blank += "　";
+				}
+				s_blank += "|-";
+				$("#id_dept_id").append("<option value='"+jsondata.DEPT_TREE[i].DEPTID+"'>" + s_blank + jsondata.DEPT_TREE[i].DEPTNAME + "</option>");
+			}
+		}
+		if (jsondata.MAIN_DEPT_ID && jsondata.MAIN_DEPT_ID != "") {
+			$("#id_dept_id").val(jsondata.MAIN_DEPT_ID);
+		}
+	}
+	$("#id_submit").click(function() {
+		showConfirm("确认切换该部门？", "changeDept");
+		return;
+	});
+
+	function changeDept() {
+		var flag= "1";
+		var organ_id= $("#id_organ_id").val();
+		var dept_id= $("#id_dept_id").val();
+		var organ_name=$("#id_organ_id option:selected").text().replace(/(　)*(\|-)/g, '');
+		var dept_name= $("#id_dept_id option:selected").text().replace(/(　)*(\|-)/g, '');
+		var organ_nlevel= $("#id_organ_id option:selected").attr("nlevel");
+		postSyncAjax("restful?action=<#encAction action="user_change_dept"/>&ORGANID="+organ_id+"&ORGAN_NAME="+organ_name+"&DEPT_NAME="+dept_name+"&DEPT_ID="+dept_id+"&ORGAN_NLEVEL="+organ_nlevel+"&flag="+flag,"","changeDeptData");
+		//postAjax("HttpChannel", datas, "changeDeptData");
+	}
+	function changeDeptData(jsondata) {
+		if (jsondata && jsondata.g_result == '1') {
+			var flag= $("#FLAG").val();
+			if(flag==1){
+				window.top.location.href = "do?action=<#encAction action="goto_portal"/>";
+			}else{
+				window.top.location.href = "do?action=<#encAction action="goto_subsystem"/>&APP_ID=${APP_ID}";
+			}
+			
+		} else {
+			showErrorMsg("部门切换失败！");
+		}
+	}
+	function changeEntrust(obj){
+		var total = $(obj).closest("tr").find("input[name='total']").val().split(",");
+		var flag= "2";
+		var organ_id= total[2];
+		var dept_id=total[0];
+		var organ_name=total[3];
+		var dept_name= total[1];
+	    var opno = total[5];
+	    var opnoname = total[4];
+		postSyncAjax("restful?action=<#encAction action="user_change_dept"/>&ORGANID="+organ_id+"&ORGAN_NAME="+organ_name+"&DEPT_NAME="+dept_name+"&DEPT_ID="+dept_id+"&flag="+flag+"&OPNO="+opno+"&OPNONAME="+opnoname,"","changeDeptData");
+	}
+
+	$(function() {
+		getOrganSelectList();
+		$("html").css("font-size", 16);
+	});
+</script>
+<% include("../../common/end.html"){} %>

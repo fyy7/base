@@ -1,0 +1,123 @@
+<% include("../../common/head.html"){} %>
+<form name="form1" id="form1">
+	<div id="fieldset_condition" style="margin: 0px;">
+		<fieldset>
+			<legend id="fieldset_legend" onclick="fieldsetToggle('fieldset_legend');" style="cursor: pointer;" title="点击：显示/隐藏">
+				<img src='${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/images/DHTMLSuite_minus.gif' />查询条件
+			</legend>
+			<table id="fieldset_data">
+				<tr>
+					<td>年份：</td>
+					<td><input type="text" name="SEL_YEAR" /></td>
+					<td><a href="#" class="easyui-linkbutton btn_query" data-options="iconCls:'icon-search'" onclick='queryData()'>查询</a></td>
+				</tr>
+			</table>
+		</fieldset>
+	</div>
+
+	<div style="margin: 0px;">
+		<table id="dg" title="">
+			<thead>
+				<tr>
+					<th data-options="field:'HOLIDAY_YEAR',width:80,align:'center',halign:'center',sortable:true">年份</th>
+				</tr>
+			</thead>
+		</table>
+	</div>
+</form>
+<script>
+	//初始化加载
+	$(function() {
+		queryData();
+	});
+
+	//自动缩放
+	$(window).resize(function() {
+		$('#dg').resizeDataGrid($("#fieldset_condition").height() + 1, 4, 0, 0);
+	});
+
+	//查询
+	function queryData() {		
+		var s_url = "restful?action=<#encAction action="sys_holiday_list"/>";
+		$('#dg').datagrid({
+			url : s_url,
+			pageNumber:1,
+			queryParams : $('#form1').serializeObject(),
+			onLoadSuccess : function(data) {
+				$(window).resize();
+				//成功验证是否有无出错
+				if (data.g_result == "0") {
+					showMsg(data.g_message);
+				}
+			},
+			onDblClickRow : function(rowIndex, rowData) {
+				//双击
+				updateData(rowData.HOLIDAY_YEAR+'年设置',rowData.HOLIDAY_YEAR);
+			}
+		});
+		var pager = $('#dg').datagrid('getPager'); //获取表格分页
+		pager.pagination({
+			buttons : stoolbar
+		});
+	}
+
+	//刷新查询
+	function refreshQueryData(jsondata) {
+		if (jsondata.g_result && jsondata.g_result == '1') {
+			if (!jsondata.showMsgFlag) {
+				//没有显示过的，显示
+				showMsg(jsondata.g_message);
+			}
+			queryData();
+		}
+	}
+	
+	var s_year=(new Date()).getFullYear();
+
+	//底部按钮
+	var stoolbar = [ {
+		text : (s_year+'年设置'),
+		iconCls : 'icon-calendar',
+		handler : function() {
+			updateData(s_year+'年设置',s_year);
+		}
+	}, '-', {
+		text : ((s_year+1)+'年设置'),
+		iconCls : 'icon-calendar',
+		handler : function() {
+			updateData((s_year+1)+'年设置',(s_year+1));
+		}
+	}, '-', {
+		text : '删除',
+		iconCls : 'icon-delete',
+		handler : function() {
+			var rows = $('#dg').datagrid('getSelections');
+			if (rows.length != 1) {
+				showMsgAndExecFn("请选择一条数据！", "");
+				return;
+			}
+			showConfirm("删除该条数据吗？", "delData");
+		}
+	}];
+	
+	//处理按钮多余的坚线
+  	stoolbar=dataGridButtonFilter(stoolbar);
+	
+	function updateData(title, year) {
+		openWindow(title, 'do?action=<#encAction action="sys_holiday_edit"/>&noHtmlHeadFlag=1&YEAR='+year, '100%', '100%', "refreshQueryData");
+	}
+
+	function delData() {
+		var rows = $('#dg').datagrid('getSelections');
+		if (rows.length != 1) {
+			showMsgAndExecFn("请选择一条数据！", "");
+			return;
+		}
+		for (var i = 0; i < rows.length; i++) {
+			postAjax("restful", "action=<#encAction action="sys_holiday_del"/>&SEL_YEAR=" + rows[i].HOLIDAY_YEAR, "refreshQueryData");
+		}
+	}
+
+	
+</script>
+<% include("../../common/end.html"){} %>

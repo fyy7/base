@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>${APP_NAME!}</title>
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+<link rel="Shortcut Icon" href="${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/${APP_PIC_ADDRESS!'images/favicon.ico'}" />
+<script type="text/javascript">
+		var Loadimagerul = "${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/images/loading.gif";
+	</script>
+<link rel='stylesheet' type='text/css' href='<#jsCssPath url="/css/main.css"/>' rel='stylesheet' />
+<link rel='stylesheet' type='text/css' href='<#jsCssPath url="/css/main_tree.css"/>' rel='stylesheet' />
+<link rel='stylesheet' type='text/css' href='<#jsCssPath url="/js/themes/default/easyui.css"/>' id="swicth-style" />
+<link rel='stylesheet' type='text/css' href='<#jsCssPath url="/js/themes/icon.css"/>' />
+<style type="text/css">
+#gotoIndexPageBtn:hover {
+	background-color: #255297;
+}
+</style>
+</head>
+<body class="easyui-layout">
+	<input type="hidden" name="appid" id="appid" value="${APP_ID!}" />
+	<div style="display: none;">
+		<form method="get" id="form_logout" name="form_logout" action="do">
+			<input type="hidden" name="action" value="<#encAction action="kind_base_user_logout"/>"/>
+		</form>
+	</div>
+	<div region="north" border="true" class="cs-north" id='id_div_north' style="height: 90px; overflow: ''; right: 350px;">
+		<div class="m_top" style="right: 350px;">
+			<div class="logo">
+				<img class="app-logo" src="${APP_PIC_ADDRESS!}" style="has (APP_PIC_ADDRESS)?'': 'display:none'"> <span class="app-title">${APP_NAME!}</span>
+			</div>
+			<div class="right_box">
+				<div class="btn_div" title='退出系统'>
+					<div class="icon_bg" id="id_logout">
+						<img src="${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/js/themes/${cs_skin!"default"}/images/m_t3_s.png">
+					</div>
+					<p>退出系统</p>
+				</div>
+				<!-- <div class="btn_div" title='密码修改'>
+					<div class="icon_bg" onclick='addTab("密码修改","do?action=<#encAction action="modify_password"/>")'> 
+					<img src="${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/js/themes/${cs_skin!"default"}/images/m_t2_s.png">
+					</div>
+				</div>
+				<p>修改密码</p> -->
+			</div>
+			<!-- <div class="btn_div" title='部门切换'>
+				<div class="icon_bg" onclick="addTab('部门切换','do?action=<#encAction action="user_goto_change_dept"/>
+				&flag=2&app_id=${APP_ID!}');"> <img src="${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/js/themes/${cs_skin!"default"}/images/m_t1_s.png">
+					</div>
+			<p>部门切换</p> -->
+			<div class="btn_div" title='密码修改'>
+				<div class="icon_bg" onclick='addTab("密码修改","do?action=<#encAction action="modify_password"/>")'>
+					<img src="${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/js/themes/${cs_skin!"default"}/images/m_t2_s.png">
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+	<!-- 	<div id="gotoIndexPageBtn" style="position: absolute; z-index: 100; right: 350px; top: 0px; ">
+		<div class="btn_div" title='密码修改'>
+			<div class="icon_bg" onclick='addTab("密码修改","do?action=<#encAction action="modify_password"/>")'> 
+			<img src="${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/js/themes/${cs_skin!"default"}/images/m_t2_s.png">
+			</div>
+		</div>
+	</div> -->
+	<div class="sub_box" style='display: none;'>
+		<div class="fontandzhuti_box" style="float: right">
+			<div class="l">主题</div>
+			<div class="r">
+				<div class="hiden_div">
+					<div class="upd"></div>
+					<p type="theme" id="default">蓝色</p>
+				</div>
+				<div class="jt"></div>
+				<span id="id_theme">蓝色</span>
+			</div>
+		</div>
+		<div class="fontandzhuti_box">
+			<div class="l">字体</div>
+			<div class="r">
+				<div class="hiden_div">
+					<div class="upd"></div>
+					<p type="font" id="12">12号</p>
+					<p type="font" id="14">14号</p>
+					<p type="font" id="16">16号</p>
+					<p type="font" id="18">18号</p>
+				</div>
+				<div class="jt"></div>
+				<span id="id_font_size">14号</span>
+			</div>
+		</div>
+	</div>
+	<div class="user_posi" style="right: 72px">
+		<div class="user_pan">
+			<div class="line_one">
+				<div class="fx_btn"></div>
+				欢迎您：<span>${!(session[session_name].OpName) }(${!(session[session_name].OpAccount) })</span>
+
+			</div>
+
+			<div class="line_bod" style="display: block;">
+				<div class="line_two">
+					<p>
+						机构：<span>${!(session[session_name].OrgName)}</span>
+					</p>
+					<p>
+						部门：<span>${!(session[session_name].DeptName)}</span>
+					</p>
+				</div>
+			</div>
+		</div>
+
+	</div>
+	<div style="position: absolute; z-index: 100; right: 320px; top: 16px;">
+		<div class="">
+			<div id="gotoIndexPageBtn" style="border: 1px solid #aecff9; color: #aecff9; line-height: 35px; width: 100px; text-align: center; border-radius: 4px; cursor: pointer;" onclick="window.location.href='do?action=dataexchange_index'">首页</div>
+		</div>
+	</div>
+
+	<div region="west" border="true" split="true" title="导航菜单" class="cs-west">
+		<!-- <ul class="topnav" id='id_resource_menu'>
+		</ul> -->
+		${MENU_HTML}
+	</div>
+
+	<div id="mainPanle" region="center" border="true" border="false">
+		<div id="tabs" class="easyui-tabs" fit="true" border="false"></div>
+	</div>
+
+	<div region="south" border="false" class="cs-south" style="font-weight: bolder; text-align: center;">${!(COPY_RIGHTS)}</div>
+
+	<div id='id_menu_controll' style='display: none;'>
+		<div id="mm" class="easyui-menu cs-tab-menu">
+			<div id="mm-tab_favorites" style='display: none;'>收藏本模块</div>
+			<div id="mm-tabupdate">刷新</div>
+			<div class="menu-sep"></div>
+			<div id="mm-tabclose">关闭</div>
+			<div id="mm-tabcloseother">关闭其他</div>
+			<div id="mm-tabcloseall">关闭全部</div>
+		</div>
+		<div id="mm2" class="easyui-menu cs-tab-menu">
+			<div id="mm2-tabupdate">刷新</div>
+			<div id="mm2-tabcloseother">关闭其他</div>
+		</div>
+	</div>
+	<script>
+   	var get_my_power_menu="<#encAction action="get_my_power_menu"/>";
+   </script>
+	<script type="text/javascript" src='<#jsCssPath url="/js/jquery.min.js"/>'></script>
+	<script type="text/javascript" src='<#jsCssPath url="/js/jquery.easyui.min.js"/>'></script>
+	<script type="text/javascript" src='<#jsCssPath url="/js/gcommon.js"/>'></script>
+	<script type="text/javascript" src='<#jsCssPath url="/js/common.js"/>'></script>
+	<script type="text/javascript" src='<#jsCssPath url="/js/main.js"/>'></script>
+	<script type="text/javascript" src='<#jsCssPath url="/js/main_tree.js"/>'></script>
+
+	<script>
+	${!(session[session_name].ChangePwd==1?"$('#form_logout').submit();":"")}
+	var i_model="1";  // 设置为测试模式
+	
+	var fd_uuid="${FD_PROJECT_UUID!null}";
+		$(function(){
+		
+			${muti_dept!'0'=='1'?"$('#id_span_changeDept').show();":""}
+			${consignor_type!'0'=='1'?"$('#id_span_consignor').show();":""}
+
+			
+			$(".jt").mousedown(function() {
+				$(this).siblings(".hiden_div").show()
+
+			})
+			$(".r span").mousedown(function() {
+				$(this).siblings(".hiden_div").show()
+
+			})
+
+			$(".upd").mousedown(function() {
+				$(this).parent().hide()
+			})
+			$(".hiden_div").mouseleave(function() {
+				$(this).hide()
+			})
+
+			$(".hiden_div p").click(function() {
+				$(this).parent().siblings("span").text($(this).text())
+				$(this).parent().hide()
+				
+				var type = $(this).attr("type");
+				var value = $(this).attr("id");
+				
+				if(type == "font"){
+					setCookie("cs-font_size", value);
+					window.location.reload();	
+				} else if(type == "theme"){
+					setCookie("cs-skin", value);
+					var str = '<#jsCssPath url="/js/themes/default/easyui.css"/>';
+					$('#swicth-style').attr('href', str.replace('default', value));
+				}
+
+			});
+			
+			
+			$(".fx_btn").mouseenter(function() {
+				$(".user_pan").attr("class", "user_hid_div")	
+			});
+			$(".fx_btn").mouseleave(function() {
+				$(".user_hid_div").attr("class", "user_pan")
+			});
+			
+
+			$(".parent_tree").mouseup(function() {
+				var ad = setTimeout(okd, 100);
+			});
+			
+			okd();
+			
+			//字体回填
+			var size = getCookie('cs-font_size');
+			if(size!="" && size!="null" && size!=null){
+				$("#id_font_size").text(size + "号");
+			}
+			
+			setTheme();
+			
+		});
+		
+		function okd() {
+			var num = $(".parent_tree").length
+			for (var i = 0; i < num; i++) {
+				var isok = $(".parent_tree").eq(i).attr("treeselected")
+
+				if (isok == 1) {
+					$(".parent_tree").eq(i).addClass("isnocolor")
+					$(".parent_tree").eq(i).next().attr("class", "chi")
+				} else {
+					$(".parent_tree").eq(i).removeClass("isnocolor")
+				}
+			}
+		}
+		
+		function setTheme() {
+			var str = '<#jsCssPath url="/js/themes/default/easyui.css"/>';
+			var s_theme = "default";		
+			if (getCookie('cs-skin')) {
+				s_theme = getCookie("cs-skin");
+			} else {
+				setCookie("cs-skin", s_theme);
+			}
+			$('#swicth-style').attr('href', str.replace('default', s_theme));
+			switch (s_theme){
+				case 'default':
+					$("#id_theme").text("蓝色");
+					break;
+				case 'gray':
+					$("#id_theme").text("灰色");
+					break;
+				case 'metro-red':
+					$("#id_theme").text("红色");
+					break;
+				case 'metro-green':
+					$("#id_theme").text("绿色");
+					break;
+				case 'black':
+					$("#id_theme").text("黑色");
+					break;
+			}
+		}
+		
+		$(function () {
+			var Url ='do?action=';
+			var Title = "${!(TITLE)}";
+			var welcomeUrl = "${!(WELCOME_URL)}";
+			if (welcomeUrl == "") {
+				
+			}else{
+				
+				addTab(Title,Url+welcomeUrl);
+			}
+			checkLoginState("${!(KISSO_COOKIE_NAME)}_md5", 1000);
+		});	
+	</script>
+	<script type="text/javascript" src='<#jsCssPath url="/js/loading.js"/>'></script>
+</body>
+</html>

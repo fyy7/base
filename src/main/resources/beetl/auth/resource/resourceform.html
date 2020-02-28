@@ -1,0 +1,128 @@
+
+<form id="form1" name="form1" method="post" action="restful">
+	<input type="hidden" name="action" value="<#encAction action="sys_resoure_save1"/>" /> <input name="APP_ID" id="APP_ID" type="hidden" value="${RESOURCE_BEAN.APP_ID!APP_ID}" /> <input name="CHANNEL_RTYPE" id="CHANNEL_RTYPE" type="hidden" value="00001" /> <input name="RID" id="RID" type="hidden" value="${RESOURCE_BEAN.RID!}" /> <input name="ORDIDX" type="hidden" value="${RESOURCE_BEAN.ORDIDX!}" />
+
+	<table cellspacing="1" border="0" style="width: 100%;" align="left" class="dataintable form_bod">
+		<tr height="30">
+			<td style="font-size: 15px; font-weight: bold; border-bottom: 1px solid;" colspan="2" align="left">${RESOURCE_BEAN.RID!''==''?"新增":"修改"}资源信息：</td>
+		</tr>
+
+		<tr height="26">
+			<td align="right">资源标识：</td>
+			<td><span><input name="RLOGO" type="text" size="20" value="${RESOURCE_BEAN.RLOGO!}" style="width: 45%;" maxnum="100" title="资源标识" required="true" check="yz_notblank" warning="资源标识不能为空!" /></span>(完全唯一，控制权限的关键)</td>
+		</tr>
+		<tr height="26">
+			<td align="right" width="110">资源名称：</td>
+			<td><input name="TITLE" type="text" size="30" value="${RESOURCE_BEAN.TITLE!}" style="width: 95%;" maxnum="50" title="资源名称" required="true" check="yz_notblank" warning="资源名不能为空!" /></td>
+		</tr>
+		<tr height="26">
+			<td align="right" width="110">父资源组：</td>
+			<td><select id="PARENTID" name="PARENTID" select-value="${RESOURCE_BEAN.PARENTID!}" required="true" check="yz_selectone" warning="父资源组不能为空!" style="width: 95%;">
+
+			</select> <input name="RLEVEL" type="hidden" value="${RESOURCE_BEAN.RLEVEL!}" /></td>
+		</tr>
+		<tr height="26">
+			<td align="right" width="110">是否资源组：</td>
+			<td><select name="ISGROUP" id="ISGROUP" select-value="${RESOURCE_BEAN.ISGROUP!}" onchange="showLinkText();" sucFunc="showLinkText">
+				
+			</select> &nbsp;&nbsp;&nbsp;是否可视： <select name="VISIBLE" id="VISIBLE" select-value="${RESOURCE_BEAN.VISIBLE!'1'}">
+				
+			</select> &nbsp;&nbsp;&nbsp;是否可委托： <select name="ISENTRUST" id="ISENTRUST" select-value="${RESOURCE_BEAN.ISENTRUST!'1'}">
+				
+			</select></td>
+		</tr>
+		<tr id="EXTITEM1_TR" height="26">
+			<td align="right" width="110">程序链接：</td>
+			<td><input name="EXTITEM1" id="EXTITEM1" value="${RESOURCE_BEAN.EXTITEM1!}" type="text" style="width: 95%;" maxnum="250" title="程序链接" /></td>
+		</tr>
+
+		<tr id="EXTITEM2_TR" height="26">
+			<td align="right" width="110">按钮资源：</td>
+			<td><% for(var i=0;i<RESOURECE_BUTTON_LIST.~size;i++){
+			%>
+				<div style="width: 30%; display: inline-block; padding: 2px;">
+					<div style="width: 30%; display: inline-block;">
+
+						<input type='checkbox' ${RESOURECE_BUTTON_LIST[i].BSELECT== '1'?'checked':''} onchange="if(this.checked){$('#BSELECT_${i}').val('1');}else{$('#BSELECT_${i}').val('0');}" /> ${RESOURECE_BUTTON_LIST[i].BVALUE}
+					</div>
+					<div style="width: 65%; display: inline-block;">
+						<input name="BSELECT" id="BSELECT_${i}" value="${ RESOURECE_BUTTON_LIST[i].BSELECT}" type='hidden' /> <input name="BVALUE" value="${ RESOURECE_BUTTON_LIST[i].BVALUE}" )}" type='hidden' /> <input name="BTITLE" value="${ RESOURECE_BUTTON_LIST[i].BTITLE}" )}" type='text' style="width: 120px;" />
+					</div>
+				</div>
+				<% } %> </td>
+		</tr>
+		<tr id="EXTITEM3_TR" height="40">
+			<td align="right" width="110">图标：</td>
+			<td><img src='' id='id_image_src' /><input name="EXTITEM3" value="${RESOURCE_BEAN.EXTITEM3!}" id="EXTITEM3" type="text" style="width: 90%;" readonly="readonly" onclick="getImgSrc('EXTITEM3');" title='请选择图标！' /></td>
+		</tr>
+		<tr height="26" id='id_tr_scope_val'>
+			<td align="right" width="110">工作流：</td>
+			<td>
+			<input type="hidden" name='WORKFLOWS' id='WORKFLOWS' value="${RESOURCE_BEAN.WORKFLOWS!}">
+			<input type="text" _act_search="true" style="width: 90%"   name='WORKFLOWS_NAME' onclick="selectWorkFlow(1,'WORKFLOWS','WORKFLOWS_NAME')" id='WORKFLOWS_NAME' value="${RESOURCE_BEAN.WORKFLOWS_NAME!}"></td>
+		</tr>
+		<tr height="26" id='id_tr_scope_val'>
+			<td align="right" width="110">应用范围：</td>
+			<td><input type="hidden" name='SCOPE' id='id_scope' value="${RESOURCE_BEAN.SCOPE!}"> <input name="scope1" type="radio" id='id_scope_1' onclick='$("#id_scope").val("1");$("#id_tr_scope").hide();' /><label for='id_scope_1'>所有</label> <input name="scope1" type="radio" id='id_scope_2' onclick='$("#id_scope").val("2");$("#id_tr_scope").show();' /><label for='id_scope_2'>包含</label> <input name="scope1" type="radio" id='id_scope_3' onclick='$("#id_scope").val("3");$("#id_tr_scope").show();' /><label for='id_scope_3'>排除</label></td>
+		</tr>
+		<tr height="26" id='id_tr_scope' style='display: none;'>
+			<td align="right" width="110">范围选择：</td>
+			<td><input type="hidden" name='SCOPE_ORGIDS' value="${RESOURCE_BEAN.SCOPE_ORGIDS!}"> <input name="SCOPE_ORGNAMES" type="text" value="${RESOURCE_BEAN.SCOPE_ORGNAMES!}" size="40" style="width: 95%;" readonly onclick="selectOrgid()" /></td>
+		</tr>
+
+		<tr height="26">
+			<td align="right" width="110">备注：</td>
+			<td><input name="NOTES" type="text" size="40" style="width: 95%;" maxnum="250" title="备注" value="${RESOURCE_BEAN.NOTES!}" /></td>
+		</tr>
+		<tr height="80px;">
+			<td colspan="2" align="center"><#hasButton code="resource.module_4">
+				<a id="id_a_add" href="#" class="easyui-linkbutton btn_edit" onclick="saveData();return false;">保存</a></#hasButton> <#hasButton code="resource.module_8">
+				<a id="id_a_del" href="#" class="easyui-linkbutton btn_close" onclick="delData();return false;" style="display: none;">删除</a></#hasButton></td>
+		</tr>
+	</table>
+</form>
+<script type="text/javascript">
+$(function(){
+
+	init();
+})
+function init(){
+var tree_setting={
+		check: {
+			enable: true
+		}
+}
+	var appid=$("#APP_ID").val();
+	var parram={"APPID":appid${RESOURCE_BEAN.RID!''==''?"":",SEL_RID:'"+RESOURCE_BEAN.RID+"'"}}
+	act_setSelectValue('<#encAction action="act"/>','PARENTID','select_resource_query',parram,'ALLORDIDX',appid);
+	act_setSelectValue('<#encAction action="act"/>','VISIBLE','select_dmb_query',{"DMLX":"YESNODM"},null,"YESNODM");
+	act_setSelectValue('<#encAction action="act"/>','ISGROUP','select_dmb_query',{"DMLX":"YESNODM"},null,"YESNODM");
+	act_setSelectValue('<#encAction action="act"/>','ISENTRUST','select_dmb_query',{"DMLX":"YESNODM"},null,"YESNODM");
+
+	//act_setTreeSelect('<#encAction action="act"/>','#WORKFLOWS_NAME','select_wf_dic_flow_tree',{},null,'tree',tree_setting);
+
+	var tmp='${RESOURCE_BEAN.SCOPE!}';
+	$("input [name='scope1']").val(tmp);
+
+
+}
+function selectWorkFlow(multi, id_dataid, id_dataname ){
+    //打开选择的窗口
+    var params = "&MULTI=" + multi;
+    params += "&ID_DATAID=" + id_dataid; 
+    params += "&ID_DATANAME=" + id_dataname; 
+    openWindow("工作流选择","do?action=<#encAction action="workflow_select"/>"+params, "520", "900", "returnSelectUsersValue");
+}
+function returnSelectUsersValue(json_obj) {
+	
+	   if (json_obj.clear==1) {
+		   $("input[name='WORKFLOWS']").val("");
+        $("input[name='WORKFLOWS_NAME']").val("");
+
+	   } else if (json_obj.dataIdsValue) {
+        $("input[name='WORKFLOWS']").val(json_obj.dataIdsValue);
+        $("input[name='WORKFLOWS_NAME']").val(json_obj.dataNamesValue);
+
+    }
+}
+</script>

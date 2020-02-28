@@ -1,0 +1,210 @@
+<% include("common/head.html"){} %>
+<link rel="stylesheet" type="text/css" href="<#jsCssPath url="/login/loginstyle.css"/>" />
+<link rel="stylesheet" type="text/css" href="<#jsCssPath url="/login/bg.css"/>" />
+</head>
+<script>
+	if (window.top!=window.self){
+		window.top.location.href="./";
+	}
+</script>
+
+<body>
+	<div class="header">
+		<div class="header__width">
+			<div class="header__logo">${!(kind_framework_common_params_system_title)}</div>
+		</div>
+	</div>
+	<div class="middel">
+		<div class="middel__cont">
+			<div class="middel__from">
+				<div title='切换二维码登录！' id="qrcodeLoginBtn" style="display: none;width: 50px; height: 50px; position: absolute; top: 2px; right: 0;" onclick="switchLoginForm(1)">
+					<img src='<#jsCssPath url="/images/qr_code.png"/>'>
+				</div>
+				<div title='切换账号密码登录！' id="pcLoginBtn" style="width: 50px; height: 50px; position: absolute; top: 2px; right: 0; display: none;" onclick="switchLoginForm(2)">
+					<img src="<#jsCssPath url="/images/pc.png"/>">
+				</div>
+				<div id="qrCodeContainer" style="text-align: center; display: none;">
+					<image id="qrCode" src="" style="width: 200px; height: 200px;" />
+					<div id="qrCodeRefresh" style="width: 200px; height: 200px; display: none; margin: auto; opacity: 0.7;" onclick="doRefresh()">
+						<image id="qrCodeRefresh" src="<#jsCssPath url="/images/png64x64/740.png"/>
+						" style="width: 62px; height: 62px; margin-top: 62px;"/>
+					</div>
+					<br> <a href="javascript:;" onclick="refreshQrcode()">刷新</a>
+					<div id="result" style="color: red;">请使用E手签扫码登录！</div>
+				</div>
+				<form action="restful" id='form'>
+					<input id="login_action" name='action' type="hidden" value="<#encAction action="kind_base_user_login"/>">
+					<div class="middel__hd">账户登录</div>
+					<div class="middel__line">
+						<div class="middel__icon">
+							<img src="<#jsCssPath url="/login/images/icon1.png"/>">
+						</div>
+						<input type="text" name='username' id="username" placeholder="用户名" />
+					</div>
+					<div class="middel__line">
+						<div class="middel__icon">
+							<img src="<#jsCssPath url="/login/images/icon2.png"/>">
+						</div>
+						<input type="password" name='password' id="password" value="" />
+					</div>
+					<div class="middel__line">
+						<div class="middel__icon">
+							<img src="<#jsCssPath url="/login/images/icon3.png"/>">
+						</div>
+						<input name='verifycode' id="verifyCode_input" type="text" value='' style="width: 120px;" maxlength="4" />
+						<div class="" style="padding-top: 10px; padding-left: 230px;">
+							<img id='verifyCode' title="点击重置" src="" onclick="resetImg()" style='display: none; cursor: pointer;'>
+						</div>
+					</div>
+					<!-- 	<div class="middel__line-bg">
+						<a href="#">忘记密码？</a>
+					</div> -->
+					<button id="login" type="button" class="middel__btn">登 录</button>
+					<div class="middel__line-bg" style="display: none;">
+						如果你忘记了密码？请<a href="#"> 点击这里</a>
+					</div>
+			</div>
+			<div class="middel__img"></div>
+
+			</form>
+		</div>
+	</div>
+	<div class="bottom">使用单位：${!(kind_framework_common_params_system_portal_title)}，技术支持：${!(kind_framework_common_params_system_portal_copyright)} &copy; ${date(),'yyyy'}</div>
+</body>
+
+<script>
+	$(function() {
+		$(document).attr("title","${!(kind_framework_common_params_system_portal_title)}");
+		if("${initStart!}"!="1" && $("#login_action").val()==''){
+			var sUrl="do?action=login&initStart=1";
+			var returnUrl="<%if(has(ReturnURL)){print(ReturnURL);}else{print('');}%>";
+			if(returnUrl!=''){
+				//returnUrl=unescape(decodeURI(returnUrl));
+				sUrl+="&ReturnURL="+returnUrl;
+			}
+			window.location.href=sUrl;
+			return;
+		}
+		$("#login").click(function() {
+			if($("#username").val().length==0){
+				showMsg("请输入用户名!");
+				return false ;
+			}
+			if($("#password").val().length==0){
+				showMsg("请输入密码!");
+				return false ;
+			}
+	
+			if( ${VERIFY_FLAG!'1'=='0'?false:true}&&$("#verifyCode_input").val().length==0){
+				showMsg("请输验证码！");
+				return false ;
+			}
+			
+			postForm("form", function(obj) {
+		
+				//这里需要解码
+				var ssoReturnUrl=unescape(decodeURI("<%if(has(ReturnURL)){print(ReturnURL);}else{print('');}%>"));
+				if(ssoReturnUrl!=''){
+					window.location.href = ssoReturnUrl;
+				}else{
+					window.location.href = 'do?action=<#encAction action="goto_subsystem"/>';
+				}
+			},function(obj){
+				//失败了，重新获取验证码
+				resetImg();
+			});
+		});
+		
+		 ${VERIFY_FLAG!'1'=='0'?'':'resetImg();'}
+	});
+	
+	function resetImg(){
+		postAjax("restful?action=getVerifyCode",{},function(obj){
+			$("#verifyCode").attr("src","data:image/jpg;base64,"+obj.img_base64);
+			$("#verifyCode").show();
+		},0,1);
+	}
+	
+	// 监听回车键
+	$("body").bind("keydown", function(e){
+		var theEvent = e || window.event;    
+		var code = theEvent.keyCode || theEvent.which || theEvent.charCode;    
+		if (code == 13) {
+			$('#login').click();
+		}    
+	});
+	
+	
+	// 二维码登录相关
+	
+	$(function () {
+		refreshQrcode();
+	});
+	
+	function doRefresh() {
+		refreshQrcode();
+		checkEsignLogin();
+		$("#qrCode").show();
+		$("#qrCodeRefresh").hide();
+		$("#result").html("请使用E手签APP扫码登录！");
+	}
+	
+	function refreshQrcode() {
+		$("#qrCode").attr("src", "do?action=esign_get_login_qrcode&v=" + (new Date().getTime()));
+	}
+	
+	function switchLoginForm(type) {
+		if (type == 1) {  // 二维码登录模式
+			$("#qrcodeLoginBtn").hide();
+			$("#pcLoginBtn").show();
+			$("#qrCodeContainer").show();
+			$("#form").hide();
+			checkEsignLogin();
+		} else {  // 帐号密码模式
+			$("#qrcodeLoginBtn").show();
+			$("#pcLoginBtn").hide();
+			$("#qrCodeContainer").hide();
+			$("#form").show();
+			clearInterval(checkEsignLoginInterval);
+		}
+	}
+	
+	var checkEsignLoginInterval;
+	function checkEsignLogin() {
+		checkEsignLoginInterval = setInterval(function () {
+			$.post("restful?action=esign_get_login_result", function (data) {
+				if (data.g_result == 1) {
+					var code = data.code ? data.code : "-1";
+					if (code == -1) {
+						$("#result").html("服务器响应异常");
+					} else if (code == 0) {
+						$("#result").html("验证通过");
+						window.location.href = 'do?action=<#encAction action="dataexchange_index"/>';
+					} else if (code == 1) {
+						$("#result").html("已经登录，正在跳转");
+						window.location.href = 'do?action=<#encAction action="dataexchange_index"/>';
+					} else if (code == 2) {
+						$("#result").html("二维码已超时，请点击刷新");
+ 						refreshQrcode();
+						clearInterval(checkEsignLoginInterval);
+						$("#qrCode").hide();
+						$("#qrCodeRefresh").show();
+					} else if (code == 5) {
+						
+					} else {
+// 						clearInterval(checkEsignLoginInterval);
+// 						window.top.$.messager.confirm("确认", data.g_message, function (r) {
+// 							checkEsignLogin();
+// 						});
+						$("#result").html(data.g_message);
+					}
+				} else {
+					$("#result").html(data.g_message);
+				}
+			}, "json");
+		}, 1000);
+	};
+
+</script>
+
+</html>

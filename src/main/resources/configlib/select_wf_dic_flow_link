@@ -1,0 +1,54 @@
+[{
+
+	"ActAction": {
+		"type": "selPaginSql",
+		"tableConfig": [{
+			"name": "SYS_RESOURCES_WORKFLOW",
+			"alias": "d",
+			"linkType": ",",
+			"linkStr": ""
+		},{
+			"name": "SYS_RESOURCES",
+			"alias": "c",
+			"linkType": ",",
+			"linkStr": "d.RID=C.RID"
+		}],
+		"paramConfig": [{
+			"name": "RID",
+			"tableAlias": "c"
+		},{
+			"name": "TITLE",
+			"alias": "MENU_NAME",
+			"tableAlias": "c"
+		},{
+			"name": "FLOW_ID",
+			"alias": "FLOW_ID",
+			"tableAlias": "d"
+		},{
+			"name": "FLOW_NAME",
+			"alias": "FLOW_NAME",
+			"tableAlias": "d"
+		}],
+		"keyName": "rows",
+
+		"whereConfig": [{
+		"from": "RS#!SEL_FLOW_NAME",
+			"name": "FLOW_NAME",
+			"tableAlias": "D",
+			"type": "%%",
+			"value": ""
+		},{
+		"from": "RS#!SEL_FLOW_ID",
+			"name": "FLOW_ID",
+			"tableAlias": "D",
+			"type": "%%",
+			"value": ""
+		}],
+		"orderConfig":[{
+			"name": "ALLORDIDX",
+			"tableAlias": "c",
+			"type": ""
+		
+		}]
+	}
+}]

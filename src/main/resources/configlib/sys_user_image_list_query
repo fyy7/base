@@ -1,0 +1,83 @@
+[{
+"ActPostposition":[{
+	"type":"LISTTURNCODE",
+	"target":"rows",
+	"TURNCODE":[{
+		"field":"IMGAE_ISDEL",
+		"dmlx":"dmb.YESNODM",
+	},
+	{
+		"field":"ISDEL",
+		"dmlx":"dmb.YESNODM",
+	}
+	]
+	}],
+	"ActAction": {
+		"type": "selPaginSql",
+		"tableConfig": [{
+			"name": "HR_PERSONNEL_BASE_IMAGE",
+			"alias": "d",
+			"linkType": ",",
+			"linkStr": ""
+		},{
+			"name": "SYS_N_USERS",
+			"alias": "a",
+			"linkType": "left",
+			"linkStr": "a.OPNO=d.PERSONID"
+		}],
+		"paramConfig": [{
+			"name": "PERSONNAME",
+			"alias": "IMGAE_PERSONNAME",
+			"tableAlias": "d"
+		},{
+			"name": "MOBILEPHONE",
+			"alias": "IMGAE_MOBILEPHONE",
+			"tableAlias": "d"
+		},{
+			"name": "ISDEL",
+			"alias": "IMGAE_ISDEL",
+			"tableAlias": "d"
+		},{
+			"name": "OPNAME",
+			"alias": "OPNAME",
+			"tableAlias": "a"
+		},{
+			"name": "MOBILE",
+			"alias": "MOBILE",
+			"tableAlias": "a"
+		},{
+			"name": "ISDEL",
+			"alias": "ISDEL",
+			"tableAlias": "a"
+		},{
+			"name": "PERSONID",
+			"alias": "KEY",
+			"tableAlias": "d"
+		}],
+		"keyName": "rows",
+		
+		"whereConfig": [
+		
+		{
+			"name": "data_exchange_flag",
+			"tableAlias": "d",
+			"type": "=",
+			"value": "1"
+		},{
+
+			"from": "RS#!SEL_OPNAME",
+			"name":"PERSONNAME",
+			"tableAlias": "D",
+			"type": "%%",
+		
+		}
+		
+		],
+		"orderConfig":[{
+			"name": "LASTUPDATETIME",
+			"tableAlias": "d",
+			"type": ""
+		
+		}]
+	}
+}]

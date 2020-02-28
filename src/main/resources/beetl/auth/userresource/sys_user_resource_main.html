@@ -1,0 +1,131 @@
+<% include("../../common/head.html"){} %>
+<form name="form1" id="form1">
+	<div id="fieldset_condition" style="margin: 0px;">
+		<fieldset>
+			<legend id="fieldset_legend" onclick="fieldsetToggle('fieldset_legend','${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/');" style="cursor: pointer;" title="点击：显示/隐藏">
+				<img src='${kind_framework_ms_urls_resource==null?'.':kind_framework_ms_urls_resource}/images/DHTMLSuite_minus.gif' />查询条件
+			</legend>
+			<table style="width: 100%;" id="fieldset_data">
+				<tr>
+					<td>机构：<select name="SEL_UNIT" id='SEL_UNIT' class="txtitem" style="width: 200px;" onchange="getDeptList(this.value)">
+							<option value=''>--</option>
+					</select> 姓名：<input name="SEL_OPNAME" type="text" size="15" class="txtitem" />&nbsp;&nbsp; 是否分配：[<input name='SEL_TYPE' type="radio" id='id_type_0' value='0' checked="checked" /><label for='id_type_0'>未分配</label> <input name='SEL_TYPE' type="radio" id='id_type_1' value='1' /><label for='id_type_1'>已分配</label> ]&nbsp;&nbsp; <a href="#" class="easyui-linkbutton btn_query" data-options="iconCls:'icon-search'" onclick='queryData()'>查询</a> <br /> 部门：<select name="SEL_DEPTID" id='SEL_DEPARTMENT' class="txtitem" style="width: 200px;">
+							<option value=''>--</option>
+					</select> 账号：<input name="SEL_OPACCOUNT" type="text" size="15" class="txtitem" />
+					</td>
+				</tr>
+			</table>
+		</fieldset>
+	</div>
+
+	<div>
+		<table id="dg" class="easyui-datagrid" title="">
+			<thead>
+				<tr>
+					<th data-options="field:'OPACCOUNT',width:120,align:'left',halign:'center'">账号</th>
+					<th data-options="field:'OPNAME',width:120,align:'left',halign:'center'">姓名</th>
+					<th data-options="field:'UNNAME',width:200,align:'left',halign:'center'">机构</th>
+					<th data-options="field:'DEPARTMENTNAME',width:200,align:'left',halign:'center'">部门</th>
+					<th data-options="field:'MAIN_DEPT_FLAG',width:80,align:'center',formatter:paisex">主要部门</th>
+
+					<th data-options="field:'ENABLED',width:80,align:'center',formatter:paisex">启用标志</th>
+				</tr>
+			</thead>
+		</table>
+	</div>
+</form>
+
+<script>
+	function getDeptList(ogranId){
+		  var json={};
+		    json["ORGANID"]=ogranId;
+		    $("#SEL_DEPARTMENT").empty();
+		    $("#SEL_DEPARTMENT").append("<option value=''>--</option>");
+		    act_setSelectValue('<#encAction action="act"/>',"SEL_DEPARTMENT","select_dept_query",json);
+	}
+
+	
+	//初始化加载
+	$(function() {
+		act_setSelectValue('<#encAction action="act"/>','SEL_UNIT','select_organid_query',null,'ALLORDIDX');
+		var pager = $('#dg').datagrid('getPager');//获取表格分页
+		pager.pagination({
+			buttons : stoolbar
+		});
+	});
+
+	//自动缩放
+	$(window).resize(function() {
+		$('#dg').resizeDataGrid($("#fieldset_condition").height(), 4, 0, 0);
+	});
+
+	//查询
+	function queryData() {
+		var s_url = "restful?action=<#encAction action="sys_user_resource_query"/>";
+		$('#dg').datagrid({
+			url : s_url,
+			pageNumber:1,
+			queryParams : $('#form1').serializeObject(),
+			onLoadSuccess : function(data) {
+				$(window).resize();
+				//成功验证是否有无出错
+				if (data.g_result == "0") {
+					showMsg(data.g_message);
+				}
+			},
+			onDblClickRow : function(rowIndex, rowData) {
+			
+			}
+		});
+		var pager = $('#dg').datagrid('getPager'); //获取表格分页
+		pager.pagination({
+			buttons : stoolbar
+		});
+	}
+	
+
+	//刷新查询
+	function refreshQueryData(jsondata) {
+		if (jsondata.g_result && jsondata.g_result == '1') {
+			if (!jsondata.showMsgFlag) {
+				//没有显示过的，显示
+				showMsg(jsondata.g_message);
+			}
+			queryData();
+		}
+	}
+	function setResourceData(title,opno,dept_id,org_id){
+		openWindow(title, 'do?action=<#encAction action="sys_user_rights"/>&ORG_ID='+org_id+'&DEPT_ID='+dept_id+'&OPNO=' + opno, 800,1024, "refreshQueryData");
+	}
+
+
+	//底部按钮
+	var stoolbar = [<#hasButton code="resources.user_1">	
+	{
+		text : '分配权限',
+		iconCls : 'icon-add',
+		handler : function() {
+			var rows = $('#dg').datagrid('getSelections');
+			if (rows.length != 1) {
+				showMsgAndExecFn("请选择一条数据！", "");
+				return;
+			}
+			setResourceData('分配权限', rows[0].OPNO,rows[0].DEPT_ID,rows[0].ORG_ID);
+		}
+	}</#hasButton>];
+	
+	/* 代码转换 */
+	function paisex(val ,row){
+		if(val=='1'){
+			return "是";
+		}
+		
+		if (val=='0') {
+			return "否";
+		}
+		
+		return "";
+	}
+	
+</script>
+<% include("../../common/end.html"){} %>

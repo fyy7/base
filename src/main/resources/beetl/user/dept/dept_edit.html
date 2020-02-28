@@ -1,0 +1,119 @@
+<script type="text/javascript">
+   var pid = '${PARENTID}';
+   $("#PARENTID").find("option[value='" + pid + "']").attr("selected", true);
+   
+   var sel_id_userid, sel_id_username, sel_id_deptid, sel_id_deptname;
+   function selectUser(multi, org_modify, id_userid, id_username, id_deptid, id_deptname){
+	   sel_id_userid=id_userid;
+	   sel_id_username=id_username;
+	   sel_id_deptid=id_deptid;
+	   sel_id_deptname=id_deptname;
+       //打开选择的窗口
+       var params = "&MULTI=" + multi;
+       params = params + "&ORG_MODIFY=" + org_modify;
+       params = params + "&ID_USERID=" + id_userid;
+       params = params + "&ID_USERNAME=" + id_username;
+       params = params + "&ID_DEPTID=" + id_deptid;
+       params = params + "&ID_DEPTNAME=" + id_deptname;
+       params = params + "&DEPTID=" + $("#DEPTID").val();
+       openWindow("部门分管领导选择","do?action=<#encAction action="user_select"/>&ORG_MODIFY=0&ORGANID="+$("#form1 input[name='ORGANID']").val()+params, "520", "900", "returnSelectUsersValue");
+   }
+   function returnSelectUsersValue(json_obj) {
+	   if (json_obj.clear==1) {
+		   $("input[name='"+sel_id_userid+"']").val("");
+           $("input[name='"+sel_id_deptid+"']").val("");
+           $("input[name='"+sel_id_username+"']").val("");
+           $("input[name='"+sel_id_deptname+"']").val("");
+	   } else if (json_obj.userIdsValue) {
+           $("input[name='"+sel_id_userid+"']").val(json_obj.userIdsValue);
+           $("input[name='"+sel_id_deptid+"']").val(json_obj.deptIdsValue);
+           $("input[name='"+sel_id_username+"']").val(json_obj.userNamesValue);
+           $("input[name='"+sel_id_deptname+"']").val(json_obj.deptNamesValue);
+       }
+   }
+   $(function(){
+	   initSelect();
+	   
+   })
+</script>
+<form id="form1" name="form1" method="post" action="restful">
+	<input type="hidden" name="action" value="<#encAction action="dept_save"/>"> <input type="hidden" name="DEPTID" id="DEPTID" value="${!(BEAN.DEPTID)}"> <input type="hidden" name="DLEVEL" value="${!(BEAN.DLEVEL)}">
+	<!-- 层次 -->
+	<input type="hidden" name="ORDIDX" value="${!(BEAN.ORDIDX)}">
+	<!-- 排序号 -->
+	<input type="hidden" name="ALLORDIDX" value="${!(BEAN.ALLORDIDX)}">
+	<!-- 全部排序号 -->
+	<input type="hidden" name="ORGANID" value="${!(ORGANID)}">
+	<!-- 所属组织 -->
+	<input type="hidden" name="CMD" id="CMD" value="${CMD}"> <input type="hidden" name="TYPE" id="TYPE" value="${TYPE!}">
+	<table width="100%" cellspacing="1" class="infotable" border="0" class="dataintable form_bod">
+		<tr height="30">
+			<td style="font-size: 15px; font-weight: bold; border-bottom: 1px solid #ccc;" colspan="2" align="left">${DEPTID == "" ? "新增":"修改"}部门：</td>
+		</tr>
+		<tr height="30" style="display: none;">
+			<td align="right" class="infotitle" style="width: 120px">部门标识：</td>
+			<td><input type="text" name="DEPTDM" id="DEPTDM" value="${!(BEAN.DEPTDM)}" class="txtitem" style="width: 50%" required="true" check="yz_positivenum1" warning="部门标识格式不正确！"></td>
+		</tr>
+		<tr height="30">
+			<td align="right" class="infotitle" width="120">部门名称：</td>
+			<td><input type="text" name="DEPTNAME" value="${!(BEAN.DEPTNAME)}" class="txtitem" maxnum="100" title="部门名称" style="width: 91%" required="true" check="yz_notblank" warning="部门名称不能为空，且不能包含空格！"></td>
+		</tr>
+		<tr height="30">
+			<td align="right" class="infotitle">上级部门：</td>
+			<td><select name="PARENTID" id="PARENTID" style="width: 91%" required="true" check="yz_selectone" warning="上级部门必须选择一项！" select-value="${!(BEAN.PARENTID)}"> <% for(SUPER in SUPER_LIST){ %>
+					<option value="${SUPER.DEPTID}">${SUPER.ALLORDIDX}${SUPER.DEPTNAME}</option> <% } %>
+			</select></td>
+		</tr>
+		 <tr height="26" class="infotitle">
+			<td align="right" class="infotitle" width="110">部门类型：</td>
+			<td>
+				<table style="border: 1px solid #abc6de;border-radius: 3px;width:91%;color: #666;">
+				<%
+          for(var i=0;i<DEPT_TYPE_LIST.~size;i++){
+        %>
+          ${i%3==0?"<tr temp='temp'>":""}
+          <td align="right" width="10%" style="color:white">
+            ${DEPT_TYPE_LIST[i].BVALUE}
+             <input type='checkbox' ${DEPT_TYPE_LIST[i].BSELECT==1?'checked':''} onchange="if(this.checked){$('#BSELECT_${i}').val('1');}else{$('#BSELECT_${i}').val('0');}"/>
+          </td>
+          <td>
+            <input name="BSELECT" id="BSELECT_${i}" value="${DEPT_TYPE_LIST[i].BSELECT}" type='hidden'/>
+            <input name="BVALUE" value="${DEPT_TYPE_LIST[i].BVALUE}" type='hidden'/>
+            <input name="BTITLE" value="${DEPT_TYPE_LIST[i].BTITLE}" type='text' style="width: 120px;"/>
+          </td>
+          ${(i%3==2 && i>0)?"</tr>":""}
+        <%
+          }
+        %>
+				</table>
+			</td>
+		</tr>
+		<tr height="30">
+         <td align="right" class="infotitle">分管领导：</td>
+         <td>
+            <input id="LEADER_USERID" name="LEADER_USERID" value="${BEAN.LEADER_USERID!}" type="hidden" class="txtitem" />
+            <input id="LEADER_DEPTID" name="LEADER_DEPTID" value="${BEAN.LEADER_DEPTID!}" type="hidden" class="txtitem" />
+            <input id="LEADER_DEPTNAME" name="LEADER_DEPTNAME" value="${BEAN.LEADER_DEPTNAME!}" type="hidden" class="txtitem" />
+            <input id="LEADER_USERNAME" name="LEADER_USERNAME" value="${BEAN.LEADER_USERNAME!}" type="text" class="txtitem" style="width: 91%" onclick="selectUser(0,0,'LEADER_USERID','LEADER_USERNAME','LEADER_DEPTID','LEADER_DEPTNAME');return false;" readOnly />
+         </td>
+       </tr> 
+       <tr height="30">
+         <td align="right" class="infotitle">部门领导：</td>
+         <td>
+            <input id="HEAD_USERID" name="HEAD_USERID" value="${BEAN.HEAD_USERID!}" type="hidden" class="txtitem" />
+            <input id="HEAD_DEPTID" name="HEAD_DEPTID" value="${BEAN.HEAD_DEPTID!}" type="hidden" class="txtitem" />
+            <input id="HEAD_DEPTNAME" name="HEAD_DEPTNAME" value="${BEAN.HEAD_DEPTNAME!}" type="hidden" class="txtitem" />
+            <input id="HEAD_USERNAME" name="HEAD_USERNAME" value="${BEAN.HEAD_USERNAME!}" type="text" class="txtitem" style="width: 91%" onclick="selectUser(0,0,'HEAD_USERID','HEAD_USERNAME','HEAD_DEPTID','HEAD_DEPTNAME');return false;" readOnly />
+         </td>
+       </tr> 
+		<tr height="30">
+			<td align="right" class="infotitle">备注：</td>
+			<td><textarea name="REMARK" rows="3" maxnum="255" title="备注" style="width: 89.5%">${!(BEAN.REMARK)}</textarea></td>
+		</tr>
+		<tr height="30">
+			<td colspan="2" align="center"><#hasButton code="userpower.branch_2">
+				<a id="id_a_add" href="#" class="easyui-linkbutton btn_edit" onclick="saveData();return false;">保存</a></#hasButton> <#hasButton code="userpower.branch_8">
+				<a id="id_a_del" href="#" class="easyui-linkbutton btn_close" onclick="delData();return false;" style="display: none;">删除</a></#hasButton></td>
+		</tr>
+	</table>
+</form>

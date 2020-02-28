@@ -1,0 +1,108 @@
+[{
+	"ActPreposition": {
+		"name": "test",
+		"preposition": [{
+			"from": "ss#!title",
+			"type": "str_null",
+			"value": ""
+		}, {
+			"from": "ss#!name",
+			"type": "str_null",
+			"value": ""
+		}],
+		"logic": "or"
+	},
+	"ActPostposition":[{
+	"type":"LISTTURNCODE",
+	"target":"rows",
+	"TURNCODE":[{
+		"field":"ENABLED",
+		"dmlx":"YESNODM",
+	},
+	{
+		"field":"MAIN_DEPT_FLAG",
+		"dmlx":"YESNODM",
+	}
+	]
+	}],
+	"ActAction": {
+		"type":"assemble",
+		"tableConfig": [{
+			"name": "SYS_N_USERS",
+			"alias": "a",
+			"linkType": "",
+			"linkStr": ""
+		}, {
+			"name": "SYS_N_USER_DEPT_INFO",
+			"alias": "b",
+			"linkType": ",",
+			"linkStr": " a.opno=b.opno "
+		}, {
+			"name": "SYS_DEPARTMENT_INFO",
+			"alias": "c",
+			"linkType": ",",
+			"linkStr": " b.DEPT_ID=c.DEPTID "
+		}, {
+			"name": "SYS_ORGANIZATION_INFO",
+			"alias": "d",
+			"linkType": ",",
+			"linkStr": "  B.ORGAN_ID = D.ORGANID and C.ORGANID=D.ORGANID  "
+		}],
+		"paramConfig": [{
+			"name": "MAIN_DEPT_FLAG",
+			"alias": "MAIN_DEPT_FLAG",
+			"tableAlias": "b"
+		}, {
+			"name": "opno",
+			"alias": "OPNO",
+			"tableAlias": "a"
+		}, {
+			"name": "OPNAME",
+			"alias": "OPNAME",
+			"tableAlias": "a"
+		}, {
+			"name": "OPACCOUNT",
+			"alias": "OPACCOUNT",
+			"tableAlias": "a"
+		}, {
+			"name": "ENABLED",
+			"alias": "ENABLED",
+			"tableAlias": "a"
+		}, {
+			"name": "NAME",
+			"alias": "UNNAME",
+			"tableAlias": "d"
+		}, {
+			"name": "DEPTNAME",
+			"alias": "DEPARTMENTNAME",
+			"tableAlias": "c"
+		}, {
+			"name": "DEPTID",
+			"alias": "DEPT_ID",
+			"tableAlias": "c"
+		}],
+		"keyName": "rows",
+		"orderConfig": [{
+			"name": "ALLORDIDX ",
+			"tableAlias": "D",
+			"type": ""
+		}],
+		"type": "selListSql",
+		"whereConfig": [{
+			"from": "RS#!OPNAME",
+			"tableAlias": "a",
+			"type": "%%",
+			"value": ""
+		},{
+			"from": "RS#!OPACCOUNT",
+			"tableAlias": "a",
+			"type": "%%",
+			"value": ""
+		},{
+			"from": "RS#!ORGAN_ID",
+			"tableAlias": "B",
+			"type": "=",
+			"value": ""
+		}]
+	}
+}]

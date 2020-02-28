@@ -1,0 +1,389 @@
+<% include("../../common/head.html"){} %>
+<script type="text/javascript">
+	var app_setting = {
+		check: {
+			enable: false
+		},
+		view: {
+			selectedMulti: false,
+			addDiyDom: addDiyDomApp
+		},
+		data: {
+			key: {
+				title:"APPNAME",
+				name:"APPNAME"
+			},
+			simpleData: {
+				enable: true,
+				idKey: "APPID"
+			}
+		},
+		callback: {
+			onClick:onClickAppTree
+		}
+	};
+	var setting = {
+		check: {
+			enable: true,
+			chkboxType:  { "Y": "p", "N": "s" }
+		},
+		view: {
+			selectedMulti: false,
+			addDiyDom: addDiyDom
+		},
+		data: {
+			key: {
+				title:"TITLE",
+				name:"TITLE"
+			},
+			simpleData: {
+				enable: true,
+				idKey: "RID",
+				pIdKey: "PARENTID"
+			}
+		},
+		callback: {
+			//onClick:onClickTree
+		}
+	};
+	
+	var zNodes =null;		
+	//已选择数据存储
+	var rolesData=${ROLERIGHTS_ENTRUST_JSON};
+	var appTreeData=${ROLERIGHTS_ENTRUST_TYPE};
+	function onClickAppTree(event, treeId, treeNode, clickFlag){
+		loadTreeData(treeNode);
+	}
+
+	var oldobj=null;
+	$(function(){
+		act_setSelectValue('<#encAction action="act"/>','ORGANID','select_organid_query',null,'ALLORDIDX');
+		act_setSelectValue('<#encAction action="act"/>','rtype','select_dmb_query',{"DMLX":"RES_TYPE"},null,"RES_TYPE");
+		$.fn.zTree.init($("#app_treeData"), app_setting, appTreeData);
+	
+		$("#expandAllBtn").bind("click", {type:"expandAll"}, expandNode);
+		$("#collapseAllBtn").bind("click", {type:"collapseAll"}, expandNode);
+
+		var node=null;
+		$("#cleckType").click(function(){
+			var zTree = $.fn.zTree.getZTreeObj("treeData");
+			if($(this).is(":checked")){
+				setting.check.chkboxType={ "Y": "ps", "N": "s" };
+			}else{
+				setting.check.chkboxType={ "Y": "p", "N": "s" };
+			}
+			zTree.setting.check.chkboxType=setting.check.chkboxType
+		})
+		$("#ROLENAME").val("${SYS_N_ROLES_ENTRUST_LIST.ROLENAME}");
+	});
+	
+
+	function addDiyDomApp(treeId, treeNode){
+	    var spantxt=$("#" + treeNode.tId + "_span").html();  
+        if(spantxt.length>15){  
+            spantxt=spantxt.substring(0,15)+"...";  
+            $("#" + treeNode.tId + "_span").html(spantxt);  
+        }
+	}
+
+	function changeRtype() {
+		var value = getCheckedValue("rtype");
+		if (oldobj && value != oldobj.CHANNEL_RTYPE) {
+			oldobj.CHANNEL_RTYPE = value;
+			loadTreeData(oldobj);
+		}
+
+	}
+	function getCheckedValue(name) {
+		var test = $("input[name='" + name + "']:checked");
+		var checkBoxValue = "";
+		test.each(function() {
+			checkBoxValue += $(this).val() + ",";
+		})
+		checkBoxValue = checkBoxValue.substring(0, checkBoxValue.length - 1);
+		return checkBoxValue;
+	}
+
+	function setCheckedValue(name, value) {
+		var test = $("input[name='" + name + "']:checkbox");
+		var checkBoxValue = "";
+
+		test.each(function() {
+			if (value&&value.indexOf($(this).val()) > -1) {
+				$(this).prop('checked', true);
+			} else {
+				$(this).prop('checked', false);
+			}
+		})
+	}
+
+	//类型列初始化
+	function tun2clecked() {
+		/* 		$("#rtype option[value='00002']").remove();
+		 $("#rtype option[value='00001']").remove();
+		 $("#rtype option[value='00000']").remove();
+		 $("#rtype").prepend("<option check value='default01,00002,00004'>菜单、按钮、工作流资源</option>"); */
+
+		act_select2Checkbox($("#rtype"));
+		if (appTreeData && appTreeData[0]) {
+			var zTree = $.fn.zTree.getZTreeObj("app_treeData");
+			var node = zTree.getNodeByParam("APPID", appTreeData[0].APPID);
+			zTree.cancelSelectedNode();//先取消所有的选中状态
+			zTree.selectNode(node, true);//将指定ID的节点选中
+			loadTreeData(appTreeData[0]);
+		}
+	}
+	function addDiyDom(treeId, treeNode) {
+		var sObj = $("#" + treeNode.tId + "_span");
+		var addStr = "<span id='diyshow_space_" +treeNode.id+ "' > </span>"
+		sObj.after(addStr);
+	}
+	function loadTreeData(jsondata) {
+		//获取div内的值
+		if (jsondata && jsondata.APPID) {
+			var appid = jsondata.APPID;
+			var channel_rtype = jsondata.CHANNEL_RTYPE;
+			if (oldobj != null) {
+				updateJsonData();
+			}
+			oldobj = jsondata;
+			postAjax("restful?action=<#encAction action="get_resources_entrust_ourself"/>&APP_ID="+ appid + "&CHANNEL_RTYPE=" + channel_rtype, "","getTreeDataValue");
+			setCheckedValue("rtype", channel_rtype);
+		}
+
+	}
+	function getTreeDataValue(jsondata) {
+		if (jsondata.g_result == 1) {
+			zNodes = jsondata.value;
+			$("#treeData").empty();
+			initTree();
+		}
+	}
+
+	function initTree() {
+		$.fn.zTree.init($("#treeData"), setting, zNodes);
+		var zTree = $.fn.zTree.getZTreeObj("treeData");
+
+		zTree.expandAll(true);
+		for ( var key in rolesData) {
+			node = zTree.getNodeByParam("RID", key, null);
+			if (node != null) {
+				zTree.checkNode(node, rolesData[key], false, true);
+				node.oldchecked = "Y";
+			}
+		}
+		$(window).resize();
+	}
+
+	function expandNode(e) {
+
+		var zTree = $.fn.zTree.getZTreeObj("treeData");
+		var type = e.data.type;
+		var nodes = zTree.getSelectedNodes();
+		if (type.indexOf("All") < 0 && nodes.length == 0) {
+			alert("请先选择一个父节点");
+		}
+
+		if (type == "expandAll") {
+			zTree.expandAll(true);
+		} else if (type == "collapseAll") {
+			zTree.expandAll(false);
+		}
+	}
+	function updateJsonData() {
+
+		var zTree = $.fn.zTree.getZTreeObj("treeData");
+		if (zTree) {
+			//获取勾选的
+			var nodes = zTree.getCheckedNodes(true);
+			if (nodes.length > 0) {
+				for (var j = 0; j < nodes.length; j++) {
+					if (!rolesData[nodes[j].RID]) {
+						rolesData[nodes[j].RID] = true;
+					}
+				}
+			}
+			//获取未勾选的
+			nodes = zTree.getCheckedNodes(false);
+			if (nodes.length > 0) {
+				for (var j = 0; j < nodes.length; j++) {
+					if (rolesData[nodes[j].RID]) {
+						rolesData[nodes[j].RID] = false;
+					}
+				}
+			}
+		}
+	}
+	function saveData() {
+		var roleRightsAdd = "";
+		var roleRightsDel = "";
+
+		updateJsonData();
+
+		for ( var key in rolesData) {
+
+			if (rolesData[key] == true) {
+
+				roleRightsAdd += key + ";";
+			} else {
+				roleRightsDel += key + ";";
+			}
+		}
+
+		roleRightsAdd = roleRightsAdd.substr(0, roleRightsAdd.length - 1);
+		roleRightsDel = roleRightsDel.substr(0, roleRightsDel.length - 1);
+
+		$("#RoleRights_Add").val(roleRightsAdd);
+		$("#RoleRights_Del").val(roleRightsDel);
+		$("#RoleRights_Json").val(JSON.stringify(rolesData));
+
+		submitFormData("form1", "");
+	}
+
+	function getDeptTreeDate() {
+		var obj = $("#ORGANID").val();
+		showWaitMsg();
+		if (obj == '') {
+			hideWaitMsg();
+			return;
+		}
+
+		postAjax(
+				"restful?action=<#encAction action="act"/>&flagId=select_dept_query&ORGANID="
+						+ obj, "", "getDeptTreeDataValue");
+		hideWaitMsg();
+	}
+
+	function getDeptTreeDataValue(jsondata) {
+		if (jsondata.g_result == '0') {
+			showMsg(jsondata.g_message);
+			return;
+		}
+
+		var _html = "";
+		$("#DEPTID option").remove();
+		$("#DEPTID").append("<option value=''>-请选择-</option>");
+		$.each(jsondata.rows, function(n, json) {
+			_html += "<option value='"+json.DM+"'>" + json.DMNR + "</option>";
+		});
+		$("#DEPTID").append(_html);
+		var falg = "${FALG!}";
+		if (falg) {
+			var deptId = $("#DEPT_ID").val();
+			$("#DEPTID option[value='" + deptId + "']").attr("selected",
+					"selected");
+		} else {
+			$("#DEPTID option[value='${session[session_name].DeptId}']").attr(
+					"selected", "selected");
+		}
+
+		getUserTreeDate();
+	}
+
+	function getUserTreeDate(obj) {
+		var obj = $("#DEPTID").val()
+		showWaitMsg();
+		var organid = $("#ORGANID").val();
+		postAjax(
+				"restful?action=<#encAction action="sys_entrust_get_entrust_list"/>&ORGANID="
+						+ organid + "&DEPT_ID=" + obj, "",
+				"getUserTreeDataValue");
+		hideWaitMsg();
+	}
+
+	function getUserTreeDataValue(jsondata) {
+		if (jsondata.g_result == '0') {
+			showMsg(jsondata.g_message);
+			return;
+		}
+
+		var _html = "";
+		$("#OPACCOUNT option").remove();
+		$("#OPACCOUNT").append("<option value=''>-请选择-</option>");
+		$.each(jsondata.rows, function(n, json) {
+			_html += "<option value='" + json.OPNO + "," + json.DEPT_ID + "'>"
+					+ json.OPNAME + "</option>";
+		});
+		$("#OPACCOUNT").append(_html);
+		var opno = $("#OPNO").val();
+		var deptId = $("#DEPT_ID").val();
+		$("#OPACCOUNT option[value='" + opno + "," + deptId + "']").attr(
+				"selected", "selected");
+	}
+
+	function getUserNameDate(obj) {
+		var opaccount = $("#OPACCOUNT option:selected").val();
+		if (opaccount == '') {
+			return;
+		}
+
+		var options = $("#OPACCOUNT option:selected").text();
+		$("#ROLENAME").val(options);
+		operateDataRole();
+	}
+
+	//角色操作
+	function operateDataRole() {
+		var options = $("#OPACCOUNT option:selected").val();
+		if (options) {
+			var option = options.split(",");
+			$("#OPNO").val(option[0]);
+			$("#DEPT_ID").val(option[1]);
+		}
+	}
+
+	//自动缩放
+	$(window).resize(function() {
+		$('#id_div_tree').height($(window).height() - 110);
+	});
+</script>
+<div style="width: 260px; z-index: 9999; position: fixed ! important; right: 0px; top: 95px;">
+	<select name="rtype" id="rtype" onchange="changeRtype()" sucFunc="tun2clecked"></select>
+</div>
+<form id="form1" name="form1" method="post" action="restful">
+	<input type="hidden" name="action" value="<#encAction action="sys_entrust_save"/>" /> 
+	<input type="hidden" name="ROLEID" id="ROLEID" value="${SYS_N_ROLES_ENTRUST_LIST.ROLEID}" /> 
+	<input type="hidden" name="PID" id="PID" value="${SYS_N_ROLESUSER_ENTRUST_LIST.PID!}" /> 
+	<input type="hidden" name="OPNO" id="OPNO" value="${SYS_N_ROLESUSER_ENTRUST_LIST.OPNO!}" /> 
+	<input type="hidden" name="DEPT_ID" id="DEPT_ID" value="${SYS_N_ROLESUSER_ENTRUST_LIST.DEPT_ID!}" /> 
+	<input type="hidden" name="ROLENAME" id="ROLENAME" value="${SYS_N_ROLES_ENTRUST_LIST.ROLENAME!}" /> 
+	<input type="hidden" name="RoleRights_Add" id="RoleRights_Add" /> 
+	<input type="hidden" name="RoleRights_Del" id="RoleRights_Del" /> 
+	<input type="hidden" name="RoleRights_Json" id="RoleRights_Json" />
+	<table border='0' style="width: 100%">
+		<tr>
+			<td align="right" width="50">机构：</td>
+			<td width="200"><select name='ORGANID' id='ORGANID' style="width: 200px;" sucFunc="getDeptTreeDate" onchange="getDeptTreeDate();"></select></td>
+			<td align="right" width="90">部门：</td>
+			<td width="180"><select name='DEPTID' id='DEPTID' style="width: 160px;" sucFunc="getUserTreeDate"  onchange="getUserTreeDate();"></select></td>
+			<td align="right" width="70">被委托人：</td>
+			<td width="180"><select name='OPACCOUNT' id='OPACCOUNT' style="width: 160px;" required="true" check="yz_notblank" warning="受托人不能为空" onchange="getUserNameDate(this.value);"></select></td>
+			<td><span><input id="cleckType" type="checkbox"><label for="cleckType">级联选择</label></span></td>
+		</tr>
+		<tr>
+			<td align="right">备注：</td>
+			<td><span><input type='text' name='REMARK' value="${SYS_N_ROLES_ENTRUST_LIST.REMARK}" style="width: 200px;" class="txtitem" maxnum="250" title="备注" /></span></td>
+			<td align="right">委托期限：</td>
+			<td><input name="BEGINDATE" type="text" id="BeginDate" value="${SYS_N_ROLES_ENTRUST_LIST.BEGINDATE}" style="width: 160px;" class="Wdate" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:true,readOnly:true,maxDate:'#F{$dp.$D(\'EndDate\')}'})" size="12" required="true" warning="有效时间不能为空"></td>
+			<td align="right">至：</td>
+			<td><input name="ENDDATE" type="text" id="EndDate" value="${SYS_N_ROLES_ENTRUST_LIST.ENDDATE}" style="width: 160px;" class="Wdate" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:true,readOnly:true,minDate:'#F{$dp.$D(\'BeginDate\')}'})" size="12" required="true" warning="有效时间不能为空"></td>
+			<td><#hasButton code="resource.entrust_2">
+				<a href="#" class="easyui-linkbutton btn_edit" style="margin: 0px;" onclick="saveData();return false;">保存</a></#hasButton></td>
+		</tr>
+	</table>
+</form>
+<table border='0' style="width: 100%">
+	<tr>
+		<td width="260px" valign="top" style="border-top: solid 1px;display:none ">
+			<div id="app_ul_div" class="app_ul_div select" style="vertical-align: top;">
+				<ul id="app_treeData" class="ztree"></ul>
+			</div>
+		</td>
+		<td width="100%" style="border-top: solid 1px; border-left: solid 1px; height: 300px">
+			<div id="id_div_tree" class="ztree" style="overflow-y: auto;">
+				<ul id="treeData" class="ztree"></ul>
+			</div>
+		</td>
+	</tr>
+</table>
+<% include("../../common/end.html"){} %>

@@ -1,0 +1,84 @@
+<SCRIPT type="text/javascript">
+	var setting = {
+		check: {
+			enable: false
+		},
+		view: {
+			selectedMulti: false
+		},
+		data: {
+			key: {
+				title:"TITLE"
+			},
+			simpleData: {
+				enable: true
+			}
+		},
+		callback: {
+			onClick:onClickTree
+		}
+	};
+	function onClickTree(event, treeId, treeNode, clickFlag) {
+		queryData(treeNode.RID);
+	}
+	
+	function queryData(rid){
+		var opno="#{USER_BEAN.get('OPNO')}";
+		var deptid="#{USER_BEAN.get('DEPTID')}";
+		postAjaxAndGetHtml("HttpChannel?action=<#encAction action="sys_user_rights_show_roles"/>","RID="+rid+"&noHtmlHeadFlag=1&OPNO="+opno+"&DEPTID="+deptid,"getResourceHtml");
+	}
+	
+	function getResourceHtml(data){
+		$("#id_div_resoure").html(data);
+		$.parser.parse($("#id_div_resoure"));//渲染  
+	}
+		
+	
+	var zNodes =#{RESOURCES_JSON};		
+
+	function expandNode(e) {
+		var zTree = $.fn.zTree.getZTreeObj("treeData");
+		var type = e.data.type;
+		var nodes = zTree.getSelectedNodes();
+		if (type.indexOf("All")<0 && nodes.length == 0) {
+			alert("请先选择一个父节点");
+		}
+
+		if (type == "expandAll") {
+			zTree.expandAll(true);
+		} else if (type == "collapseAll") {
+			zTree.expandAll(false);
+		}
+	}
+
+	$(function(){
+		$.fn.zTree.init($("#treeData"), setting, zNodes);
+		var zTree = $.fn.zTree.getZTreeObj("treeData");
+		$("#expandAllBtn").bind("click", {type:"expandAll"}, expandNode);
+		$("#collapseAllBtn").bind("click", {type:"collapseAll"}, expandNode);
+		zTree.expandAll(true);	
+		if(zNodes.length==0){
+			$("#id_div_resoure").html("<div style='font-size:20px;color:red;padding-top:120px;'>当前用户暂未分配权限!</div>");			
+		}
+	});
+	
+	//自动缩放
+	$(window).resize(function() {
+		$('#id_div_tree').height($(window).height() -60);
+		//$('#id_div_tree').width($(window).width() -10);
+	});
+</SCRIPT>
+
+<TABLE border='0' width='100%'>
+	<tr>
+		<td colspan="2">当前用户：<font style='font-size: 13;' color="red">#{USER_BEAN.get('OPNAME')}</font>【组织机构：#{USER_BEAN.get('ORGANNAME')}，部门：#{USER_BEAN.get('DEPTNAME')}】
+		</td>
+	</tr>
+	<tr>
+		<td width="300" style="border-top: solid 1px; border-right: solid 1px;"><a id="expandAllBtn" href="#" class="easyui-linkbutton btn_edit" style="margin: 0px; height: 30px;" onclick="return false;">展开</a> <a id="collapseAllBtn" href="#" class="easyui-linkbutton btn_edit" style="margin: 0px; height: 30px;" onclick="return false;">折叠</a>
+			<div id="id_div_tree" style="overflow-y: auto; border-top: solid 1px;">
+				<ul id="treeData" class="ztree"></ul>
+			</div></td>
+		<td style="border-top: solid 1px;" valign="top" id='id_div_resoure'></td>
+	</tr>
+</TABLE>

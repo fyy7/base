@@ -1,0 +1,27 @@
+{
+	"homePageTitle": "首页页面Title",
+	"systemName": "系统名称",
+	"systemLogoUrl": "系统LOGO url",
+	"systemIcon": "浏览器小图标",
+	"copyRights": "版权说明",
+
+	/* 菜单配置，支持两级菜单 */
+	"menus": [{
+		"name": "菜单名称",
+		"targetPageId": "页面ID",
+		"subMenus":  [{
+			"name": "子菜单名称",
+			"targetPageId": "DEMO_PAGE"
+		}]
+	}, {
+		"name": "菜单名称1",
+		"targetPageId": "页面ID",
+		"subMenus":  [{
+			"name": "子菜单名称11",
+			"targetPageId": "DEMO_PAGE"
+		}, {
+			"name": "子菜单名称12",
+			"targetPageId": "DEMO_PAGE"
+		}]
+	}]
+}

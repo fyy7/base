@@ -1,0 +1,9 @@
+FROM docker-registry.kind.com:5000/kind.com/centos7.2_64bit-jdk8
+
+LABEL maintainer kind
+
+COPY kind-base-0.0.1-SNAPSHOT.jar /springboot/publish/kind-base-0.0.1-SNAPSHOT.jar
+
+EXPOSE 22 80 8080 8443 443 8181 8989 9999
+
+ENTRYPOINT java -Dfile.encoding=UTF-8 -jar /springboot/publish/kind-base-0.0.1-SNAPSHOT.jar

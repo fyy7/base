@@ -1,0 +1,653 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<!-- -RELEASE/-SNAPSHOTS -->
+	<groupId>com.kind</groupId>
+	<artifactId>kind-base</artifactId>
+	<version>0.0.4-SNAPSHOTS</version>
+	<packaging>jar</packaging>
+
+	<name>kind-base</name>
+	<description>kind-base project for Spring Boot</description>
+
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>1.5.20.RELEASE</version>
+		<relativePath /> <!-- lookup parent from repository -->
+	</parent>
+
+	<properties>
+		<!-- kind框架的版本 -->
+		<kind-framework.version>0.2.81</kind-framework.version>
+		<!-- kind公用包 -->
+		<kind-common.version>0.3.17</kind-common.version>
+		<!-- 工作流版本  -->
+		<workflow-all.version>0.1.25</workflow-all.version>
+		<!-- 工作流中svg相关版本 -->
+		<xmlgraphics.version>1.11</xmlgraphics.version>
+
+		<druid.version>1.1.21</druid.version>
+		<beetl.version>2.9.10</beetl.version>
+		<fastjson.version>1.2.58</fastjson.version>
+		<axis.version>1.4</axis.version>
+		<hutool.version>4.5.9</hutool.version>
+		<bouncycastle.version>1.60</bouncycastle.version>
+		<kryo.version>3.0.3</kryo.version>
+		<kisso.version>3.7.5</kisso.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<java.version>1.8</java.version>
+		<spring-cloud.version>Edgware.SR2</spring-cloud.version>
+
+		<commons-fileupload.version>1.3.3</commons-fileupload.version>
+		<commons-io.version>2.6</commons-io.version>
+
+		<fastdfs.version>SNAPSHOT-1.27</fastdfs.version>
+		<poi-ooxml.version>4.0.0</poi-ooxml.version>
+		<xerces.version>2.11.0</xerces.version>
+		<!-- mysql版本 -->
+		<mysql.version>8.0.18</mysql.version>
+
+		<quartz.version>2.3.1</quartz.version>
+	</properties>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+			<!-- 排除内嵌tomcat -->
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-tomcat</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<!--kind springBoot框架 -->
+		<dependency>
+			<groupId>com.kind</groupId>
+			<artifactId>kind-framework</artifactId>
+			<version>${kind-framework.version}</version>
+		</dependency>
+
+		<!--kind 公用包 -->
+		<dependency>
+			<groupId>com.kind</groupId>
+			<artifactId>kind-common</artifactId>
+			<version>${kind-common.version}</version>
+		</dependency>
+
+		<!--工作流框架-->
+		<dependency>
+			<groupId>com.kind</groupId>
+			<artifactId>kind-workflow-all</artifactId>
+			<version>${workflow-all.version}</version>
+		</dependency>
+
+		<!-- svg解析 -->
+		<dependency>
+			<groupId>org.apache.xmlgraphics</groupId>
+			<artifactId>batik-transcoder</artifactId>
+			<version>${xmlgraphics.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.xmlgraphics</groupId>
+			<artifactId>batik-codec</artifactId>
+			<version>${xmlgraphics.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.elasticsearch.client</groupId>
+			<artifactId>elasticsearch-rest-high-level-client</artifactId>
+			<version>5.6.16</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.elasticsearch</groupId>
+			<artifactId>elasticsearch</artifactId>
+			<version>5.6.16</version>
+		</dependency>
+
+		<!-- web服务axis -->
+		<dependency>
+			<groupId>axis</groupId>
+			<artifactId>axis</artifactId>
+			<version>${axis.version}</version>
+		</dependency>
+
+		<!-- 重试机制 <dependency> <groupId>org.springframework.retry</groupId> <artifactId>spring-retry</artifactId> </dependency> -->
+		<!-- <dependency> <groupId>de.codecentric</groupId> <artifactId>spring-boot-admin-starter-client</artifactId> <version>1.5.7</version> </dependency> -->
+
+		<!-- 熔断器 -->
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-hystrix</artifactId>
+		</dependency>
+
+		<!-- springBoot监控 <dependency> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-starter-actuator</artifactId> </dependency> -->
+
+		<!-- 单点登录 -->
+		<dependency>
+			<groupId>com.baomidou</groupId>
+			<artifactId>kisso</artifactId>
+			<version>${kisso.version}</version>
+		</dependency>
+
+		<!-- AOP切面引入 -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-aop</artifactId>
+		</dependency>
+
+		<!-- redis缓存 -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
+		</dependency>
+
+		<!-- session共享redis -->
+		<dependency>
+			<groupId>org.springframework.session</groupId>
+			<artifactId>spring-session-data-redis</artifactId>
+		</dependency>
+
+		<!-- druid 连接池 -->
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>druid</artifactId>
+			<version>${druid.version}</version>
+		</dependency>
+
+		<!-- fastjson解析 -->
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>${fastjson.version}</version>
+		</dependency>
+
+		<!-- beetl模板 -->
+		<dependency>
+			<groupId>com.ibeetl</groupId>
+			<artifactId>beetl</artifactId>
+			<version>${beetl.version}</version>
+		</dependency>
+
+		<!-- 序列化类kryo -->
+		<dependency>
+			<groupId>com.esotericsoftware</groupId>
+			<artifactId>kryo-shaded</artifactId>
+			<version>${kryo.version}</version>
+		</dependency>
+
+		<!-- Java基础工具类 -->
+		<dependency>
+			<groupId>cn.hutool</groupId>
+			<artifactId>hutool-all</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-configuration</groupId>
+			<artifactId>commons-configuration</artifactId>
+		</dependency>
+
+		<!-- 国密算法依赖1.60版本 -->
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcpkix-jdk15on</artifactId>
+			<version>${bouncycastle.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk15on</artifactId>
+			<version>${bouncycastle.version}</version>
+		</dependency>
+		<!-- 表格导入 -->
+
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>xerces</groupId>
+			<artifactId>xercesImpl</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<!-- <dependency> <groupId>org.quartz-scheduler</groupId> <artifactId>quartz</artifactId> <version>2.3.0</version> </dependency> -->
+
+
+		<!-- E手签 -->
+		<dependency>
+			<groupId>com.kinsec</groupId>
+			<artifactId>pkimodule</artifactId>
+			<version>20181212</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.kinsec</groupId>
+			<artifactId>wsbmodule20180907</artifactId>
+			<version>4.0</version>
+		</dependency>
+
+		<!-- jdbc引入 -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jdbc</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+			<version>${commons-fileupload.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>${commons-io.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.csource</groupId>
+			<artifactId>fastdfs-client-java</artifactId>
+			<version>${fastdfs.version}</version>
+		</dependency>
+
+		<!-- activeMq -->
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-client</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-broker</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.quartz-scheduler</groupId>
+			<artifactId>quartz</artifactId>
+			<version>${quartz.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.quartz-scheduler</groupId>
+			<artifactId>quartz-jobs</artifactId>
+			<version>${quartz.version}</version>
+		</dependency>
+
+
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</dependency>
+
+		<!-- mysql驱动包 -->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>${mysql.version}</version>
+		</dependency>
+
+		<!-- <dependency> <groupId>io.netty</groupId> <artifactId>netty-all</artifactId> <version>4.1.15.Final</version> </dependency> -->
+
+		<!-- https://mvnrepository.com/artifact/org.dom4j/dom4j -->
+		<dependency>
+			<groupId>org.dom4j</groupId>
+			<artifactId>dom4j</artifactId>
+			<version>2.1.1</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/jaxen/jaxen -->
+		<dependency>
+			<groupId>jaxen</groupId>
+			<artifactId>jaxen</artifactId>
+			<version>1.1.6</version>
+			<exclusions>
+				<exclusion>
+					<groupId>maven-plugins</groupId>
+					<artifactId>maven-cobertura-plugin</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>maven-plugins</groupId>
+					<artifactId>maven-findbugs-plugin</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!-- 引入zxing（Hutool） -->
+		<dependency>
+			<groupId>com.google.zxing</groupId>
+			<artifactId>core</artifactId>
+			<version>3.3.3</version>
+		</dependency>
+
+		<!-- <dependency> <groupId>org.scala-lang</groupId> <artifactId>scala-library</artifactId> <version>2.11.0</version> </dependency> <dependency> <groupId>org.apache.commons</groupId> <artifactId>commons-lang3</artifactId> <version>3.4</version> </dependency> -->
+
+	</dependencies>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.apache.poi</groupId>
+				<artifactId>poi-ooxml</artifactId>
+				<version>${poi-ooxml.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>xerces</groupId>
+				<artifactId>xercesImpl</artifactId>
+				<version>${xerces.version}</version>
+			</dependency>
+
+			<!-- https://mvnrepository.com/artifact/net.sourceforge.dynamicreports -->
+			<!-- https://mvnrepository.com/artifact/net.sourceforge.dynamicreports/dynamicreports-core -->
+			<dependency>
+				<groupId>net.sourceforge.dynamicreports</groupId>
+				<artifactId>dynamicreports-core</artifactId>
+				<version>${dynamicreports.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>${spring-cloud.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>cn.hutool</groupId>
+				<artifactId>hutool-all</artifactId>
+				<version>4.5.6</version>
+			</dependency>
+
+		</dependencies>
+	</dependencyManagement>
+
+	<profiles>
+		<profile>
+			<id>dev</id>
+			<properties>
+				<profile.active>dev</profile.active>
+			</properties>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+		</profile>
+		<profile>
+			<id>prod</id>
+			<properties>
+				<profile.active>prod</profile.active>
+			</properties>
+		</profile>
+		<profile>
+			<id>test</id>
+			<properties>
+				<profile.active>test</profile.active>
+			</properties>
+		</profile>
+	</profiles>
+
+	<build>
+		<finalName>${project.artifactId}-${project.version}</finalName>
+		<resources>
+			<resource><!--此处的设置是打包的时候排除不相关的目录 -->
+				<directory>src/main/resources/</directory><!--此处设置为上面在resource目录下创建的文件夹 -->
+				<excludes>
+					<exclude>profile/**</exclude>
+					<exclude>downfile/**</exclude>
+				</excludes>
+				<filtering>true</filtering><!--开启过滤器，此处不能忽略！ -->
+			</resource>
+			<resource><!-- 处理过滤器导致文件异常原因 -->
+				<directory>src/main/resources/</directory><!--此处设置为上面在resource目录下创建的文件夹 -->
+				<includes>
+					<include>downfile/**</include>
+				</includes>
+				<filtering>false</filtering><!--开启过滤器，此处不能忽略！ -->
+			</resource>
+		</resources>
+
+		<plugins>
+		
+			<!-- 源码混淆 -->
+			<!-- <plugin>
+				<groupId>com.github.wvengen</groupId>
+				<artifactId>proguard-maven-plugin</artifactId>
+				<version>2.2.0</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>proguard</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<proguardVersion>6.2.0</proguardVersion>
+					<injar>${project.build.finalName}.jar</injar>
+					<outjar>${project.build.finalName}.jar</outjar>
+					<obfuscate>true</obfuscate>
+					<injarNotExistsSkip>true</injarNotExistsSkip>
+					<outputDirectory>${project.build.directory}</outputDirectory>
+					<proguardInclude>proguard.conf</proguardInclude>
+					<libs>
+						<lib>${java.home}/lib/rt.jar</lib>
+						<lib>${java.home}/lib/jce.jar</lib>
+					</libs>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>net.sf.proguard</groupId>
+						<artifactId>proguard-base</artifactId>
+						<version>6.2.0</version>
+					</dependency>
+				</dependencies>
+			</plugin> -->
+		
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<!-- 指定主类，避免报错：Execution default of goal org.springframework.boot:spring-boot-maven-plugin:1.5.20.RELEASE:repackage failed: Unable to find a single main class from the following candidates -->
+					<mainClass>com.kind.KindBaseApplication</mainClass>
+					<!-- spring-boot:run 中文乱码解决 -->
+					<jvmArguments>-Dfile.encoding=UTF-8</jvmArguments>
+					<!-- tomcat相关jar不打包 -->
+					<packagingExcludes>
+						WEB-INF/lib/tomcat*.jar,WEB-INF/lib/spring-boot-starter-tomcat-*.jar
+					</packagingExcludes>
+					<executions>
+						<execution>
+							<goals>
+								<goal>repackage</goal>
+							</goals>
+						</execution>
+					</executions>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<!-- 打包不测试开关 -->
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.6</version>
+				<executions>
+					<execution>
+						<id>copy-resources</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<!-- 覆盖原有文件 -->
+							<overwrite>true</overwrite>
+							<outputDirectory>${project.build.outputDirectory}</outputDirectory>
+							<!-- 待处理的资源定义 -->
+							<resources>
+								<!-- 先排除所有配置文件 -->
+								<!-- <resource> <directory>src/main/resources</directory> <excludes> <exclude>profile/**</exclude> </excludes> <filtering>true</filtering> </resource> -->
+								<!-- 指定加载的配置文件 -->
+								<resource>
+									<directory>src/main/resources/profile/${profile.active}</directory>
+									<filtering>true</filtering>
+								</resource>
+							</resources>
+						</configuration>
+						<inherited>true</inherited>
+					</execution>
+				</executions>
+			</plugin>
+			
+			<plugin>
+				<!-- YUI Compressor Maven压缩插件 -->
+				<groupId>net.alchim31.maven</groupId>
+				<artifactId>yuicompressor-maven-plugin</artifactId>
+				<version>1.5.1</version>
+				<executions>
+					<execution>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>compress</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<!-- 读取js,css文件采用UTF-8编码 -->
+					<encoding>UTF-8</encoding>
+					<!-- 不显示js可能的错误 -->
+					<jswarn>false</jswarn>
+					<!-- 是否混淆 -->
+					<nomunge>true</nomunge>
+					<!-- 若存在已压缩的文件，会先对比源文件是否有改动  有改动便压缩，无改动就不压缩 -->
+					<force>false</force>
+					<!-- 在指定的列号后插入新行 -->
+					<linebreakpos>-1</linebreakpos>
+					<!-- 压缩之前先执行聚合文件操作 -->
+					<preProcessAggregates>true</preProcessAggregates>
+					<!-- 压缩后保存文件后缀 无后缀 -->
+					<nosuffix>true</nosuffix>
+					
+					<!-- 源目录，即需压缩的根目录 -->
+					<!--<sourceDirectory>src/main/resources</sourceDirectory> -->
+					<!-- 输出目录，即压缩后的目录-->
+					<!--<outputDirectory>js_compress</outputDirectory> -->    
+					
+					<force>true</force>
+					<!-- 压缩js和css文件 -->
+					<includes>
+						<include>**/workflow/**/*.js</include>
+						<!--<include>**/*.css</include>-->
+					</includes>
+					<!-- 以下目录和文件不会被压缩 -->
+					<excludes>
+						<!--<exclude>**/*.min.js</exclude>-->
+					</excludes>
+				</configuration>
+			</plugin>
+
+			<!-- assembly打包 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>3.1.1</version>
+				<executions>
+					<execution>
+						<id>kind-base-assembly</id>
+						<!-- 绑定到package生命周期 -->
+						<phase>package</phase>
+						<goals>
+							<!-- 只运行一次 -->
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<descriptors>
+						<!-- 配置描述符文件 -->
+						<descriptor>assembly.xml</descriptor>
+					</descriptors>
+					<!-- <finalName>${project.name}</finalName> -->
+					<outputDirectory>./target</outputDirectory>
+				</configuration>
+			</plugin>
+			
+			<!-- 源码加密 https://github.com/core-lib/xjar -->
+			<!-- <plugin>
+                <groupId>com.github.core-lib</groupId>
+                <artifactId>xjar-maven-plugin</artifactId>
+                <version>v2.0.6</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <configuration>
+                        	密码后续使用命令行传入，不写在pom里
+                            <password>kind</password>
+                            <targetJar>${project.build.finalName}-enc.jar</targetJar>
+							<excludes>
+								<exclude>static/**</exclude>
+								<exclude>beetl/**</exclude>
+								<exclude>configlib/**</exclude>
+							</excludes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin> -->
+
+		</plugins>
+
+	</build>
+	
+	<pluginRepositories>
+		<!-- 设置 jitpack.io 插件仓库，xjar用 -->
+        <pluginRepository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </pluginRepository>
+    </pluginRepositories>
+	
+	<distributionManagement>
+		<repository>
+			<id>kind-releases</id>
+			<url>
+                http://192.168.0.29:8081/repository/kind-releases/
+            </url>
+		</repository>
+		<snapshotRepository>
+			<id>kind-snapshots</id>
+			<url>
+                http://192.168.0.29:8081/repository/kind-snapshots/
+            </url>
+		</snapshotRepository>
+	</distributionManagement>
+</project>

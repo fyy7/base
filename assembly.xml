@@ -1,0 +1,32 @@
+<assembly>
+
+	<!-- id将带在生成的文件名称后面，为 ${artifactId}-${id}.jar或 ${finalName(如果指定的话)}-${id}.jar -->
+	<id>assembly</id>
+
+	<formats>
+		<format>jar</format>
+	</formats>
+
+	<!-- 是否在最外层包一层目录 -->
+	<includeBaseDirectory>false</includeBaseDirectory>
+
+	<fileSets>
+		<fileSet>
+			<directory>target/classes/com</directory>
+			<outputDirectory>./com</outputDirectory>
+		</fileSet>
+		<fileSet>
+			<directory>target/classes/beetl</directory>
+			<outputDirectory>./beetl</outputDirectory>
+		</fileSet>
+		<fileSet>
+			<directory>target/classes/static</directory>
+			<outputDirectory>./static</outputDirectory>
+		</fileSet>
+		<fileSet>
+			<directory>target/classes/configlib</directory>
+			<outputDirectory>./configlib</outputDirectory>
+		</fileSet>
+	</fileSets>
+
+</assembly>

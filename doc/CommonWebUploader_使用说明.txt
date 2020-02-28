@@ -1,0 +1,116 @@
+----------------------------------------------------------------------------------------------------------------------------------------
+一、引入依赖
+
+kind-common版本：0.3.15及以上
+
+<添加 jquery依赖>
+<link rel="stylesheet" href='<#jsCssPath url="/lib/webuploader/webuploader.css"/>'>
+<script type="text/javascript" src='<#jsCssPath url="/lib/webuploader/webuploader.js"/>'></script>
+<script type="text/javascript" src='<#jsCssPath url="/module/webuploader/CommonWebUploader.js"/>'></script>
+
+
+----------------------------------------------------------------------------------------------------------------------------------------
+二、定制样式
+
+<style>
+
+	.infotitle {height: 30px; width: 90px; text-align: right;}
+	
+	.uploader-file-container {}
+	.uploader-file-item {width: 450px; height: 35px; padding-bottom: 5px;}
+	.uploader-file-thumblr {float: left; width: 35px; height: 35px; line-height: 35px; text-align: center; vertical-align: middle;}
+	.uploader-file-thumblr img {width: 35px; height: 35px; border-radius: 5px;}
+	.uploader-file-info {float: left; margin-left: 10px; margin-top: 0px; width: 300px;}
+	.uploader-file-name {font-size: 13px; color: #07141e; font-family: "宋体", "tahoma", "arial"}
+	.uploader-file-progress {width: 100%; height: 5px; border: 1px solid #999; border-radius: 10px; margin-top: 3px; padding: 1px;}
+	.uploader-file-progress-bar {background: #1094fa; height: 5px; width: 0px; border-radius: 10px;}
+	.uploader-file-operate {float: right; line-height: 40px; vertical-align: middle;}
+	.uploader-file-status {width: 30px; font-size: 12px; color: green;}
+	.uploader-file-status.uploader-file-fail {color: red;}
+	.uploader-file-remove {margin-left: 5px; cursor: pointer;}
+	
+</style>
+
+
+----------------------------------------------------------------------------------------------------------------------------------------
+三、使用（参考：/beetl/attachment/attachment_multi_upload_webuploader.html）
+
+<!-- 定义容器用于展示文件列表 -->
+<div id="uploaderContainer" style="padding-left: 60px; margin: 20px 0;"></div>
+<div style="text-align: center;">
+	<!-- 定义选择文件按钮-->
+	<a id="webuploaderBtn" class="easyui-linkbutton btn_edit" style="border-color: #4bc6e8; background-color: #4bc6e8;" data-options="iconCls:'icon-add'" href="javascript:;">添加附件</a>
+	<a class="easyui-linkbutton btn_edit" data-options="iconCls:'icon-save'" href="javascript:;" onclick="uploads();">上传</a>
+</div>
+
+<script type="text/javascript">
+
+	// 初始化
+	$(function() {
+		
+		// 初始化webuploader
+		webuploader = new CommonWebUploader({
+			debugMode: true,
+			containerId: "uploaderContainer",  // 用于展示文件列表的容器ID
+			filePickerId: "webuploaderBtn",  // 选择文件按钮ID
+			serverUrl: "upload?APP_ID=" + $("#appInfos").val() + "&CHECK_TYPE=" + $("#attachmentCheckTypes").val() + "&FDFS=1&SAVE_DIRECT=1",
+			chunkSize: 10 * 1024 * 1024,  // 文件分片大小（B），建议10M以内
+			fileSingleSizeLimit: 100 * 1024 * 1024,  // 文件大小（B）
+			showMsgFn: showMsg,
+	        beforeUpload: function () {                     // 上传之前触发事件，传参：空
+	            console.log("before");
+	        },
+	        afterUpload: function (successUploadInfos) {    // 上传结束触发事件，传参：successUploadInfos（array，包含服务器响应等相关信息）
+	            console.log("after");
+	        }
+		});
+		
+	});
+	
+	function uploads() {
+		//alert(webuploader.hasFileForUpload());
+	
+		doWebUpload(webuploader, function (data) {
+			console.log(data);
+		});
+	}
+	
+	// api
+	// webuploader.getUploader();  // 返回当前webuploader实例
+	// webuploader.upload(callback(uploadInfos));  // 触发上传，callback为上传后的回调函数，参数为uploadInfos，其中uploadInfos格式包含所有分片上传响应信息，需进行转换简化后使用，可使用公共函数webUploaderDataConvert进行转换。
+	// webuploader.setUploaderOption(key, {webupload配置项，参考官网文档});
+	// webuploader.getUploaderOption(key);
+	// webuploader.getUploadInfos();  // 获取得到的上传的结果（uploadInfos，包含所有分片上送响应数据）
+	// webuploader.setErrorMsg("F_EXCEED_SIZE", "文件大小不能超过" + webuploader.getUploaderOption("fileSingleSizeLimit") + "B")，设置为null则不提示
+	// webuploader.hasFileForUpload();  // 是否有文件待上传
+	// webuploader.getStats();  // 当前webuploader状态，详见官网手册
+	
+	// 公共函数
+	/**
+	 * webuploader文件上送后返回的数据格式转换
+	 * @param successUploadInfos	webuploader调用upload后回调函数参数值，或者低啊用getUploadInfos返回的数据值
+	 * @param callback				上送后回调函数，参数：转换后的数据格式data(格式: [{"name": "文件名", "g_result":1,"g_message":"上传文件完成","uid":"add03cda312940d5a50efb3c5fc345d8"}, ...])
+	 */
+	function webUploaderDataConvert(successUploadInfos) {...}
+	/**
+	 * webuploader文件上送并对返回数据处理
+	 * @param webuploaderObj	webuploader实例对象
+	 * @param callback			上送后回调函数，参数：data(格式: [{"name": "文件名", "g_result":1,"g_message":"上传文件完成","uid":"add03cda312940d5a50efb3c5fc345d8"}, ...])
+	 */
+	function doWebUpload(webuploaderObj, callback) {...}
+
+	// ERROR MSG 定义
+	// F_DUPLICATE: "文件已存在",
+	// F_EXCEED_SIZE: "文件大小超出限制",
+	// Q_EXCEED_NUM_LIMIT: "文件数量超出限制",
+	// Q_TYPE_DENIED: "文件格式不正确",
+	// YT_NO_FILES_FOR_UPLOAD: "请选择待上传的文件"
+	
+</script>
+
+<div id="uploaderContainer" style="padding-left: 60px; margin: 20px 0;"></div>
+<div style="text-align: center;">
+	<a id="webuploaderBtn" class="easyui-linkbutton btn_edit" style="border-color: #4bc6e8; background-color: #4bc6e8;" data-options="iconCls:'icon-add'" href="javascript:;">添加附件</a>
+	<a class="easyui-linkbutton btn_edit" data-options="iconCls:'icon-save'" href="javascript:;" onclick="uploads();">上传</a>
+</div>
+

@@ -45,7 +45,7 @@
 
 		<fastdfs.version>SNAPSHOT-1.27</fastdfs.version>
 		<poi-ooxml.version>4.0.0</poi-ooxml.version>
-		<xerces.version>2.11.0</xerces.version>
+		<xerces.version>2.12.0</xerces.version>
 		<!-- mysql版本 -->
 		<mysql.version>8.0.18</mysql.version>
 

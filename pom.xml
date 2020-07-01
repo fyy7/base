@@ -49,7 +49,7 @@
 		<!-- mysql版本 -->
 		<mysql.version>8.0.18</mysql.version>
 
-		<quartz.version>2.3.1</quartz.version>
+		<quartz.version>2.3.2</quartz.version>
 	</properties>
 
 	<dependencies>

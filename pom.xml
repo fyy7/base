@@ -32,7 +32,7 @@
 		<fastjson.version>1.2.58</fastjson.version>
 		<axis.version>1.4</axis.version>
 		<hutool.version>4.5.9</hutool.version>
-		<bouncycastle.version>1.60</bouncycastle.version>
+		<bouncycastle.version>1.67</bouncycastle.version>
 		<kryo.version>3.0.3</kryo.version>
 		<kisso.version>3.7.5</kisso.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

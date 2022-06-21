@@ -47,7 +47,7 @@
 		<poi-ooxml.version>4.0.0</poi-ooxml.version>
 		<xerces.version>2.11.0</xerces.version>
 		<!-- mysql版本 -->
-		<mysql.version>8.0.18</mysql.version>
+		<mysql.version>8.0.28</mysql.version>
 
 		<quartz.version>2.3.1</quartz.version>
 	</properties>
